@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/drawer/pages/profile.dart';
-import 'package:oobacht/screens/drawer/pages/settings.dart';
 
 import 'components/drawer_list_tile.dart';
 import 'pages/informations.dart';
+import 'pages/profile.dart';
+import 'pages/settings.dart';
 
 class MainMenuDrawer extends StatelessWidget {
   const MainMenuDrawer({Key? key}) : super(key: key);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/drawer/components/drawer_page_app_bar.dart';
+import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../utils/theme.dart';
+import '../components/drawer_page_app_bar.dart';
 
 class SettingsDrawerPage extends StatefulWidget {
   const SettingsDrawerPage({Key? key}) : super(key: key);

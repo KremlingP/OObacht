@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/drawer/components/drawer_page_app_bar.dart';
+
+import '../components/drawer_page_app_bar.dart';
 
 class InformationsDrawerPage extends StatelessWidget {
   const InformationsDrawerPage({Key? key}) : super(key: key);

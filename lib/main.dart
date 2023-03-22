@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/main_menu.dart';
+import 'package:oobacht/screens/main_menu/main_menu.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +35,7 @@ class _OobachtAppState extends State<OobachtApp> {
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(const AssetImage("assets/logo.png"), context);
     return MaterialApp(
       title: 'OObacht!',
       theme: CustomTheme.lightTheme,
