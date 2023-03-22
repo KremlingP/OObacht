@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/screens/drawer/pages/profile.dart';
+import 'package:oobacht/screens/drawer/pages/settings.dart';
 
 import 'components/drawer_list_tile.dart';
-import 'pages/information_screen.dart';
+import 'pages/informations.dart';
 
 class MainMenuDrawer extends StatelessWidget {
   const MainMenuDrawer({Key? key}) : super(key: key);
@@ -30,19 +32,19 @@ class MainMenuDrawer extends StatelessWidget {
               text: 'Profil',
               icon: Icons.person,
               context: context,
-              site: const InformationScreen(),
+              site: const ProfileDrawerPage(),
             ),
             DrawerListTile(
               text: 'Einstellungen',
               icon: Icons.settings,
               context: context,
-              site: const InformationScreen(),
+              site: const SettingsDrawerPage(),
             ),
             DrawerListTile(
               text: 'Informationen',
               icon: Icons.info_outline,
               context: context,
-              site: const InformationScreen(),
+              site: const InformationsDrawerPage(),
             ),
           ],
         ),

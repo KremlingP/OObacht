@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.dhbw.oobacht">
    <application
-        android:label="oobacht"
+        android:label="OObacht!"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

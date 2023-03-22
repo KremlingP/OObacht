@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:oobacht/screens/drawer/components/drawer_page_app_bar.dart';
 
-class InformationScreen extends StatelessWidget {
-  const InformationScreen({Key? key}) : super(key: key);
+class InformationsDrawerPage extends StatelessWidget {
+  const InformationsDrawerPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +10,7 @@ class InformationScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
-        appBar: const DrawerPageAppBar(title: "INFORMATIONEN"),
+        appBar: const DrawerPageAppBar(title: "Informationen"),
         body: SafeArea(
           child: Center(
             child: Column(
