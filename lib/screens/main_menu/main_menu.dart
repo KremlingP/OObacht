@@ -15,9 +15,18 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   bool darkMode = false;
-  int _selectedIndex = 0;
 
+  //PageController to make pages swipeable
+  final _pageViewController = PageController();
+  int _activePageIndex = 0;
   final List<Widget> _contentPages = [const MainMap(), const MainList()];
+
+  @override
+  void dispose() {
+    //dispose PageController to stop bugs
+    _pageViewController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +54,18 @@ class _MainMenuState extends State<MainMenu> {
         child: const MainMenuDrawer(),
       ),
       body: SafeArea(
-        child: _contentPages.elementAt(_selectedIndex),
-      ),
+          child: PageView(
+        controller: _pageViewController,
+        children: _contentPages,
+        onPageChanged: (index) {
+          setState(() {
+            _activePageIndex = index;
+          });
+        },
+      )),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _activePageIndex,
+        onTap: _onItemTapped,
         backgroundColor: Colors.orange,
         selectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
@@ -60,8 +78,6 @@ class _MainMenuState extends State<MainMenu> {
             label: 'Liste',
           )
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
     );
   }
@@ -69,8 +85,10 @@ class _MainMenuState extends State<MainMenu> {
   void _onItemTapped(int index) {
     setState(
       () {
-        _selectedIndex = index;
+        _activePageIndex = index;
       },
     );
+    _pageViewController.animateToPage(index,
+        duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
   }
 }
