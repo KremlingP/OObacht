@@ -16,9 +16,8 @@ class CustomTheme with ChangeNotifier {
     return ThemeData(
       scaffoldBackgroundColor: Colors.black12,
       primaryColor: Colors.black,
-      textTheme: const TextTheme(
-        //Für App-Bar
-        displayLarge: TextStyle(color: Colors.white),
+      appBarTheme: const AppBarTheme(
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       inputDecorationTheme: const InputDecorationTheme(
         enabledBorder:
@@ -33,8 +32,8 @@ class CustomTheme with ChangeNotifier {
     return ThemeData(
       scaffoldBackgroundColor: Colors.black12,
       primaryColor: Colors.white,
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(color: Colors.white),
+      appBarTheme: const AppBarTheme(
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       inputDecorationTheme: const InputDecorationTheme(
         enabledBorder:

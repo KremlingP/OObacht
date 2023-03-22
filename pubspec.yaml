@@ -70,3 +70,6 @@ flutter:
     - family: Fredoka
       fonts:
       - asset: fonts/FredokaOne-Regular.ttf
+    - family: Courgette
+      fonts:
+      - asset: fonts/Courgette-Regular.ttf
