@@ -63,21 +63,49 @@ class _MainMenuState extends State<MainMenu> {
           });
         },
       )),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _activePageIndex,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.orange,
-        selectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Karte',
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
+        onPressed: _newReport,
+        tooltip: 'Neue Meldung erstellen',
+        elevation: 4.0,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          height: kBottomNavigationBarHeight,
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.background,
+              border: const Border(
+                top: BorderSide(
+                  color: Colors.grey,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _activePageIndex,
+              onTap: _onItemTapped,
+              backgroundColor: Colors.orange,
+              selectedItemColor: Colors.white,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Karte',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Liste',
+                )
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Liste',
-          )
-        ],
+        ),
       ),
     );
   }
@@ -90,5 +118,9 @@ class _MainMenuState extends State<MainMenu> {
     );
     _pageViewController.animateToPage(index,
         duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
+  }
+
+  void _newReport() {
+    ///TODOFH Navigation zu neuer Meldung Seite
   }
 }
