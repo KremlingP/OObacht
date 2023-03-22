@@ -1,4 +1,6 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/theme.dart';
 
@@ -18,12 +20,10 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text(
+        title: const AutoSizeText(
           'OOBACHT!',
-          style: TextStyle(
-            fontFamily: 'Fredoka',
-            color: Colors.white,
-          ),
+          style: TextStyle(fontFamily: 'Fredoka', color: Colors.white),
+          maxLines: 1,
         ),
         centerTitle: true,
       ),
@@ -44,7 +44,7 @@ class _MainMenuState extends State<MainMenu> {
                 setState(() {
                   darkMode = value;
                   currentTheme.toggleTheme();
-                  //saveDataToSharedPrefs();
+                  saveDataToSharedPrefs();
                 });
               },
             ),
@@ -52,5 +52,10 @@ class _MainMenuState extends State<MainMenu> {
         ),
       ),
     );
+  }
+
+  void saveDataToSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkMode', darkMode);
   }
 }

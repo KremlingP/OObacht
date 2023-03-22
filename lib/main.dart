@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/screens/main_menu.dart';
 import 'package:oobacht/utils/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase/firebase_options.dart';
 
@@ -29,7 +30,7 @@ class _OobachtAppState extends State<OobachtApp> {
     currentTheme.addListener(() {
       setState(() {});
     });
-    //loadDataFromSharedPrefs();
+    loadDataFromSharedPrefs();
   }
 
   @override
@@ -44,14 +45,13 @@ class _OobachtAppState extends State<OobachtApp> {
     );
   }
 
-  //TODOFH SharedPreferences für Einstellungen hinzufügen
-  // void loadDataFromSharedPrefs() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     if (prefs.getBool('darkMode') != null) {
-  //       //standard is LightMode, if DarkMode is true toggle theme
-  //       if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
-  //     }
-  //   });
-  // }
+  void loadDataFromSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.getBool('darkMode') != null) {
+        //standard is LightMode, if DarkMode is true toggle theme
+        if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
+      }
+    });
+  }
 }
