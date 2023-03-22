@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "786574581911",
+    "project_id": "oobacht-ea4d4",
+    "storage_bucket": "oobacht-ea4d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786574581911:android:69aa29d3a036371b1fc9d2",
+        "android_client_info": {
+          "package_name": "de.dhbw.oobacht"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786574581911-mk46cr1ul166ipa4a2bh1ad0e6r4pq78.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQKNL739TMQCuh5tIboB9oLIA_F2KPsvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786574581911-d96ng3pahcg3ae3c5ee2i4g0q668b0v0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
