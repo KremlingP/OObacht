@@ -21,7 +21,7 @@ class MainMap extends StatefulWidget {
 
 class _MainMapState extends State<MainMap> {
   final List<Report> _reportsMOCK = [
-    Report("0", "Test 0", "Desc 0", DateTime.now(), [Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown)], const LatLng(48.445166, 8.696739), ""),
+    Report("0", "Test 0", "Desc 0", DateTime.now(), [Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown)], const LatLng(48.445166, 8.706739), ""),
     Report("1", "Test 1", "Desc 1", DateTime.now(), [Group("childs", "Gefahr für Kinder", Icons.child_friendly, Colors.yellow)], const LatLng(48.445166, 8.686739), ""),
     Report("2", "Test 2", "Desc 2", DateTime.now(), [Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded, Colors.red)], const LatLng(48.445166, 8.676739), ""),
     Report("3", "Test 3", "Desc 3", DateTime.now(), [Group("climber", "Gefahr für Kletterer", Icons.sports, Colors.blue)], const LatLng(48.445166, 8.666739), ""),
@@ -29,73 +29,68 @@ class _MainMapState extends State<MainMap> {
 
   Position? _currentPosition;
   late GoogleMapController mapController;
+  Widget _widget = const Center(child: CircularProgressIndicator());
+  bool mapCreated = false;
 
-  Future<void> _onMapCreated(GoogleMapController controller) async {
+  Future<void> _createMap() async {
     final theme = Theme.of(context);
-
     List<Report> reportsList = _reportsMOCK;
-
-    _getCurrentPosition;
-
     MarkerGenerator markerGenerator = MarkerGenerator(100);
+
     _markers.clear();
     for (final report in reportsList) {
       var icon = await markerGenerator.createBitmapDescriptorFromIconData(
           report.groups[0].icon, theme.primaryColor, report.groups[0].color, theme.colorScheme.background);
-
-      setState(() {
-        final marker = Marker(
-          markerId: MarkerId(report.id),
-          position: report.location,
-          icon: icon,
-          infoWindow: InfoWindow(
-            title: report.title,
-            snippet: report.description,
-            onTap: () {
-              navigator.navigateToNewScreen(
-                  newScreen: const ReportDetailsScreen(), context: context);
-            },
-          ),
-        );
+      final marker = Marker(
+        markerId: MarkerId(report.id),
+        position: report.location,
+        icon: icon,
+        infoWindow: InfoWindow(
+          title: report.title,
+          snippet: report.description,
+          onTap: () {
+            navigator.navigateToNewScreen(
+                newScreen: const ReportDetailsScreen(), context: context);
+          },
+        ),
+      );
       _markers[report.id] = marker;
-      });
     }
-  }
 
-  IconData testMethod(Report report) {
-    return report.groups[0].icon;
+    await _getCurrentPosition();
+    setState(() {
+      _widget = GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng((_currentPosition?.latitude ?? 48.445166), (_currentPosition?.longitude ?? 8.696739)),
+          zoom: 14.0,
+        ),
+        markers: _markers.values.toSet(),
+        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+          Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer(),),
+        },
+        myLocationEnabled: true,
+        compassEnabled: true,
+      );
+      mapCreated = true;
+    });
   }
 
   final Map<String, Marker> _markers = {};
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    double lat = _currentPosition?.longitude ?? 48.445166;
-    double long = _currentPosition?.longitude ?? 18.696739;
-    final LatLng center = LatLng(lat, long);
-    return GoogleMap(
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: CameraPosition(
-        target: center,
-        zoom: 14.0,
-      ),
-      markers: _markers.values.toSet(),
-      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-        Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer(),),
-      },
-    );
+    if (!mapCreated) _createMap();
+    return _widget;
   }
 
   Future<bool> _handleLocationPermission() async {
-    print(">> Entered _handleLocationPermission");
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Location services are disabled. Please enable the services')));
+          content: Text('Der Standort ist deaktiviert. Bitte aktiviere ihn in den Einstellungen.')));
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -103,13 +98,13 @@ class _MainMapState extends State<MainMap> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied')));
+            const SnackBar(content: Text('Standortzugriff verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
         return false;
       }
     }
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Location permissions are permanently denied, we cannot request permissions.')));
+          content: Text('Standortzugriff permanent verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
       return false;
     }
     return true;
@@ -122,9 +117,8 @@ class _MainMapState extends State<MainMap> {
         desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
-      print(">> ${_currentPosition?.latitude} ${_currentPosition?.longitude}");
     }).catchError((e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     });
   }
 }
