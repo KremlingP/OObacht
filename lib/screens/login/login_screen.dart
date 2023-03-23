@@ -25,8 +25,13 @@ class LoginScreen extends StatelessWidget {
           SignInButton(
             Buttons.Google,
             text: "Mit Google fortfahren",
-            onPressed: () {
-              signInWithGoogle();
+            onPressed: () async {
+              dynamic result = await signInWithGoogle();
+              if (result == null) {
+                print('error signing in');
+              } else {
+                print('signed in: ' + result);
+              }
             },
           )
         ],
@@ -35,16 +40,21 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future signInWithGoogle() async {
-    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-    AuthCredential authCredential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+      AuthCredential authCredential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(authCredential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(authCredential);
 
-    print(userCredential.user?.displayName);
+      return userCredential;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
   }
 }
