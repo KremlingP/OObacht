@@ -30,7 +30,7 @@ class LoginScreen extends StatelessWidget {
               if (result == null) {
                 print('error signing in');
               } else {
-                print('signed in: ' + result);
+                print('signed in: ${result.name}');
               }
             },
           )
