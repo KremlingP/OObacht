@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/report_details/report_details_screen.dart';
-
-import '../../../../utils/navigator_helper.dart' as navigator;
+import 'package:oobacht/logic/classes/group.dart';
+import 'package:oobacht/logic/classes/report.dart';
+import 'package:oobacht/screens/main_menu/pages/main_list/components/reports_list_tile.dart';
 
 class MainList extends StatefulWidget {
   const MainList({Key? key}) : super(key: key);
@@ -11,27 +11,38 @@ class MainList extends StatefulWidget {
 }
 
 class _MainListState extends State<MainList> {
+  final List<Report> _mockReports = _getMockReports();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Liste"),
-          const Icon(Icons.list),
-          TextButton(
-            style: ButtonStyle(
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.orange),
-            ),
-            onPressed: () {
-              navigator.navigateToNewScreen(
-                  newScreen: const ReportDetailsScreen(), context: context);
-            },
-            child: const Text('Detail'),
-          ),
-        ],
+    return Container(
+      color: theme.colorScheme.background,
+      child: ListView.builder(
+        itemCount: _mockReports.length,
+        itemBuilder: (context, index) {
+          return ReportsListTile(data: _mockReports[index]);
+        },
       ),
     );
+  }
+
+  static List<Report> _getMockReports() {
+    return [
+      Report(
+          "1",
+          "Krasse Meldung",
+          "Ich hab etwas wirklich krasses gefunden, deshalb muss ich erst mal richtig viel Text drüber schreiben um meine UI testen zu können!",
+          DateTime.now(),
+          [
+            Group("1", Icons.add, "Mathematiker"),
+            Group("2", Icons.save, "Speicher")
+          ],
+          "http://"),
+      Report("2", "Zweite Meldung", "Kurzer Text", DateTime.now(),
+          [Group("1", Icons.add, "Mathematiker")], "http://"),
+      Report("3", "Dritte Meldung", "Beispiel", DateTime.now(),
+          [Group("1", Icons.add, "Mathematiker")], "http://"),
+    ];
   }
 }
