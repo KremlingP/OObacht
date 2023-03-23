@@ -1,5 +1,6 @@
 class Group {
+  final String id;
   final String name;
 
-  Group(this.name);
+  Group(this.id, this.name);
 }
