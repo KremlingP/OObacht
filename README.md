@@ -7,18 +7,18 @@ Project for the lecture "Development of mobile applications" at DHBW Stuttgart C
 - assets: Icons, Logos, Bilder
 - fonts:  Schriftarten
 - lib: Code
-  -firebase: Alles bzgl. firebase
-  -logic:    
-    -classes: Datenklassen und sonstige Klassen
-    -services: Services die Funktionen bereit stellen
-  -screens:  Einzelne Screens: Jeder Screen neuer Unterordner
-    -main_menu:      Name des Screens
-      -(components): Widgets die nur in diesem Screen gebraucht werden und größer
-      -main_menu.dart: Layout/Scaffold des Screens
-    ...
-  -utils:     Funktionen die in der App mehrmals verwendet werden, z.B. Validierung, Theme
-  -widgets:   Widgets die in der App mehrmals verwendet werden, z.B. App-Bar, Eingabefelder
-  main.dart   Hauptklasse
+  - firebase: Alles bzgl. firebase
+  - logic:    
+    - classes: Datenklassen und sonstige Klassen
+    - services: Services die Funktionen bereit stellen
+  - screens:  Einzelne Screens: Jeder Screen neuer Unterordner
+    - main_menu:      Name des Screens
+      - (components): Widgets die nur in diesem Screen gebraucht werden und größer
+      - main_menu.dart: Layout/Scaffold des Screens
+      - ...
+  - utils:     Funktionen die in der App mehrmals verwendet werden, z.B. Validierung, Theme
+  - widgets:   Widgets die in der App mehrmals verwendet werden, z.B. App-Bar, Eingabefelder
+  - main.dart:   Hauptklasse
 
 ## Getting Started
 
