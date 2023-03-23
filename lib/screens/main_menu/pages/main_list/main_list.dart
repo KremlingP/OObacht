@@ -17,6 +17,7 @@ class _MainListState extends State<MainList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
+      padding: const EdgeInsets.all(5.0),
       color: theme.colorScheme.background,
       child: ListView.builder(
         itemCount: _mockReports.length,
