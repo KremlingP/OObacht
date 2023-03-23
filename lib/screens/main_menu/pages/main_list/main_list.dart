@@ -40,8 +40,13 @@ class _MainListState extends State<MainList> {
             Group("2", Icons.save, "Speicher")
           ],
           "http://"),
-      Report("2", "Zweite Meldung", "Kurzer Text", DateTime.now(),
-          [Group("1", Icons.add, "Mathematiker")], "http://"),
+      Report(
+          "2",
+          "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
+          "Kurzer Text",
+          DateTime.now(),
+          [Group("1", Icons.add, "Mathematiker")],
+          "http://"),
       Report("3", "Dritte Meldung", "Beispiel", DateTime.now(),
           [Group("1", Icons.add, "Mathematiker")], "http://"),
     ];
