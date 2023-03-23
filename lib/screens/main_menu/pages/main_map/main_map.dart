@@ -10,6 +10,7 @@ class MainMap extends StatefulWidget {
 class _MainMapState extends State<MainMap> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
