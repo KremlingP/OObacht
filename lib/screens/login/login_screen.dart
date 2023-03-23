@@ -1,7 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
-
-import '../../../../utils/navigator_helper.dart' as navigator;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -20,13 +19,26 @@ class LoginScreen extends StatelessWidget {
               foregroundColor: MaterialStateProperty.all<Color>(Colors.orange),
             ),
             onPressed: () {
-              navigator.navigateToNewScreen(
-                  newScreen: const MainMenuScreen(), context: context);
+              signInWithGoogle();
             },
-            child: const Text('Login'),
+            child: const Text('Login mit Google'),
           ),
         ],
       ),
     );
+  }
+
+  Future signInWithGoogle() async {
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    AuthCredential authCredential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(authCredential);
+
+    print(userCredential.user?.displayName);
   }
 }
