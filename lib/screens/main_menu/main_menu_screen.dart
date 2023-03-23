@@ -1,18 +1,20 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/main_list/main_list.dart';
-import 'package:oobacht/screens/main_map/main_map.dart';
+import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
+import 'package:oobacht/screens/main_menu/pages/main_map/main_map.dart';
+import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
+import '../../../../utils/navigator_helper.dart' as navigator;
 import 'drawer/main_menu_drawer.dart';
 
-class MainMenu extends StatefulWidget {
-  const MainMenu({Key? key}) : super(key: key);
+class MainMenuScreen extends StatefulWidget {
+  const MainMenuScreen({Key? key}) : super(key: key);
 
   @override
-  _MainMenuState createState() => _MainMenuState();
+  _MainMenuScreenState createState() => _MainMenuScreenState();
 }
 
-class _MainMenuState extends State<MainMenu> {
+class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   bool darkMode = false;
 
@@ -121,6 +123,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   void _newReport() {
-    ///TODOFH Navigation zu neuer Meldung Seite
+    navigator.navigateToNewScreen(
+        newScreen: const NewReportScreen(), context: context);
   }
 }
