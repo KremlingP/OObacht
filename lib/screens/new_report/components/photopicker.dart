@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
 class PhotoPicker extends StatefulWidget {
+
   const PhotoPicker({Key? key}) : super(key: key);
 
   @override
@@ -93,6 +95,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        NewReportScreen.of(context)?.imageFile = imageFile!;
       });
     }
   }
@@ -103,6 +106,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        NewReportScreen.of(context)?.imageFile = imageFile!;
       });
     }
   }

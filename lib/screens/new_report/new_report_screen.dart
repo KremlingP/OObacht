@@ -16,6 +16,9 @@ class NewReportScreen extends StatefulWidget {
 
   @override
   _NewReportScreenState createState() => _NewReportScreenState();
+
+  static _NewReportScreenState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_NewReportScreenState>();
 }
 
 // TODO get reports from backend
@@ -75,13 +78,16 @@ class _NewReportScreenState extends State<NewReportScreen> {
 
   List<Object?> selectedCategories = [];
 
-  File imageFile = File('');
-
   bool mapCreated = false;
   Widget _mapWidget = const Center(child: CircularProgressIndicator());
 
   final _formKey = GlobalKey<FormState>();
   final _multiSelectKey = GlobalKey<FormFieldState>();
+
+  String title = "";
+  String description = "";
+  File imageFile = File('');
+  LatLng? position;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +126,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       maxLines: 1,
                       maxLength: 50,
                       autocorrect: true,
+                      onSaved: (value) => title = value ?? "",
                       decoration: InputDecoration(
                         labelText: 'Titel',
                         hintText: 'Gebe den Titel der Meldung ein...',
@@ -141,6 +148,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       maxLines: 10,
                       maxLength: 500,
                       autocorrect: true,
+                      onSaved: (value) => description = value ?? "",
                       decoration: InputDecoration(
                         labelText: 'Beschreibung',
                         hintText: 'Gebe eine Beschreibung für die Meldung ein...',
@@ -236,7 +244,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    const PhotoPicker(),
+                    PhotoPicker(),
                     const SizedBox(height: 20),
                     SizedBox(
                         height: 100,
@@ -248,9 +256,21 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       children: <Widget>[
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              print("Formular ist gültig und kann verarbeitet werden");
-                              // Hier können wir mit den geprüften Daten aus dem Formular etwas machen.
+                            if (_formKey.currentState!.validate() && position != null) {
+                              _formKey.currentState!.save();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Meldung wird gespeichert...')));
+                              Report report = Report(
+                                  null,
+                                  title,
+                                  description,
+                                  null,
+                                  selectedCategories.map((e) => e as Group).toList(),
+                                  position!,
+                                  imageFile.path
+                              );
+                              // TODO: Save report to database
+                              print("$report: ${report.title}, ${report.description}, ${report.groups}, ${report.location}, ${report.imageUrl}");
                             }
                           },
                           child: const Text('Speichern'),
@@ -279,6 +299,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
               markers: markers
       );
     });
+    position = LatLng(currentPosition!.latitude, currentPosition.longitude);
   }
 
 }

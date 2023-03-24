@@ -21,7 +21,7 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList, ThemeD
         report.groups[0].color,
         theme.colorScheme.background);
     final marker = Marker(
-      markerId: MarkerId(report.id),
+      markerId: MarkerId(report.id ?? ""),
       position: report.location,
       icon: icon,
       infoWindow: InfoWindow(
@@ -33,7 +33,7 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList, ThemeD
         },
       ),
     );
-    markers[report.id] = marker;
+    markers[report.id ?? ""] = marker;
   }
   return markers;
 }
