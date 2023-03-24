@@ -244,43 +244,44 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    PhotoPicker(),
+                    const PhotoPicker(),
                     const SizedBox(height: 20),
                     SizedBox(
                         height: 100,
                         child: _mapWidget
                     ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate() && position != null) {
-                              _formKey.currentState!.save();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Meldung wird gespeichert...')));
-                              Report report = Report(
-                                  null,
-                                  title,
-                                  description,
-                                  null,
-                                  selectedCategories.map((e) => e as Group).toList(),
-                                  position!,
-                                  imageFile.path
-                              );
-                              // TODO: Save report to database
-                              print("$report: ${report.title}, ${report.description}, ${report.groups}, ${report.location}, ${report.imageUrl}");
-                            }
-                          },
-                          child: const Text('Speichern'),
-                        )
-                      ],
-                    )
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: FloatingActionButton.extended (
+              onPressed: () {
+                if (_formKey.currentState!.validate() && position != null) {
+                  _formKey.currentState!.save();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Meldung wird gespeichert...')));
+                  Report report = Report(
+                      null,
+                      title,
+                      description,
+                      null,
+                      selectedCategories.map((e) => e as Group).toList(),
+                      position!,
+                      imageFile.path
+                  );
+                  // TODO: Save report to database
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bitte alle Felder ausfüllen.')));
+                }
+              },
+              label: const Text('Meldung erstellen'),
+              icon: const Icon(Icons.save),
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.primaryColor
           ),
         ),
       ),
