@@ -3,10 +3,15 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
+import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
+import 'package:oobacht/screens/main_menu/pages/main_map/main_map.dart';
+import 'package:oobacht/screens/new_report/components/categorypicker.dart';
+import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
+import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
 import 'package:oobacht/utils/map_utils.dart';
+import 'package:oobacht/utils/navigator_helper.dart';
 
 import '../../logic/classes/report.dart';
 import '../main_menu/pages/main_map/components/customgooglemap.dart';
@@ -62,39 +67,24 @@ final List<Report> _reportsMOCK = [
       const LatLng(48.445166, 8.666739),
       ""),
 ];
-// TODO get categories from backend
-final List<Group> categoriesMOCK = [
-  Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded, Colors.red),
-  Group("childs", "Gefahr für Kinder", Icons.child_friendly, Colors.yellow),
-  Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown),
-  Group("traffic", "Gefahr für Verkehr", Icons.directions_car, Colors.green),
-  Group("climber", "Gefahr für Kletterer", Icons.sports, Colors.blue),
-  Group("other", "Sonstige Gefahr", Icons.warning, Colors.orange),
-];
+
 
 class _NewReportScreenState extends State<NewReportScreen> {
   List<Report> reportsList = _reportsMOCK;
-  List<Group> categories = categoriesMOCK;
-
-  List<Object?> selectedCategories = [];
 
   bool mapCreated = false;
   Widget _mapWidget = const Center(child: CircularProgressIndicator());
 
   final _formKey = GlobalKey<FormState>();
-  final _multiSelectKey = GlobalKey<FormFieldState>();
 
   String title = "";
   String description = "";
+  List<Object?> selectedCategories = [];
   File imageFile = File('');
   LatLng? position;
 
   @override
   Widget build(BuildContext context) {
-    final categoryItems = categories
-        .map((e) => MultiSelectItem<Group>(e, e.name))
-        .toList();
-
     final theme = Theme.of(context);
 
     if (!mapCreated) _createMap();
@@ -121,128 +111,11 @@ class _NewReportScreenState extends State<NewReportScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    TextFormField(
-                      keyboardType: TextInputType.text,
-                      maxLines: 1,
-                      maxLength: 50,
-                      autocorrect: true,
-                      onSaved: (value) => title = value ?? "",
-                      decoration: InputDecoration(
-                        labelText: 'Titel',
-                        hintText: 'Gebe den Titel der Meldung ein...',
-                        border: const OutlineInputBorder(),
-                        labelStyle: TextStyle(color: theme.primaryColor),
-                        hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
-                      ),
-                      style: TextStyle(color: theme.primaryColor),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Bitte einen Titel eingeben.';
-                        }
-                        return null;
-                      },
-                    ),
+                    const TitleInputField(),
                     const SizedBox(height: 20),
-                    TextFormField(
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 10,
-                      maxLength: 500,
-                      autocorrect: true,
-                      onSaved: (value) => description = value ?? "",
-                      decoration: InputDecoration(
-                        labelText: 'Beschreibung',
-                        hintText: 'Gebe eine Beschreibung für die Meldung ein...',
-                        border: const OutlineInputBorder(),
-                        labelStyle: TextStyle(color: theme.primaryColor),
-                        hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
-                      ),
-                      style: TextStyle(color: theme.primaryColor),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Bitte eine Beschreibung eingeben.';
-                        }
-                        return null;
-                      },
-                    ),
+                    const DescriptionInputField(),
                     const SizedBox(height: 20),
-
-                    MultiSelectBottomSheetField(
-                      key: _multiSelectKey,
-                      initialChildSize: 0.4,
-                      maxChildSize: 0.95,
-                      listType: MultiSelectListType.CHIP,
-                      searchable: true,
-                      validator: (values) {
-                        if (values == null || values.isEmpty) {
-                          return "Bitte mindestens eine Kategorie auswählen.";
-                        }
-                        return null;
-                      },
-                      title: Text(
-                        "Kategorien",
-                        style: TextStyle(
-                          color: theme.primaryColor,
-                          fontSize: 20,
-                        ),
-                      ),
-                      backgroundColor: theme.colorScheme.background,
-                      selectedColor: theme.colorScheme.primary.withOpacity(0.1),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.1),
-                        borderRadius: const BorderRadius.all(Radius.circular(40)),
-                        border: Border.all(
-                          color: theme.colorScheme.primary,
-                          width: 2,
-                        ),
-                      ),
-                      buttonIcon: Icon(
-                        Icons.category,
-                        color: theme.primaryColor,
-                      ),
-                      buttonText: Text(
-                        "Kategorien auswählen",
-                        style: TextStyle(
-                          color: theme.primaryColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      confirmText: Text(
-                          "Auswählen",
-                          style: TextStyle(color: theme.primaryColor)
-                      ),
-                      cancelText: Text(
-                          "Abbrechen",
-                          style: TextStyle(color: theme.primaryColor)
-                      ),
-                      searchHint: "Suche nach Kategorien...",
-                      searchHintStyle: TextStyle(
-                        color: theme.primaryColor,
-                      ),
-                      searchIcon: Icon(
-                        Icons.search,
-                        color: theme.primaryColor,
-                      ),
-                      closeSearchIcon: Icon(
-                        Icons.close,
-                        color: theme.primaryColor,
-                      ),
-                      items: categoryItems,
-                      onConfirm: (values) {
-                        setState(() {
-                          selectedCategories = values;
-                        });
-                        _multiSelectKey.currentState?.validate();
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        onTap: (value) {
-                          setState(() {
-                            selectedCategories.remove(value);
-                          });
-                          _multiSelectKey.currentState?.validate();
-                        },
-                      ),
-                    ),
-
+                    const CategoryPicker(),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
@@ -262,7 +135,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                 if (_formKey.currentState!.validate() && position != null) {
                   _formKey.currentState!.save();
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Meldung wird gespeichert...')));
+                      const SnackBar(content: Text('Meldung wurde gespeichert!')));
                   Report report = Report(
                       null,
                       title,
@@ -273,6 +146,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       imageFile.path
                   );
                   // TODO: Save report to database
+                  navigateToNewScreen(newScreen: const MainMenuScreen(), context: context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Bitte alle Felder ausfüllen.')));
