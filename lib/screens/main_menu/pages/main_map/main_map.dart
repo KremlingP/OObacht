@@ -35,8 +35,8 @@ class _MainMapState extends State<MainMap> {
         "Desc 1",
         DateTime.now(),
         [
-          Group("childs", "Gefahr für Kinder", Icons.child_friendly,
-              Colors.yellow)
+          Group("childs", "Gefahr für Kinder", Icons.child_friendly, Colors.yellow),
+          Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown)
         ],
         const LatLng(48.445166, 8.686739),
         ""),
@@ -69,6 +69,7 @@ class _MainMapState extends State<MainMap> {
   Future<void> _createMap() async {
     final theme = Theme.of(context);
     List<Report> reportsList = _reportsMOCK;
+    _checkMultipleCategories(reportsList);
     MarkerGenerator markerGenerator = MarkerGenerator(100);
 
     _markers.clear();
@@ -102,66 +103,40 @@ class _MainMapState extends State<MainMap> {
           Positioned(
             top: 10,
             left: 10,
-            child: Scrollable(
-              dragStartBehavior: DragStartBehavior.down,
-              viewportBuilder: (context, offset) {
-                return Viewport(
-                  axisDirection: AxisDirection.down,
-                  offset: offset,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Container(
-                        height: 100,
-                        width: 200,
-                        color: Colors.white,
-                        child: Column(
-                          children: const [
-                            Text("Test"),
-                            Text("Test"),
-                            Text("Test"),
-                          ],
-                        ),
+            height: 105,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: DataTable(
+                headingRowHeight: 0,
+                dataRowHeight: 25,
+                dataRowColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(147, 150, 153, 0.5)),
+                columnSpacing: 1,
+                border: TableBorder.all(
+                  color: Colors.transparent,
+                ),
+                columns: const [
+                  DataColumn(
+                      label: Text('Icon')
+                  ),
+                  DataColumn(
+                      label: Text('NAME')
+                  ),
+                ],
+                rows: reportsList.map((e) =>
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Icon(e.groups[0].icon, color: e.groups[0].color),
                       ),
-                    ),
-                  ],
-                );
-              },
+                      DataCell(
+                        Text(e.groups[0].name),
+                      ),
+                    ],
+                  ),
+                ).toList(),
+              ),
             ),
           ),
-
-            /*Table(
-              columnWidths: const {
-                0: FixedColumnWidth(30),
-                1: FixedColumnWidth(150),
-              },
-              children: const [
-                TableRow(
-                  children: [
-                    Icon(Icons.pets, color: Colors.brown),
-                    Text("Gefahr für Tiere"),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    Icon(Icons.child_friendly, color: Colors.yellow),
-                    Text("Gefahr für Kinder"),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    Icon(Icons.dangerous_rounded, color: Colors.red),
-                    Text("Allgemeine Gefahr"),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    Icon(Icons.sports, color: Colors.blue),
-                    Text("Gefahr für Kletterer"),
-                  ],
-                ),
-              ],
-            ),
-          ),*/
         ],
       );
     });
@@ -233,5 +208,20 @@ class _MainMapState extends State<MainMap> {
     }).catchError((e) {
       debugPrint(e.toString());
     });
+  }
+
+  void _checkMultipleCategories(List<Report> reportsList) {
+    for (final report in reportsList) {
+      if (report.groups.length > 1) {
+        report.groups.insert(0,
+          Group(
+            "multiple",
+            "Mehrere Kategorien",
+            Icons.category,
+            Colors.grey,
+          )
+        );
+      }
+    }
   }
 }
