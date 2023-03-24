@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:oobacht/screens/login/login_screen.dart';
+import 'package:oobacht/utils/auth_wrapper.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +41,7 @@ class _OobachtAppState extends State<OobachtApp> {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: currentTheme.currentTheme,
-      home: const LoginScreen(),
+      home: const AuthWrapper(),
       //debugShowCheckedModeBanner: false,
     );
   }
