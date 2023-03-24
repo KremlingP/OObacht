@@ -36,8 +36,8 @@ class _MainListState extends State<MainList> {
           "Ich hab etwas wirklich krasses gefunden, deshalb muss ich erst mal richtig viel Text drüber schreiben um meine UI testen zu können!",
           DateTime.now(),
           [
-            Group("1", Icons.add, "Mathematiker"),
-            Group("2", Icons.save, "Speicher")
+            Group("1", Icons.add, Colors.blue, "Mathematiker"),
+            Group("2", Icons.save, Colors.yellow, "Speicher")
           ],
           "http://"),
       Report(
@@ -45,10 +45,10 @@ class _MainListState extends State<MainList> {
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
           "Kurzer Text",
           DateTime.now(),
-          [Group("1", Icons.add, "Mathematiker")],
+          [Group("1", Icons.add, Colors.blue, "Mathematiker")],
           "http://"),
       Report("3", "Dritte Meldung", "Beispiel", DateTime.now(),
-          [Group("1", Icons.add, "Mathematiker")], "http://"),
+          [Group("1", Icons.watch, Colors.red, "Mathematiker")], "http://"),
     ];
   }
 }
