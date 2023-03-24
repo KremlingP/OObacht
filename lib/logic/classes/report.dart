@@ -1,5 +1,4 @@
-import 'dart:html';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 
 class Report {
@@ -8,7 +7,7 @@ class Report {
   final String description;
   final DateTime creationDate;
   final List<Group> groups;
-  final Coordinates location;
+  final LatLng location;
   final String imageUrl;
 
   Report(this.id, this.title, this.description, this.creationDate, this.groups,
