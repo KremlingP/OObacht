@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
@@ -7,10 +8,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/report.dart';
+import 'package:oobacht/screens/main_menu/pages/main_map/components/mapcaption.dart';
 import 'package:oobacht/screens/main_menu/pages/main_map/services/marker_icon_generator.dart';
 
 import '../../../report_details/report_details_screen.dart';
 import '../../../../utils/navigator_helper.dart' as navigator;
+import 'components/customgooglemap.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
@@ -20,6 +23,7 @@ class MainMap extends StatefulWidget {
 }
 
 class _MainMapState extends State<MainMap> {
+  // TODO get reports from backend
   final List<Report> _reportsMOCK = [
     Report(
         "0",
@@ -65,13 +69,31 @@ class _MainMapState extends State<MainMap> {
   late GoogleMapController mapController;
   Widget _widget = const Center(child: CircularProgressIndicator());
   bool mapCreated = false;
+  final HashMap<String, Marker> _markers = HashMap();
 
   Future<void> _createMap() async {
     final theme = Theme.of(context);
     List<Report> reportsList = _reportsMOCK;
     _checkMultipleCategories(reportsList);
-    MarkerGenerator markerGenerator = MarkerGenerator(100);
 
+    await _generateMarkers(reportsList, theme);
+
+    await _getCurrentPosition();
+    setState(() {
+      mapCreated = true;
+      _widget = Stack(
+        children: [
+          CustomGoogleMap(
+              currentPosition: _currentPosition,
+              markers: _markers),
+          MapCaption(reportsList: reportsList)
+        ],
+      );
+    });
+  }
+
+  Future<void> _generateMarkers(List<Report> reportsList, ThemeData theme) async {
+    MarkerGenerator markerGenerator = MarkerGenerator(100);
     _markers.clear();
     for (final report in reportsList) {
       var icon = await markerGenerator.createBitmapDescriptorFromIconData(
@@ -94,79 +116,12 @@ class _MainMapState extends State<MainMap> {
       );
       _markers[report.id] = marker;
     }
-
-    await _getCurrentPosition();
-    setState(() {
-      _widget = Stack(
-        children: [
-          _createGoogleMap(),
-          Positioned(
-            top: 10,
-            left: 10,
-            height: 105,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: DataTable(
-                headingRowHeight: 0,
-                dataRowHeight: 25,
-                dataRowColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(147, 150, 153, 0.5)),
-                columnSpacing: 1,
-                border: TableBorder.all(
-                  color: Colors.transparent,
-                ),
-                columns: const [
-                  DataColumn(
-                      label: Text('Icon')
-                  ),
-                  DataColumn(
-                      label: Text('NAME')
-                  ),
-                ],
-                rows: reportsList.map((e) =>
-                  DataRow(
-                    cells: [
-                      DataCell(
-                        Icon(e.groups[0].icon, color: e.groups[0].color),
-                      ),
-                      DataCell(
-                        Text(e.groups[0].name),
-                      ),
-                    ],
-                  ),
-                ).toList(),
-              ),
-            ),
-          ),
-        ],
-      );
-    });
   }
-
-  final Map<String, Marker> _markers = {};
 
   @override
   Widget build(BuildContext context) {
     if (!mapCreated) _createMap();
     return _widget;
-  }
-
-  GoogleMap _createGoogleMap() {
-    mapCreated = true;
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: LatLng((_currentPosition?.latitude ?? 48.445166),
-            (_currentPosition?.longitude ?? 8.696739)),
-        zoom: 14.0,
-      ),
-      markers: _markers.values.toSet(),
-      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-        Factory<OneSequenceGestureRecognizer>(
-          () => EagerGestureRecognizer(),
-        ),
-      },
-      myLocationEnabled: true,
-      compassEnabled: true,
-    );
   }
 
   Future<bool> _handleLocationPermission() async {
