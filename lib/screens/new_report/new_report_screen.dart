@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
 import 'package:oobacht/screens/main_menu/pages/main_map/main_map.dart';
-import 'package:oobacht/screens/new_report/components/categorypicker.dart';
+import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
 import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
@@ -115,7 +115,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const DescriptionInputField(),
                     const SizedBox(height: 20),
-                    const CategoryPicker(),
+                    const CategoryPicker(superScreen: "newReport"),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
