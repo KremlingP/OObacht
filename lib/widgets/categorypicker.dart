@@ -3,13 +3,15 @@ import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_fiel
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:oobacht/screens/main_menu/drawer/pages/profile.dart';
 
-import '../../../logic/classes/group.dart';
-import '../new_report_screen.dart';
+import '../logic/classes/group.dart';
+import '../screens/new_report/new_report_screen.dart';
 
 class CategoryPicker extends StatefulWidget {
+  final String superScreen;
 
-  const CategoryPicker({Key? key}) : super(key: key);
+  const CategoryPicker({Key? key, required this.superScreen}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _CategoryPickerState();
@@ -101,7 +103,17 @@ class _CategoryPickerState extends State<CategoryPicker> {
       onConfirm: (values) {
         setState(() {
           selectedCategories = values;
-          NewReportScreen.of(context)?.selectedCategories = selectedCategories;
+          if(widget.superScreen == "newReport") {
+            NewReportScreen
+                .of(context)
+                ?.selectedCategories = selectedCategories;
+          } else if(widget.superScreen == "profile") {
+            ProfileDrawerPage
+                .of(context)
+                ?.selectedCategories = selectedCategories;
+          } else {
+            throw Exception("Unknown superScreen: ${widget.superScreen}");
+          }
         });
         _multiSelectKey.currentState?.validate();
       },
