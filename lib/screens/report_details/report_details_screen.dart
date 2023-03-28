@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/logic/classes/report.dart';
+import 'package:oobacht/screens/report_details/components/map_section.dart';
 
 import '../../utils/helper_methods.dart';
 
@@ -55,7 +56,7 @@ class ReportDetailsScreen extends StatelessWidget {
                           color: theme.primaryColor),
                       overflow: TextOverflow.visible,
                     ),
-                    const SizedBox(height: 10.0),
+                    const SizedBox(height: 5.0),
 
                     ///Groups
                     Wrap(
@@ -73,6 +74,17 @@ class ReportDetailsScreen extends StatelessWidget {
                       style: TextStyle(color: theme.primaryColor),
                       overflow: TextOverflow.visible,
                     ),
+                    const SizedBox(height: 10.0),
+
+                    ///Map
+                    Container(
+                      height: shortestViewportWidth * 0.66,
+                      width: shortestViewportWidth * 0.66,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: theme.colorScheme.primary, width: 3.0)),
+                      child: MapSection(reportData: reportData),
+                    )
                   ],
                 ),
               )
