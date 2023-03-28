@@ -5,7 +5,6 @@ import 'package:oobacht/screens/report_details/report_details_screen.dart';
 import 'package:oobacht/utils/helper_methods.dart';
 import 'package:oobacht/utils/navigator_helper.dart' as navigator;
 import 'package:oobacht/widgets/text_styles/bold_text_style.dart';
-import 'package:oobacht/widgets/text_styles/normal_text_style.dart';
 
 class ReportsListTile extends StatelessWidget {
   final Report data;
@@ -23,7 +22,7 @@ class ReportsListTile extends StatelessWidget {
           elevation: 5.0,
           child: Container(
             padding: const EdgeInsets.all(10.0),
-            height: media.size.shortestSide / 3,
+            height: media.size.shortestSide / 3.2,
             child: Column(
               children: [
                 ///Header row: title and timestamp
@@ -35,19 +34,29 @@ class ReportsListTile extends StatelessWidget {
                     children: [
                       SizedBox(
                           width: media.size.width / 2,
-                          child: BoldText(text: data.title, maxLines: 1)),
-                      Chip(
-                        avatar: const Icon(Icons.event),
-                        label: NormalText(
-                            text:
-                                HelperMethods.getDisplayDate(data.creationDate),
-                            maxLines: 1),
-                      ),
+                          child: BoldText(text: data.title, maxLines: 2)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Icon(
+                            Icons.event,
+                            color: Colors.orange,
+                          ),
+                          Text(
+                              " ${HelperMethods.getDisplayDate(data.creationDate)}",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              maxLines: 1),
+                        ],
+                      )
                     ],
                   ),
                 ),
 
-                ///Body row: groups and description excerpt with button to go to details
+                ///Body row 1: excerpt of description
                 Container(
                   margin: const EdgeInsets.only(bottom: 5.0),
                   height: 20,
@@ -57,6 +66,8 @@ class ReportsListTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+
+                ///Body row 2: groups
                 SizedBox(
                     height: 35,
                     child: SingleChildScrollView(
@@ -83,17 +94,15 @@ class ReportsListTile extends StatelessWidget {
   List<Widget> _getGroupChips(List<Group> groups) {
     List<Widget> chips = [];
     for (Group group in groups) {
-      chips.add(Container(
-        margin: const EdgeInsets.symmetric(vertical: 3.0),
-        child: Chip(
-          backgroundColor: group.color,
-          avatar: Icon(group.icon, color: Colors.white),
-          label: Text(
-            group.name,
-            style: const TextStyle(color: Colors.white),
+      chips.add(
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 3.0),
+          child: CircleAvatar(
+            backgroundColor: group.color,
+            child: Icon(group.icon, color: Colors.white),
           ),
         ),
-      ));
+      );
     }
 
     return chips;
