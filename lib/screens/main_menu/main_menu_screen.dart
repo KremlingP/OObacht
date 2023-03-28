@@ -65,49 +65,31 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           });
         },
       )),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueGrey,
+      floatingActionButton: FloatingActionButton.extended(
+        label: Text('Neue Meldung'),
+        backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         onPressed: _newReport,
         tooltip: 'Neue Meldung erstellen',
         elevation: 4.0,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          height: kBottomNavigationBarHeight,
-          child: Container(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.background,
-              border: const Border(
-                top: BorderSide(
-                  color: Colors.grey,
-                  width: 0.5,
-                ),
-              ),
-            ),
-            child: BottomNavigationBar(
-              currentIndex: _activePageIndex,
-              onTap: _onItemTapped,
-              backgroundColor: Colors.orange,
-              selectedItemColor: Colors.white,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: 'Karte',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.list),
-                  label: 'Liste',
-                )
-              ],
-            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _activePageIndex,
+        onTap: _onItemTapped,
+        backgroundColor: Colors.orange,
+        selectedItemColor: Colors.white,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Karte',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Liste',
+          )
+        ],
       ),
     );
   }
