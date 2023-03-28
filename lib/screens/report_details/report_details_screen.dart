@@ -63,7 +63,7 @@ class ReportDetailsScreen extends StatelessWidget {
                       runSpacing: -6.0,
                       alignment: WrapAlignment.start,
                       direction: Axis.horizontal,
-                      children: HelperMethods.getGroupChips(reportData.groups),
+                      children: getGroupChips(reportData.groups),
                     ),
                     const SizedBox(height: 5.0),
 

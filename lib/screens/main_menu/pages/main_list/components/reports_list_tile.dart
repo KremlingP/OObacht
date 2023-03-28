@@ -48,8 +48,7 @@ class ReportsListTile extends StatelessWidget {
                             Icons.event,
                             color: Colors.orange,
                           ),
-                          Text(
-                              " ${HelperMethods.getDisplayDate(data.creationDate!)}",
+                          Text(" ${getDisplayDate(data.creationDate!)}",
                               style: const TextStyle(
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold,
@@ -78,7 +77,7 @@ class ReportsListTile extends StatelessWidget {
                   runSpacing: -6.0,
                   alignment: WrapAlignment.start,
                   direction: Axis.horizontal,
-                  children: HelperMethods.getGroupChips(data.groups),
+                  children: getGroupChips(data.groups),
                 ),
               ],
             ),
