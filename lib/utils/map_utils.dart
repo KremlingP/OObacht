@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../utils/navigator_helper.dart' as navigator;
 import '../logic/classes/group.dart';
 import '../logic/classes/report.dart';
 import '../screens/report_details/report_details_screen.dart';
 import 'marker_icon_generator.dart';
-import '../../../../utils/navigator_helper.dart' as navigator;
 
-Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList, ThemeData theme, BuildContext context) async {
+Future<HashMap<String, Marker>> generateMarkers(
+    List<Report> reportsList, ThemeData theme, BuildContext context) async {
   _checkMultipleCategories(reportsList);
   MarkerGenerator markerGenerator = MarkerGenerator(100);
   final HashMap<String, Marker> markers = HashMap();
@@ -29,7 +30,10 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList, ThemeD
         snippet: report.description,
         onTap: () {
           navigator.navigateToNewScreen(
-              newScreen: const ReportDetailsScreen(), context: context);
+              newScreen: ReportDetailsScreen(
+                reportData: report,
+              ),
+              context: context);
         },
       ),
     );
@@ -41,14 +45,14 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList, ThemeD
 void _checkMultipleCategories(List<Report> reportsList) {
   for (final report in reportsList) {
     if (report.groups.length > 1) {
-      report.groups.insert(0,
+      report.groups.insert(
+          0,
           Group(
             "multiple",
             "Mehrere Kategorien",
             Icons.category,
             Colors.grey,
-          )
-      );
+          ));
     }
   }
 }

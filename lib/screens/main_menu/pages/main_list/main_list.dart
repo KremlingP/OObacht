@@ -47,17 +47,17 @@ class _MainListState extends State<MainList> {
       Report(
           "2",
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
-          "Kurzer Text",
+          "Diese Meldung hat kein Bild hinterlegt, darum keine Anzeige oben!",
           DateTime.now(),
           [
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
           const LatLng(48.445166, 8.706739),
-          "http://"),
+          ""),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
-          "Beispiel",
+          "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et e",
           DateTime.now(),
           [
             Group("5", "Uhrwerker", Icons.watch, Colors.red),

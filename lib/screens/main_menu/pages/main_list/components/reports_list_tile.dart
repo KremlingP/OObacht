@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/screens/report_details/report_details_screen.dart';
 import 'package:oobacht/utils/helper_methods.dart';
@@ -79,7 +78,7 @@ class ReportsListTile extends StatelessWidget {
                   runSpacing: -6.0,
                   alignment: WrapAlignment.start,
                   direction: Axis.horizontal,
-                  children: _getGroupChips(data.groups),
+                  children: HelperMethods.getGroupChips(data.groups),
                 ),
               ],
             ),
@@ -91,27 +90,6 @@ class ReportsListTile extends StatelessWidget {
 
   goToReportDetails(BuildContext context, Report data) {
     navigator.navigateToNewScreen(
-        newScreen: const ReportDetailsScreen(), context: context);
-  }
-
-  List<Widget> _getGroupChips(List<Group> groups) {
-    List<Widget> chips = [];
-    for (Group group in groups) {
-      chips.add(
-        Chip(
-          label: Text(
-            group.name,
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: group.color,
-          avatar: CircleAvatar(
-            backgroundColor: group.color,
-            child: Icon(group.icon, color: Colors.white),
-          ),
-        ),
-      );
-    }
-
-    return chips;
+        newScreen: ReportDetailsScreen(reportData: data), context: context);
   }
 }
