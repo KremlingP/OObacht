@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/components/reports_list_tile.dart';
@@ -36,25 +37,32 @@ class _MainListState extends State<MainList> {
           "Ich hab etwas wirklich krasses gefunden, deshalb muss ich erst mal richtig viel Text drüber schreiben um meine UI testen zu können!",
           DateTime.now(),
           [
-            Group("1", Icons.add, Colors.blue, "Mathematiker"),
-            Group("2", Icons.save, Colors.green, "Speicherwütiger!"),
-            Group("3", Icons.person, Colors.blueGrey, "Was auch immer?!"),
-            Group("4", Icons.ten_k, Colors.yellow, "Gute Frage"),
+            Group("1", "Mathematiker", Icons.add, Colors.blue),
+            Group("2", "Speicherwütiger!", Icons.save, Colors.green),
+            Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
+            Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
           ],
+          const LatLng(48.445166, 8.706739),
           "http://"),
       Report(
           "2",
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
           "Kurzer Text",
           DateTime.now(),
-          [Group("1", Icons.add, Colors.blue, "Mathematiker")],
+          [
+            Group("1", "Mathematiker", Icons.add, Colors.blue),
+          ],
+          const LatLng(48.445166, 8.706739),
           "http://"),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
           "Beispiel",
           DateTime.now(),
-          [Group("5", Icons.watch, Colors.red, "Mathematiker")],
+          [
+            Group("5", "Uhrwerker", Icons.watch, Colors.red),
+          ],
+          const LatLng(48.445166, 8.706739),
           "http://"),
     ];
   }

@@ -50,7 +50,7 @@ class ReportsListTile extends StatelessWidget {
                             color: Colors.orange,
                           ),
                           Text(
-                              " ${HelperMethods.getDisplayDate(data.creationDate)}",
+                              " ${HelperMethods.getDisplayDate(data.creationDate!)}",
                               style: const TextStyle(
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold,
