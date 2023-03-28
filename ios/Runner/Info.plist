@@ -47,5 +47,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>OObacht benötigt Zugriff auf deinen Standort im Vordergrund, um dir Meldungen für deinen aktuellen Standort anzuzeigen.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>OObacht benötigt Zugriff auf deinen Standort im Hintergrund, um dir Meldungen für deinen aktuellen Standort anzuzeigen.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>OObacht benötigt Zugriff auf deine Galerie, um Bilder von Gefahren auswählen zu können.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>OObacht benötigt Zugriff auf deine Kamera, um Bilder von Gefahren aufnehmen zu können.</string>
 </dict>
 </plist>
