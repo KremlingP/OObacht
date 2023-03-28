@@ -37,7 +37,9 @@ class _MainListState extends State<MainList> {
           DateTime.now(),
           [
             Group("1", Icons.add, Colors.blue, "Mathematiker"),
-            Group("2", Icons.save, Colors.yellow, "Speicher")
+            Group("2", Icons.save, Colors.green, "Speicherwütiger!"),
+            Group("3", Icons.person, Colors.blueGrey, "Was auch immer?!"),
+            Group("4", Icons.ten_k, Colors.yellow, "Gute Frage"),
           ],
           "http://"),
       Report(
@@ -47,8 +49,13 @@ class _MainListState extends State<MainList> {
           DateTime.now(),
           [Group("1", Icons.add, Colors.blue, "Mathematiker")],
           "http://"),
-      Report("3", "Dritte Meldung", "Beispiel", DateTime.now(),
-          [Group("1", Icons.watch, Colors.red, "Mathematiker")], "http://"),
+      Report(
+          "3",
+          "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
+          "Beispiel",
+          DateTime.now(),
+          [Group("5", Icons.watch, Colors.red, "Mathematiker")],
+          "http://"),
     ];
   }
 }

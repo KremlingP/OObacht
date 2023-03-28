@@ -4,7 +4,6 @@ import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/screens/report_details/report_details_screen.dart';
 import 'package:oobacht/utils/helper_methods.dart';
 import 'package:oobacht/utils/navigator_helper.dart' as navigator;
-import 'package:oobacht/widgets/text_styles/bold_text_style.dart';
 
 class ReportsListTile extends StatelessWidget {
   final Report data;
@@ -13,7 +12,7 @@ class ReportsListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MediaQueryData media = MediaQuery.of(context);
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: InkWell(
@@ -21,20 +20,28 @@ class ReportsListTile extends StatelessWidget {
         child: Card(
           elevation: 5.0,
           child: Container(
+            color: theme.colorScheme.background,
             padding: const EdgeInsets.all(10.0),
-            height: media.size.shortestSide / 3.2,
             child: Column(
               children: [
                 ///Header row: title and timestamp
                 Container(
                   margin: const EdgeInsets.only(bottom: 5.0),
-                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                          width: media.size.width / 2,
-                          child: BoldText(text: data.title, maxLines: 2)),
+                      ///Title
+                      Expanded(
+                          child: Text(
+                        data.title,
+                        maxLines: 2,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: theme.primaryColor),
+                        overflow: TextOverflow.ellipsis,
+                      )),
+
+                      ///Timestamp
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -45,9 +52,8 @@ class ReportsListTile extends StatelessWidget {
                           Text(
                               " ${HelperMethods.getDisplayDate(data.creationDate)}",
                               style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.orange,
                                 fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
                               ),
                               maxLines: 1),
                         ],
@@ -59,25 +65,22 @@ class ReportsListTile extends StatelessWidget {
                 ///Body row 1: excerpt of description
                 Container(
                   margin: const EdgeInsets.only(bottom: 5.0),
-                  height: 20,
                   child: Text(
                     data.description,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: theme.primaryColor),
                   ),
                 ),
 
                 ///Body row 2: groups
-                SizedBox(
-                    height: 35,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        textDirection: TextDirection.ltr,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: _getGroupChips(data.groups),
-                      ),
-                    ))
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: -6.0,
+                  alignment: WrapAlignment.start,
+                  direction: Axis.horizontal,
+                  children: _getGroupChips(data.groups),
+                ),
               ],
             ),
           ),
@@ -95,9 +98,13 @@ class ReportsListTile extends StatelessWidget {
     List<Widget> chips = [];
     for (Group group in groups) {
       chips.add(
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 3.0),
-          child: CircleAvatar(
+        Chip(
+          label: Text(
+            group.name,
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: group.color,
+          avatar: CircleAvatar(
             backgroundColor: group.color,
             child: Icon(group.icon, color: Colors.white),
           ),
