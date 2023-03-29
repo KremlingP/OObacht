@@ -16,11 +16,20 @@ Future<HashMap<String, Marker>> generateMarkers(
   MarkerGenerator markerGenerator = MarkerGenerator(100);
   final HashMap<String, Marker> markers = HashMap();
   for (final report in reportsList) {
-    var icon = await markerGenerator.createBitmapDescriptorFromIconData(
-        report.groups[0].icon,
-        theme.primaryColor,
-        report.groups[0].color,
-        theme.colorScheme.background);
+    BitmapDescriptor icon;
+    if (report.groups.length > 1) {
+      icon = await markerGenerator.createBitmapDescriptorFromIconData(
+          Icons.category,
+          theme.primaryColor,
+          Colors.grey,
+          theme.colorScheme.background);
+    } else {
+      icon = await markerGenerator.createBitmapDescriptorFromIconData(
+          report.groups[0].icon,
+          theme.primaryColor,
+          report.groups[0].color,
+          theme.colorScheme.background);
+    }
     final marker = Marker(
       markerId: MarkerId(report.id ?? ""),
       position: report.location,
@@ -44,16 +53,7 @@ Future<HashMap<String, Marker>> generateMarkers(
 
 void _checkMultipleCategories(List<Report> reportsList) {
   for (final report in reportsList) {
-    if (report.groups.length > 1) {
-      report.groups.insert(
-          0,
-          Group(
-            "multiple",
-            "Mehrere Kategorien",
-            Icons.category,
-            Colors.grey,
-          ));
-    }
+
   }
 }
 

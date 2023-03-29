@@ -25,7 +25,8 @@ final List<Report> _reportsMOCK = [
       "Test 0",
       "Desc 0",
       DateTime.now(),
-      [Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown)],
+      [Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown),
+        Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded, Colors.red)],
       const LatLng(48.445166, 8.706739),
       ""),
   Report(
@@ -45,8 +46,7 @@ final List<Report> _reportsMOCK = [
       "Desc 2",
       DateTime.now(),
       [
-        Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded,
-            Colors.red)
+        Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded, Colors.red)
       ],
       const LatLng(48.445166, 8.676739),
       ""),
