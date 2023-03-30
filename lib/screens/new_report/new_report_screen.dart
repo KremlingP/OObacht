@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
@@ -9,12 +8,10 @@ import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
 import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
-import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/navigator_helper.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../logic/classes/report.dart';
-import '../../widgets/map/components/customgooglemap.dart';
 
 class NewReportScreen extends StatefulWidget {
   const NewReportScreen({Key? key, required this.reports}) : super(key: key);
@@ -47,7 +44,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const AutoSizeText(
+        title: const Text(
           "Neue Meldung",
           style: TextStyle(fontFamily: 'Fredoka', color: Colors.white),
           maxLines: 1,

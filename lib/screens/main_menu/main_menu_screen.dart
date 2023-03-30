@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
@@ -48,7 +47,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       key: _drawerKey,
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const AutoSizeText(
+        title: const Text(
           'OObacht!',
           style: TextStyle(
               fontFamily: 'Courgette',

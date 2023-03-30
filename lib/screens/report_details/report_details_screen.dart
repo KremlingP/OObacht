@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
@@ -18,7 +17,7 @@ class ReportDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const AutoSizeText(
+        title: const Text(
           "Meldung",
           style: TextStyle(fontFamily: 'Fredoka', color: Colors.white),
           maxLines: 1,
