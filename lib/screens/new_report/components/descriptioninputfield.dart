@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../new_report_screen.dart';
 
 class DescriptionInputField extends StatefulWidget {
-
   const DescriptionInputField({Key? key}) : super(key: key);
 
   @override

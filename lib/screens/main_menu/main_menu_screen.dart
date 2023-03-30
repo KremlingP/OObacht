@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
-import 'package:oobacht/screens/main_menu/pages/main_map/main_map.dart';
+import 'package:oobacht/widgets/map/map_widget.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
@@ -24,7 +24,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   //PageController to make pages swipeable
   final _pageViewController = PageController();
   int _activePageIndex = 0;
-  final List<Widget> _contentPages = [MainMap(reports: _getMockReports()), MainList(reports: _getMockReports())];
+  final List<Widget> _contentPages = [
+    MapWidget(
+      reports: _getMockReports(),
+      showMarkerDetails: true,
+      showMapCaption: true,
+    ),
+    MainList(reports: _getMockReports())
+  ];
 
   @override
   void dispose() {
@@ -109,7 +116,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
   void _newReport() {
     navigator.navigateToNewScreen(
-        newScreen: const NewReportScreen(), context: context);
+        newScreen: NewReportScreen(
+          reports: _getMockReports(),
+        ),
+        context: context);
   }
 
   static List<Report> _getMockReports() {
@@ -125,7 +135,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
             Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
           ],
-          const LatLng(48.545166, 8.706739),
+          const LatLng(48.455166, 8.706739),
           "http://"),
       Report(
           "2",
@@ -135,7 +145,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           [
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
-          const LatLng(48.445166, 8.606739),
+          const LatLng(48.435166, 8.706739),
           ""),
       Report(
           "3",
@@ -145,7 +155,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           [
             Group("5", "Uhrwerker", Icons.watch, Colors.red),
           ],
-          const LatLng(48.745166, 8.706739),
+          const LatLng(48.445166, 8.716739),
           "http://"),
     ];
   }

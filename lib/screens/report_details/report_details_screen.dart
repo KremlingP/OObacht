@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/logic/classes/report.dart';
-import 'package:oobacht/screens/report_details/components/map_section.dart';
+import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
 
@@ -83,7 +83,11 @@ class ReportDetailsScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                           border: Border.all(
                               color: theme.colorScheme.primary, width: 3.0)),
-                      child: MapSection(reportData: reportData),
+                      child: MapWidget(
+                        reports: [reportData],
+                        showMarkerDetails: false,
+                        showMapCaption: false,
+                      ),
                     )
                   ],
                 ),

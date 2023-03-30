@@ -8,9 +8,10 @@ import '../../../../../logic/classes/report.dart';
 class MapCaption extends StatelessWidget {
   final List<Report> reportsList;
 
-  MapCaption({Key? key,
-                    required this.reportsList,
-                    }) : super(key: key);
+  MapCaption({
+    Key? key,
+    required this.reportsList,
+  }) : super(key: key);
 
   bool multipleCategoriesSet = false;
 
@@ -25,18 +26,15 @@ class MapCaption extends StatelessWidget {
         child: DataTable(
           headingRowHeight: 0,
           dataRowHeight: 25,
-          dataRowColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(147, 150, 153, 0.5)),
+          dataRowColor: MaterialStateProperty.all<Color>(
+              const Color.fromRGBO(147, 150, 153, 0.5)),
           columnSpacing: 1,
           border: TableBorder.all(
             color: Colors.transparent,
           ),
           columns: const [
-            DataColumn(
-                label: Text('Icon')
-            ),
-            DataColumn(
-                label: Text('NAME')
-            ),
+            DataColumn(label: Text('Icon')),
+            DataColumn(label: Text('NAME')),
           ],
           rows: reportsList.map((e) => getDataRowForReport(e)).toList(),
         ),
@@ -45,7 +43,7 @@ class MapCaption extends StatelessWidget {
   }
 
   DataRow getDataRowForReport(Report report) {
-    if(report.groups.length > 1 && !multipleCategoriesSet) {
+    if (report.groups.length > 1 && !multipleCategoriesSet) {
       multipleCategoriesSet = true;
       return const DataRow(
         cells: [
