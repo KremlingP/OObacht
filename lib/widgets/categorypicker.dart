@@ -36,9 +36,8 @@ class _CategoryPickerState extends State<CategoryPicker> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final categoryItems = categories
-        .map((e) => MultiSelectItem<Group>(e, e.name))
-        .toList();
+    final categoryItems =
+        categories.map((e) => MultiSelectItem<Group>(e, e.name)).toList();
     return MultiSelectBottomSheetField(
       key: _multiSelectKey,
       initialChildSize: 0.4,
@@ -79,14 +78,10 @@ class _CategoryPickerState extends State<CategoryPicker> {
           fontSize: 16,
         ),
       ),
-      confirmText: Text(
-          "Auswählen",
-          style: TextStyle(color: theme.primaryColor)
-      ),
-      cancelText: Text(
-          "Abbrechen",
-          style: TextStyle(color: theme.primaryColor)
-      ),
+      confirmText:
+          Text("Auswählen", style: TextStyle(color: theme.primaryColor)),
+      cancelText:
+          Text("Abbrechen", style: TextStyle(color: theme.primaryColor)),
       searchHint: "Suche nach Kategorien...",
       searchHintStyle: TextStyle(
         color: theme.primaryColor,
@@ -103,14 +98,12 @@ class _CategoryPickerState extends State<CategoryPicker> {
       onConfirm: (values) {
         setState(() {
           selectedCategories = values;
-          if(widget.superScreen == "newReport") {
-            NewReportScreen
-                .of(context)
-                ?.selectedCategories = selectedCategories;
-          } else if(widget.superScreen == "profile") {
-            ProfileDrawerPage
-                .of(context)
-                ?.selectedCategories = selectedCategories;
+          if (widget.superScreen == "newReport") {
+            NewReportScreen.of(context)?.selectedCategories =
+                selectedCategories;
+          } else if (widget.superScreen == "profile") {
+            ProfileDrawerPage.of(context)?.selectedCategories =
+                selectedCategories;
           } else {
             throw Exception("Unknown superScreen: ${widget.superScreen}");
           }
@@ -121,7 +114,8 @@ class _CategoryPickerState extends State<CategoryPicker> {
         onTap: (value) {
           setState(() {
             selectedCategories.remove(value);
-            NewReportScreen.of(context)?.selectedCategories = selectedCategories;
+            NewReportScreen.of(context)?.selectedCategories =
+                selectedCategories;
           });
           _multiSelectKey.currentState?.validate();
         },

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../new_report_screen.dart';
 
 class TitleInputField extends StatefulWidget {
-
   const TitleInputField({Key? key}) : super(key: key);
 
   @override
@@ -23,10 +22,8 @@ class _TitleInputFieldState extends State<TitleInputField> {
       maxLines: 1,
       maxLength: 50,
       autocorrect: true,
-      onSaved: (value) => {
-        title = value ?? "",
-        NewReportScreen.of(context)?.title = title
-      },
+      onSaved: (value) =>
+          {title = value ?? "", NewReportScreen.of(context)?.title = title},
       decoration: InputDecoration(
         labelText: 'Titel',
         hintText: 'Gebe den Titel der Meldung ein...',

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
 
 import '../../../../logic/classes/group.dart';
@@ -106,10 +108,12 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                     )),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // TODO delete account
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Account wird gelöscht...')));
+                    await GoogleSignIn().signOut();
+                    FirebaseAuth.instance.signOut();
                     navigateToNewScreen(
                         newScreen: const AuthWrapper(), context: context);
                   },
