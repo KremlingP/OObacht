@@ -22,12 +22,14 @@ class MarkerGenerator {
     final outlineCircleInnerWidth = _markerSize - (2 * _circleStrokeWidth);
     _iconSize = sqrt(pow(outlineCircleInnerWidth, 2) / 2);
     final rectDiagonal = sqrt(2 * pow(_markerSize, 2));
-    final circleDistanceToCorners = (rectDiagonal - outlineCircleInnerWidth) / 2;
+    final circleDistanceToCorners =
+        (rectDiagonal - outlineCircleInnerWidth) / 2;
     _iconOffset = sqrt(pow(circleDistanceToCorners, 2) / 2);
   }
 
   /// Creates a BitmapDescriptor from an IconData
-  Future<BitmapDescriptor> createBitmapDescriptorFromIconData(IconData iconData, Color iconColor, Color circleColor, Color backgroundColor) async {
+  Future<BitmapDescriptor> createBitmapDescriptorFromIconData(IconData iconData,
+      Color iconColor, Color circleColor, Color backgroundColor) async {
     final pictureRecorder = PictureRecorder();
     final canvas = Canvas(pictureRecorder);
 
@@ -36,7 +38,8 @@ class MarkerGenerator {
     _paintIcon(canvas, iconColor, iconData);
 
     final picture = pictureRecorder.endRecording();
-    final image = await picture.toImage(_markerSize.round(), _markerSize.round());
+    final image =
+        await picture.toImage(_markerSize.round(), _markerSize.round());
     final bytes = await image.toByteData(format: ImageByteFormat.png);
 
     return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
@@ -47,7 +50,8 @@ class MarkerGenerator {
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..color = color;
-    canvas.drawCircle(Offset(_circleOffset, _circleOffset), _fillCircleWidth, paint);
+    canvas.drawCircle(
+        Offset(_circleOffset, _circleOffset), _fillCircleWidth, paint);
   }
 
   /// Paints a circle around the icon
@@ -56,7 +60,8 @@ class MarkerGenerator {
       ..style = PaintingStyle.stroke
       ..color = color
       ..strokeWidth = _circleStrokeWidth;
-    canvas.drawCircle(Offset(_circleOffset, _circleOffset), _outlineCircleWidth, paint);
+    canvas.drawCircle(
+        Offset(_circleOffset, _circleOffset), _outlineCircleWidth, paint);
   }
 
   /// Paints the icon
@@ -70,8 +75,7 @@ class MarkerGenerator {
           fontFamily: iconData.fontFamily,
           package: iconData.fontPackage,
           color: color,
-        )
-    );
+        ));
     textPainter.layout();
     textPainter.paint(canvas, Offset(_iconOffset, _iconOffset));
   }

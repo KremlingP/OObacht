@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class DrawerPageAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,7 +9,7 @@ class DrawerPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: true,
-      title: AutoSizeText(
+      title: Text(
         title,
         style: const TextStyle(fontFamily: 'Fredoka', color: Colors.white),
         maxLines: 1,
