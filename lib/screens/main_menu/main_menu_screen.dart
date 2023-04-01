@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
-import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
+import '../../widgets/map/map_widget.dart';
 import 'drawer/main_menu_drawer.dart';
 
 class MainMenuScreen extends StatefulWidget {
@@ -18,19 +18,24 @@ class MainMenuScreen extends StatefulWidget {
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  bool darkMode = false;
+
+  List<Report> allReports = _getMockReports();
+  List<Report> filteredReports = [];
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
   int _activePageIndex = 0;
-  final List<Widget> _contentPages = [
-    MapWidget(
-      reports: _getMockReports(),
-      showMarkerDetails: true,
-      showMapCaption: true,
-    ),
-    MainList(reports: _getMockReports())
-  ];
+  late List<Widget> _contentPages;
+
+  //for search bar and filtering
+  final TextEditingController _searchQueryController = TextEditingController();
+  bool _isSearching = false;
+
+  @override
+  void initState() {
+    filteredReports = allReports;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -47,26 +52,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       key: _drawerKey,
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text(
-          'OObacht!',
-          style: TextStyle(
-              fontFamily: 'Courgette',
-              color: Colors.white,
-              fontWeight: FontWeight.w900),
-          maxLines: 1,
-        ),
+        leading: _isSearching ? const BackButton() : _buildLeading(),
+        title: _isSearching ? _buildSearchField() : _buildTitle(),
+        actions: _buildActions(),
         centerTitle: true,
-        leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => _drawerKey.currentState!.openDrawer()),
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () => _drawerKey.currentState!.openDrawer()),
-          IconButton(
-              icon: const Icon(Icons.filter_alt),
-              onPressed: () => _drawerKey.currentState!.openDrawer()),
-        ],
       ),
       drawer: SizedBox(
         width: viewportWidth * 0.65,
@@ -75,7 +64,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       body: SafeArea(
           child: PageView(
         controller: _pageViewController,
-        children: _contentPages,
+        children: [
+          MapWidget(
+            reports: filteredReports,
+            showMarkerDetails: true,
+            showMapCaption: true,
+          ),
+          MainList(reports: filteredReports),
+        ],
         onPageChanged: (index) {
           setState(() {
             _activePageIndex = index;
@@ -83,7 +79,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         },
       )),
       floatingActionButton: FloatingActionButton.extended(
-        label: Text('Neue Meldung'),
+        label: const Text('Neue Meldung'),
         backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         onPressed: _newReport,
@@ -129,6 +125,111 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         context: context);
   }
 
+  ///For Searching
+  _buildLeading() {
+    return IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: () => _drawerKey.currentState!.openDrawer());
+  }
+
+  _buildSearchField() {
+    return TextField(
+      controller: _searchQueryController,
+      autofocus: true,
+      decoration: const InputDecoration(
+        hintText: "Suche eingeben...",
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.white30),
+      ),
+      cursorColor: Colors.white,
+      style: const TextStyle(color: Colors.white, fontSize: 16.0),
+      onChanged: (query) => updateSearchQuery(query),
+    );
+  }
+
+  _buildTitle() {
+    return const Text(
+      'OObacht!',
+      style: TextStyle(
+          fontFamily: 'Courgette',
+          color: Colors.white,
+          fontWeight: FontWeight.w900),
+      maxLines: 1,
+    );
+  }
+
+  _buildActions() {
+    if (_isSearching) {
+      return <Widget>[
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            if (_searchQueryController == null ||
+                _searchQueryController.text.isEmpty) {
+              Navigator.pop(context);
+              return;
+            }
+            _clearSearchQuery();
+          },
+        ),
+      ];
+    }
+
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: _startSearch,
+      ),
+      IconButton(
+          icon: const Icon(Icons.filter_alt),
+          onPressed: () => _drawerKey.currentState!.openDrawer()),
+    ];
+  }
+
+  void _startSearch() {
+    ModalRoute.of(context)
+        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void updateSearchQuery(String newQuery) {
+    print(newQuery);
+    List<Report> results = [];
+    if (newQuery.isEmpty) {
+      results = allReports;
+    } else {
+      results = allReports
+          .where((report) =>
+              report.title.toLowerCase().contains(newQuery.toLowerCase()))
+          .toList();
+    }
+
+    print(results);
+
+    setState(() {
+      filteredReports = results;
+    });
+  }
+
+  void _stopSearching() {
+    _clearSearchQuery();
+
+    setState(() {
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearchQuery() {
+    setState(() {
+      _searchQueryController.clear();
+      updateSearchQuery("");
+    });
+  }
+
+  ///MOCK DATA
   static List<Report> _getMockReports() {
     return [
       Report(

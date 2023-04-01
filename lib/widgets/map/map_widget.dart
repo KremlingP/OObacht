@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/report.dart';
@@ -29,7 +28,6 @@ class MapWidget extends StatefulWidget {
 class _MapWidgetState extends State<MapWidget> {
   Position? _currentPosition;
   late GoogleMapController mapController;
-  Widget _widget = const Center(child: CircularProgressIndicator());
   bool mapCreated = false;
   late HashMap<String, Marker> _markers = HashMap();
 
@@ -42,22 +40,24 @@ class _MapWidgetState extends State<MapWidget> {
     _currentPosition = await getCurrentPosition(context);
     setState(() {
       mapCreated = true;
-      _widget = widget.showMapCaption
-          ? Stack(
-              children: [
-                CustomGoogleMap(
-                    currentPosition: _currentPosition, markers: _markers),
-                MapCaption(reportsList: widget.reports),
-              ],
-            )
-          : CustomGoogleMap(
-              currentPosition: _currentPosition, markers: _markers);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('ICH BUILDE DU SAU!');
     if (!mapCreated) _createMap();
-    return _widget;
+    return mapCreated
+        ? widget.showMapCaption
+            ? Stack(
+                children: [
+                  CustomGoogleMap(
+                      currentPosition: _currentPosition, markers: _markers),
+                  MapCaption(reportsList: widget.reports),
+                ],
+              )
+            : CustomGoogleMap(
+                currentPosition: _currentPosition, markers: _markers)
+        : const Center(child: CircularProgressIndicator());
   }
 }
