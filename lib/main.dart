@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
+import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +33,7 @@ class _OobachtAppState extends State<OobachtApp> {
       setState(() {});
     });
     loadDataFromSharedPrefs();
+    startPositionListener();
   }
 
   @override
@@ -54,5 +57,17 @@ class _OobachtAppState extends State<OobachtApp> {
         if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
       }
     });
+  }
+
+  Future<void> startPositionListener() async {
+    Position? position = await getCurrentPosition(context);
+    if (position != null) {
+      sendPositionToFirebase(position.latitude, position.longitude);
+    }
+  }
+
+  void sendPositionToFirebase(double latitude, double longitude) async {
+      print('DEBUG Position: $latitude, $longitude');
+      // TODO PK send position to firebase
   }
 }
