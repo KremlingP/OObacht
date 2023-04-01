@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
-import 'package:oobacht/widgets/map/map_widget.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
+import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../logic/classes/group.dart';
@@ -59,6 +59,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         leading: IconButton(
             icon: const Icon(Icons.menu),
             onPressed: () => _drawerKey.currentState!.openDrawer()),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () => _drawerKey.currentState!.openDrawer()),
+          IconButton(
+              icon: const Icon(Icons.filter_alt),
+              onPressed: () => _drawerKey.currentState!.openDrawer()),
+        ],
       ),
       drawer: SizedBox(
         width: viewportWidth * 0.65,
