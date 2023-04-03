@@ -16,14 +16,36 @@ class ReportDetailsScreen extends StatelessWidget {
     double shortestViewportWidth = MediaQuery.of(context).size.shortestSide;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: const Text(
-          "Meldung",
-          style: TextStyle(fontFamily: 'Fredoka', color: Colors.white),
-          maxLines: 1,
-        ),
-        centerTitle: true,
-      ),
+          automaticallyImplyLeading: true,
+          title: const Text(
+            "Meldung",
+            style: TextStyle(fontFamily: 'Fredoka', color: Colors.white),
+            maxLines: 1,
+          ),
+          centerTitle: true,
+          actions: [
+            PopupMenuButton(
+                icon: const Icon(Icons.error),
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem<int>(
+                      value: 0,
+                      child: Text("Als veraltet melden"),
+                    ),
+                    const PopupMenuItem<int>(
+                      value: 1,
+                      child: Text("Als unangemessen melden"),
+                    ),
+                  ];
+                },
+                onSelected: (value) {
+                  if (value == 0) {
+                    //TODO "Veraltet" ans Backend senden
+                  } else if (value == 1) {
+                    //TODO "Unangemessen" ans Backend senden
+                  }
+                }),
+          ]),
       backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
