@@ -34,6 +34,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   bool _isSearching = false;
   List<Group> allGroups = _getGroupsMock();
   late List<Group> selectedGroups;
+  bool showOnlyOwn = false;
 
   @override
   void initState() {
@@ -188,10 +189,31 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         icon: const Icon(Icons.search),
         onPressed: _startSearch,
       ),
-      IconButton(
-        icon: const Icon(Icons.filter_alt),
-        onPressed: () => _showCategoryPicker(context, theme),
-      ),
+      PopupMenuButton(
+          icon: const Icon(Icons.filter_alt),
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem<int>(
+                value: 0,
+                textStyle: TextStyle(color: theme.primaryColor),
+                child: const Text("Kategorie Filter"),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                textStyle: TextStyle(
+                    color: showOnlyOwn ? Colors.orange : theme.primaryColor),
+                child: const Text("Nur Eigene anzeigen"),
+              ),
+            ];
+          },
+          onSelected: (value) {
+            if (value == 0) {
+              _showCategoryPicker(context, theme);
+            } else if (value == 1) {
+              //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
+              showOnlyOwn = !showOnlyOwn;
+            }
+          }),
     ];
   }
 
