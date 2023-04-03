@@ -1,8 +1,4 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/report.dart';
 
 import '../../utils/map_utils.dart';
@@ -26,38 +22,74 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-  Position? _currentPosition;
-  late GoogleMapController mapController;
-  bool mapCreated = false;
-  late HashMap<String, Marker> _markers = HashMap();
-
-  Future<void> _createMap() async {
-    final theme = Theme.of(context);
-
-    _markers = await generateMarkers(
-        widget.reports, theme, context, widget.showMarkerDetails);
-
-    _currentPosition = await getCurrentPosition(context);
-    setState(() {
-      mapCreated = true;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    print('ICH BUILDE DU SAU!');
-    if (!mapCreated) _createMap();
-    return mapCreated
-        ? widget.showMapCaption
-            ? Stack(
-                children: [
-                  CustomGoogleMap(
-                      currentPosition: _currentPosition, markers: _markers),
-                  MapCaption(reportsList: widget.reports),
-                ],
-              )
-            : CustomGoogleMap(
-                currentPosition: _currentPosition, markers: _markers)
-        : const Center(child: CircularProgressIndicator());
+    final theme = Theme.of(context);
+    return FutureBuilder(
+      future: generateMarkers(
+          widget.reports, theme, context, widget.showMarkerDetails),
+      builder: (context, markerSnapshot) {
+        if (markerSnapshot.hasError) {
+          return const Center(
+            child: Text(
+              "Fehler beim Laden der Karte!",
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        }
+        if (markerSnapshot.hasData) {
+          return FutureBuilder(
+            future: getCurrentPosition(context),
+            builder: (context, locationSnapshot) {
+              if (locationSnapshot.hasError) {
+                return const Center(
+                  child: Text(
+                    "Fehler beim Auslesen des aktuellen Standortes!",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+              if (locationSnapshot.hasData) {
+                return widget.showMapCaption
+                    ? Stack(
+                        children: [
+                          CustomGoogleMap(
+                              currentPosition: locationSnapshot.data!,
+                              markers: markerSnapshot.data!),
+                          MapCaption(reportsList: widget.reports),
+                        ],
+                      )
+                    : CustomGoogleMap(
+                        currentPosition: locationSnapshot.data!,
+                        markers: markerSnapshot.data!);
+              } else {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Text("Bestimme aktuellen Standort...")
+                  ],
+                );
+              }
+            },
+          );
+        } else {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text("Lade Karte...")
+            ],
+          );
+        }
+      },
+    );
   }
 }
