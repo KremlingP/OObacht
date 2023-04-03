@@ -25,8 +25,11 @@ class _MainListState extends State<MainList> {
                 return ReportsListTile(data: widget.reports[index]);
               },
             )
-          : const Center(
-              child: Text("Keine Meldungen gefunden!"),
+          : Center(
+              child: Text(
+                "Keine Meldungen gefunden!",
+                style: TextStyle(color: theme.primaryColor),
+              ),
             ),
     );
   }
