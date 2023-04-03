@@ -7,6 +7,7 @@ class LoadingHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -14,7 +15,10 @@ class LoadingHint extends StatelessWidget {
         const SizedBox(
           height: 10.0,
         ),
-        Text(text)
+        Text(
+          text,
+          style: TextStyle(color: theme.primaryColor),
+        )
       ],
     );
   }
