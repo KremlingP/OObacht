@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oobacht/logic/classes/report.dart';
+import 'package:oobacht/widgets/error_text.dart';
+import 'package:oobacht/widgets/loading_hint.dart';
 
 import '../../utils/map_utils.dart';
 import 'components/customgooglemap.dart';
@@ -22,7 +24,6 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -31,24 +32,15 @@ class _MapWidgetState extends State<MapWidget> {
           widget.reports, theme, context, widget.showMarkerDetails),
       builder: (context, markerSnapshot) {
         if (markerSnapshot.hasError) {
-          return const Center(
-            child: Text(
-              "Fehler beim Laden der Karte!",
-              style: TextStyle(color: Colors.red),
-            ),
-          );
+          return const ErrorText(text: "Fehler beim Laden der Karte!");
         }
         if (markerSnapshot.hasData) {
           return FutureBuilder(
             future: getCurrentPosition(context),
             builder: (context, locationSnapshot) {
               if (locationSnapshot.hasError) {
-                return const Center(
-                  child: Text(
-                    "Fehler beim Auslesen des aktuellen Standortes!",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                );
+                return const ErrorText(
+                    text: "Fehler beim Auslesen des aktuellen Standortes!");
               }
               if (locationSnapshot.hasData) {
                 return widget.showMapCaption
@@ -64,30 +56,13 @@ class _MapWidgetState extends State<MapWidget> {
                         currentPosition: locationSnapshot.data!,
                         markers: markerSnapshot.data!);
               } else {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Text("Bestimme aktuellen Standort...")
-                  ],
-                );
+                return const LoadingHint(
+                    text: "Bestimme aktuellen Standort...");
               }
             },
           );
         } else {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              CircularProgressIndicator(),
-              SizedBox(
-                height: 10.0,
-              ),
-              Text("Lade Karte...")
-            ],
-          );
+          return const LoadingHint(text: "Lade Karte...");
         }
       },
     );
