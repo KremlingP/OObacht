@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
@@ -25,15 +27,18 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   //PageController to make pages swipeable
   final _pageViewController = PageController();
   int _activePageIndex = 0;
-  late List<Widget> _contentPages;
 
   //for search bar and filtering
   final TextEditingController _searchQueryController = TextEditingController();
+  String queryText = "";
   bool _isSearching = false;
+  List<Group> allGroups = _getGroupsMock();
+  late List<Group> selectedGroups;
 
   @override
   void initState() {
     filteredReports = allReports;
+    selectedGroups = allGroups;
     super.initState();
   }
 
@@ -54,7 +59,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       appBar: AppBar(
         leading: _isSearching ? const BackButton() : _buildLeading(),
         title: _isSearching ? _buildSearchField() : _buildTitle(),
-        actions: _buildActions(),
+        actions: _buildActions(theme),
         centerTitle: true,
       ),
       drawer: SizedBox(
@@ -143,7 +148,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       ),
       cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white, fontSize: 16.0),
-      onChanged: (query) => updateSearchQuery(query),
+      onChanged: (query) {
+        queryText = query;
+        updateSearchQuery();
+      },
     );
   }
 
@@ -158,7 +166,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     );
   }
 
-  _buildActions() {
+  _buildActions(ThemeData theme) {
     if (_isSearching) {
       return <Widget>[
         IconButton(
@@ -181,8 +189,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         onPressed: _startSearch,
       ),
       IconButton(
-          icon: const Icon(Icons.filter_alt),
-          onPressed: () => _drawerKey.currentState!.openDrawer()),
+        icon: const Icon(Icons.filter_alt),
+        onPressed: () => _showCategoryPicker(context, theme),
+      ),
     ];
   }
 
@@ -195,16 +204,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     });
   }
 
-  void updateSearchQuery(String newQuery) {
-    print(newQuery);
+  void updateSearchQuery() {
     List<Report> results = [];
-    if (newQuery.isEmpty) {
+    if (queryText.isEmpty) {
       results = allReports;
     } else {
-      results = allReports
-          .where((report) =>
-              report.title.toLowerCase().contains(newQuery.toLowerCase()))
-          .toList();
+      results = _getFilteredReports();
     }
 
     print(results);
@@ -225,8 +230,45 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   void _clearSearchQuery() {
     setState(() {
       _searchQueryController.clear();
-      updateSearchQuery("");
+      queryText = "";
+      updateSearchQuery();
     });
+  }
+
+  void _showCategoryPicker(BuildContext context, ThemeData theme) async {
+    await showDialog(
+        context: context,
+        builder: (ctx) {
+          return MultiSelectDialog(
+            items: allGroups.map((e) => MultiSelectItem(e, e.name)).toList(),
+            initialValue: selectedGroups,
+            onConfirm: (values) {
+              selectedGroups = values;
+              setState(() {
+                filteredReports = _getFilteredReports();
+              });
+            },
+            title: Text(
+              "Kategorie Filter",
+              style: TextStyle(color: theme.primaryColor),
+            ),
+            backgroundColor: theme.colorScheme.background,
+            checkColor: Colors.white,
+            selectedColor: Colors.orange,
+            unselectedColor: theme.primaryColor,
+            itemsTextStyle: TextStyle(color: theme.primaryColor),
+            selectedItemsTextStyle: TextStyle(color: theme.primaryColor),
+          );
+        });
+  }
+
+  List<Report> _getFilteredReports() {
+    return allReports
+        .where((report) =>
+            report.title.toLowerCase().contains(queryText.toLowerCase()) &&
+            report.groups.every(
+                (group) => selectedGroups.map((e) => e.id).contains(group.id)))
+        .toList();
   }
 
   ///MOCK DATA
@@ -265,6 +307,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           ],
           const LatLng(48.445166, 8.716739),
           "http://"),
+    ];
+  }
+
+  static List<Group> _getGroupsMock() {
+    return [
+      Group("1", "Mathematiker", Icons.add, Colors.blue),
+      Group("2", "Speicherwütiger!", Icons.save, Colors.green),
+      Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
+      Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
+      Group("5", "Uhrwerker", Icons.watch, Colors.red),
     ];
   }
 }
