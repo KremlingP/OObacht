@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
-import 'package:oobacht/widgets/map/map_widget.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
+import '../../widgets/map/map_widget.dart';
 import 'drawer/main_menu_drawer.dart';
 
 class MainMenuScreen extends StatefulWidget {
@@ -18,19 +20,27 @@ class MainMenuScreen extends StatefulWidget {
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  bool darkMode = false;
+
+  List<Report> allReports = _getMockReports();
+  List<Report> filteredReports = [];
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
   int _activePageIndex = 0;
-  final List<Widget> _contentPages = [
-    MapWidget(
-      reports: _getMockReports(),
-      showMarkerDetails: true,
-      showMapCaption: true,
-    ),
-    MainList(reports: _getMockReports())
-  ];
+
+  //for search bar and filtering
+  final TextEditingController _searchQueryController = TextEditingController();
+  String queryText = "";
+  bool _isSearching = false;
+  List<Group> allGroups = _getGroupsMock();
+  List<Group> selectedGroups = [];
+  bool showOnlyOwn = false;
+
+  @override
+  void initState() {
+    filteredReports = allReports;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -47,18 +57,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       key: _drawerKey,
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        title: const Text(
-          'OObacht!',
-          style: TextStyle(
-              fontFamily: 'Courgette',
-              color: Colors.white,
-              fontWeight: FontWeight.w900),
-          maxLines: 1,
-        ),
+        leading: _isSearching ? const BackButton() : _buildLeading(),
+        title: _isSearching ? _buildSearchField() : _buildTitle(),
+        actions: _buildActions(theme),
         centerTitle: true,
-        leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => _drawerKey.currentState!.openDrawer()),
       ),
       drawer: SizedBox(
         width: viewportWidth * 0.65,
@@ -67,7 +69,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       body: SafeArea(
           child: PageView(
         controller: _pageViewController,
-        children: _contentPages,
+        children: [
+          MapWidget(
+            reports: filteredReports,
+            showMarkerDetails: true,
+            showMapCaption: true,
+          ),
+          MainList(reports: filteredReports),
+        ],
         onPageChanged: (index) {
           setState(() {
             _activePageIndex = index;
@@ -75,7 +84,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         },
       )),
       floatingActionButton: FloatingActionButton.extended(
-        label: Text('Neue Meldung'),
+        label: const Text('Neue Meldung'),
         backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         onPressed: _newReport,
@@ -121,6 +130,171 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         context: context);
   }
 
+  ///For Searching
+  _buildLeading() {
+    return IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: () => _drawerKey.currentState!.openDrawer());
+  }
+
+  _buildSearchField() {
+    return TextField(
+      controller: _searchQueryController,
+      autofocus: true,
+      decoration: const InputDecoration(
+        hintText: "Suche eingeben...",
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.white30),
+      ),
+      cursorColor: Colors.white,
+      style: const TextStyle(color: Colors.white, fontSize: 16.0),
+      onChanged: (query) {
+        queryText = query;
+        updateSearchQuery();
+      },
+    );
+  }
+
+  _buildTitle() {
+    return const Text(
+      'OObacht!',
+      style: TextStyle(
+          fontFamily: 'Courgette',
+          color: Colors.white,
+          fontWeight: FontWeight.w900),
+      maxLines: 1,
+    );
+  }
+
+  _buildActions(ThemeData theme) {
+    if (_isSearching) {
+      return <Widget>[
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            if (_searchQueryController == null ||
+                _searchQueryController.text.isEmpty) {
+              Navigator.pop(context);
+              return;
+            }
+            _clearSearchQuery();
+          },
+        ),
+      ];
+    }
+
+    return <Widget>[
+      IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: _startSearch,
+      ),
+      PopupMenuButton(
+          icon: const Icon(Icons.filter_alt),
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem<int>(
+                value: 0,
+                textStyle: TextStyle(color: theme.primaryColor),
+                child: const Text("Kategorie Filter"),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                textStyle: TextStyle(
+                    color: showOnlyOwn ? Colors.orange : theme.primaryColor),
+                child: const Text("Nur Eigene anzeigen"),
+              ),
+            ];
+          },
+          onSelected: (value) {
+            if (value == 0) {
+              _showCategoryPicker(context, theme);
+            } else if (value == 1) {
+              //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
+              showOnlyOwn = !showOnlyOwn;
+            }
+          }),
+    ];
+  }
+
+  void _startSearch() {
+    ModalRoute.of(context)
+        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
+  void updateSearchQuery() {
+    List<Report> results = [];
+    if (queryText.isEmpty) {
+      results = allReports;
+    } else {
+      results = _getFilteredReports();
+    }
+
+    print(results);
+
+    setState(() {
+      filteredReports = results;
+    });
+  }
+
+  void _stopSearching() {
+    _clearSearchQuery();
+
+    setState(() {
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearchQuery() {
+    setState(() {
+      _searchQueryController.clear();
+      queryText = "";
+      updateSearchQuery();
+    });
+  }
+
+  void _showCategoryPicker(BuildContext context, ThemeData theme) async {
+    await showDialog(
+        context: context,
+        builder: (ctx) {
+          return MultiSelectDialog(
+            items: allGroups.map((e) => MultiSelectItem(e, e.name)).toList(),
+            initialValue: selectedGroups,
+            onConfirm: (values) {
+              selectedGroups = values;
+              setState(() {
+                filteredReports = _getFilteredReports();
+              });
+            },
+            title: Text(
+              "Kategorie Filter",
+              style: TextStyle(color: theme.primaryColor),
+            ),
+            backgroundColor: theme.colorScheme.background,
+            checkColor: Colors.white,
+            selectedColor: Colors.orange,
+            unselectedColor: theme.primaryColor,
+            itemsTextStyle: TextStyle(color: theme.primaryColor),
+            selectedItemsTextStyle: TextStyle(color: theme.primaryColor),
+          );
+        });
+  }
+
+  List<Report> _getFilteredReports() {
+    return selectedGroups.isNotEmpty
+        ? allReports
+            .where((report) =>
+                report.title.toLowerCase().contains(queryText.toLowerCase()) &&
+                report.groups.any((group) =>
+                    selectedGroups.map((e) => e.id).contains(group.id)))
+            .toList()
+        : allReports;
+  }
+
+  ///MOCK DATA
   static List<Report> _getMockReports() {
     return [
       Report(
@@ -156,6 +330,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           ],
           const LatLng(48.445166, 8.716739),
           "http://"),
+    ];
+  }
+
+  static List<Group> _getGroupsMock() {
+    return [
+      Group("1", "Mathematiker", Icons.add, Colors.blue),
+      Group("2", "Speicherwütiger!", Icons.save, Colors.green),
+      Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
+      Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
+      Group("5", "Uhrwerker", Icons.watch, Colors.red),
     ];
   }
 }

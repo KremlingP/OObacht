@@ -28,13 +28,15 @@ class ReportDetailsScreen extends StatelessWidget {
                 icon: const Icon(Icons.error),
                 itemBuilder: (context) {
                   return [
-                    const PopupMenuItem<int>(
+                    PopupMenuItem<int>(
                       value: 0,
-                      child: Text("Als veraltet melden"),
+                      textStyle: TextStyle(color: theme.primaryColor),
+                      child: const Text("Als veraltet melden"),
                     ),
-                    const PopupMenuItem<int>(
+                    PopupMenuItem<int>(
                       value: 1,
-                      child: Text("Als unangemessen melden"),
+                      textStyle: TextStyle(color: theme.primaryColor),
+                      child: const Text("Als unangemessen melden"),
                     ),
                   ];
                 },
