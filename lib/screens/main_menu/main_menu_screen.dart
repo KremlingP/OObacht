@@ -33,13 +33,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   String queryText = "";
   bool _isSearching = false;
   List<Group> allGroups = _getGroupsMock();
-  late List<Group> selectedGroups;
+  List<Group> selectedGroups = [];
   bool showOnlyOwn = false;
 
   @override
   void initState() {
     filteredReports = allReports;
-    selectedGroups = allGroups;
     super.initState();
   }
 
@@ -285,12 +284,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   List<Report> _getFilteredReports() {
-    return allReports
-        .where((report) =>
-            report.title.toLowerCase().contains(queryText.toLowerCase()) &&
-            report.groups.every(
-                (group) => selectedGroups.map((e) => e.id).contains(group.id)))
-        .toList();
+    return selectedGroups.isNotEmpty
+        ? allReports
+            .where((report) =>
+                report.title.toLowerCase().contains(queryText.toLowerCase()) &&
+                report.groups.any((group) =>
+                    selectedGroups.map((e) => e.id).contains(group.id)))
+            .toList()
+        : allReports;
   }
 
   ///MOCK DATA
