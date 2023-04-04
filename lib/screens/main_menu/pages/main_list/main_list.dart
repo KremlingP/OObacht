@@ -18,12 +18,19 @@ class _MainListState extends State<MainList> {
     return Container(
       padding: const EdgeInsets.all(5.0),
       color: theme.colorScheme.background,
-      child: ListView.builder(
-        itemCount: widget.reports.length,
-        itemBuilder: (context, index) {
-          return ReportsListTile(data: widget.reports[index]);
-        },
-      ),
+      child: widget.reports.isNotEmpty
+          ? ListView.builder(
+              itemCount: widget.reports.length,
+              itemBuilder: (context, index) {
+                return ReportsListTile(data: widget.reports[index]);
+              },
+            )
+          : Center(
+              child: Text(
+                "Keine Meldungen gefunden!",
+                style: TextStyle(color: theme.primaryColor),
+              ),
+            ),
     );
   }
 }
