@@ -17,6 +17,13 @@ class LocationPermissionWrapper extends StatefulWidget {
 class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
     with WidgetsBindingObserver {
   bool locationPermissionGranted = false;
+  late Future<void> initialMethod;
+
+  @override
+  void initState() {
+    super.initState();
+    initialMethod = initialRequestPermission();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +31,7 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
     MediaQueryData data = MediaQuery.of(context);
 
     return FutureBuilder(
-      future: initialRequestPermission(),
+      future: initialMethod,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Scaffold(
