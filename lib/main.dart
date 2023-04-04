@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
+import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,7 +78,7 @@ class _OobachtAppState extends State<OobachtApp> {
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: currentTheme.currentTheme,
-      home: const AuthWrapper(),
+      home: LocationPermissionWrapper(),
       //debugShowCheckedModeBanner: false,
     );
   }

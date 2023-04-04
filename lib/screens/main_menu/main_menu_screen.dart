@@ -24,8 +24,6 @@ class MainMenuScreen extends StatefulWidget {
 }
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
-  bool locationPermissionGranted = false;
-
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   List<Report> allReports = _getMockReports();
@@ -60,23 +58,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     double viewportWidth = MediaQuery.of(context).size.width;
-    /**return
-      FutureBuilder(
-        future: requestPermission(),
-        builder: (context, markerSnapshot) {
-          if (markerSnapshot.hasError) {
-            return const ErrorText(
-                text: "Fehler beim Anfragen der Standortberechtigung!");
-          }**/
-          if (!locationPermissionGranted) {
-            return PageView(
-              children: [
-                const LoadingHint(text: "OObacht! benötigt jederzeit Zugriff auf deinen Standort, um dir standortspezfische Mitteilungen senden zu können. Bitte erlaube das in den Einstellungen."),
-                ElevatedButton(onPressed: requestPermission, child: const Text("Standortberechtigung erlauben")),
-              ],
-            );
-          }
-          return Scaffold(
+    return Scaffold(
             key: _drawerKey,
             backgroundColor: theme.colorScheme.background,
             appBar: AppBar(
@@ -134,32 +116,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               ],
             ),
           );
-        //});
-  }
-
-  /// Request the permissions and updates the UI accordingly
-  Future<void> requestPermission() async {
-    PermissionStatus result;
-    // In Android we need to request the storage permission,
-    // while in iOS is the photos permission
-    if (Platform.isAndroid) {
-      result = await Permission.locationAlways.request();
-    } else {
-      result = await Permission.locationWhenInUse.request();
-      if (result.isGranted) {
-        result = await Permission.locationAlways.request();
-      }
-    }
-
-    if (result.isGranted) {
-      setState(() {
-        locationPermissionGranted = true;
-      });
-    } else {
-      setState(() {
-        locationPermissionGranted = false;
-      });
-    }
   }
 
   void _onItemTapped(int index) {
