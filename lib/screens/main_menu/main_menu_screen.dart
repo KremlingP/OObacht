@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
+import '../../widgets/error_text.dart';
+import '../../widgets/loading_hint.dart';
 import '../../widgets/map/map_widget.dart';
 import 'drawer/main_menu_drawer.dart';
 
@@ -19,6 +24,8 @@ class MainMenuScreen extends StatefulWidget {
 }
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
+  bool locationPermissionGranted = false;
+
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   List<Report> allReports = _getMockReports();
@@ -53,63 +60,106 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     double viewportWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      key: _drawerKey,
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        leading: _isSearching ? const BackButton() : _buildLeading(),
-        title: _isSearching ? _buildSearchField() : _buildTitle(),
-        actions: _buildActions(theme),
-        centerTitle: true,
-      ),
-      drawer: SizedBox(
-        width: viewportWidth * 0.65,
-        child: const MainMenuDrawer(),
-      ),
-      body: SafeArea(
-          child: PageView(
-        controller: _pageViewController,
-        children: [
-          MapWidget(
-            reports: filteredReports,
-            showMarkerDetails: true,
-            showMapCaption: true,
-          ),
-          MainList(reports: filteredReports),
-        ],
-        onPageChanged: (index) {
-          setState(() {
-            _activePageIndex = index;
-          });
-        },
-      )),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Neue Meldung'),
-        backgroundColor: Colors.redAccent,
-        foregroundColor: Colors.white,
-        onPressed: _newReport,
-        tooltip: 'Neue Meldung erstellen',
-        elevation: 4.0,
-        icon: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _activePageIndex,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.orange,
-        selectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Karte',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Liste',
-          )
-        ],
-      ),
-    );
+    /**return
+      FutureBuilder(
+        future: requestPermission(),
+        builder: (context, markerSnapshot) {
+          if (markerSnapshot.hasError) {
+            return const ErrorText(
+                text: "Fehler beim Anfragen der Standortberechtigung!");
+          }**/
+          if (!locationPermissionGranted) {
+            return PageView(
+              children: [
+                const LoadingHint(text: "OObacht! benötigt jederzeit Zugriff auf deinen Standort, um dir standortspezfische Mitteilungen senden zu können. Bitte erlaube das in den Einstellungen."),
+                ElevatedButton(onPressed: requestPermission, child: const Text("Standortberechtigung erlauben")),
+              ],
+            );
+          }
+          return Scaffold(
+            key: _drawerKey,
+            backgroundColor: theme.colorScheme.background,
+            appBar: AppBar(
+              leading: _isSearching ? const BackButton() : _buildLeading(),
+              title: _isSearching ? _buildSearchField() : _buildTitle(),
+              actions: _buildActions(theme),
+              centerTitle: true,
+            ),
+            drawer: SizedBox(
+              width: viewportWidth * 0.65,
+              child: const MainMenuDrawer(),
+            ),
+            body: SafeArea(
+                child: PageView(
+                  controller: _pageViewController,
+                  children: [
+                    MapWidget(
+                      reports: filteredReports,
+                      showMarkerDetails: true,
+                      showMapCaption: true,
+                    ),
+                    MainList(reports: filteredReports),
+                  ],
+              onPageChanged: (index) {
+                setState(() {
+                  _activePageIndex = index;
+                });
+              },
+            )),
+            floatingActionButton: FloatingActionButton.extended(
+              label: const Text('Neue Meldung'),
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              onPressed: _newReport,
+              tooltip: 'Neue Meldung erstellen',
+              elevation: 4.0,
+              icon: const Icon(Icons.add),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _activePageIndex,
+              onTap: _onItemTapped,
+              backgroundColor: Colors.orange,
+              selectedItemColor: Colors.white,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Karte',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Liste',
+                )
+              ],
+            ),
+          );
+        //});
+  }
+
+  /// Request the permissions and updates the UI accordingly
+  Future<void> requestPermission() async {
+    PermissionStatus result;
+    // In Android we need to request the storage permission,
+    // while in iOS is the photos permission
+    if (Platform.isAndroid) {
+      result = await Permission.locationAlways.request();
+    } else {
+      result = await Permission.locationWhenInUse.request();
+      if (result.isGranted) {
+        result = await Permission.locationAlways.request();
+      }
+    }
+
+    if (result.isGranted) {
+      setState(() {
+        locationPermissionGranted = true;
+      });
+    } else {
+      setState(() {
+        locationPermissionGranted = false;
+      });
+    }
   }
 
   void _onItemTapped(int index) {

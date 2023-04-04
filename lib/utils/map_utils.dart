@@ -12,7 +12,6 @@ import 'marker_icon_generator.dart';
 
 Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList,
     ThemeData theme, BuildContext context, bool showMarkerDetails) async {
-  _checkMultipleCategories(reportsList);
   MarkerGenerator markerGenerator = MarkerGenerator(100);
   final HashMap<String, Marker> markers = HashMap();
   for (final report in reportsList) {
@@ -53,10 +52,6 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList,
   return markers;
 }
 
-void _checkMultipleCategories(List<Report> reportsList) {
-  for (final report in reportsList) {}
-}
-
 Future<Position?> getCurrentPosition(BuildContext? context) async {
   Position? currentPosition;
   final hasPermission = await _handleLocationPermission(context);
@@ -76,25 +71,31 @@ Future<bool> _handleLocationPermission(BuildContext? context) async {
 
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    if(context != null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
             'Der Standort ist deaktiviert. Bitte aktiviere ihn in den Einstellungen.')));
+    }
     return false;
   }
   permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      if(context != null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Standortzugriff verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
+      }
       return false;
     }
   }
   if (permission == LocationPermission.deniedForever) {
-    if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    if(context != null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
             'Standortzugriff permanent verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
+    }
     return false;
   }
   return true;
