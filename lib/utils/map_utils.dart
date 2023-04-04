@@ -57,7 +57,7 @@ void _checkMultipleCategories(List<Report> reportsList) {
   for (final report in reportsList) {}
 }
 
-Future<Position?> getCurrentPosition(BuildContext context) async {
+Future<Position?> getCurrentPosition(BuildContext? context) async {
   Position? currentPosition;
   final hasPermission = await _handleLocationPermission(context);
   if (!hasPermission) return null;
@@ -70,13 +70,13 @@ Future<Position?> getCurrentPosition(BuildContext context) async {
   return currentPosition;
 }
 
-Future<bool> _handleLocationPermission(BuildContext context) async {
+Future<bool> _handleLocationPermission(BuildContext? context) async {
   bool serviceEnabled;
   LocationPermission permission;
 
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
             'Der Standort ist deaktiviert. Bitte aktiviere ihn in den Einstellungen.')));
     return false;
@@ -85,14 +85,14 @@ Future<bool> _handleLocationPermission(BuildContext context) async {
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
               'Standortzugriff verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
       return false;
     }
   }
   if (permission == LocationPermission.deniedForever) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    if(context != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
             'Standortzugriff permanent verweigert. Bitte erlaube den Zugriff in den Einstellungen.')));
     return false;

@@ -1,3 +1,4 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,6 +17,36 @@ Future<void> main() async {
   );
 
   runApp(const OobachtApp());
+
+  // Register to receive BackgroundFetch events after app is terminated.
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+}
+
+// [Android-only] This "Headless Task" is run when the Android app is terminated with `enableHeadless: true`
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  await startPositionListener();
+  BackgroundFetch.finish(taskId);
+}
+
+Future<void> startPositionListener() async {
+  Position? position = await getCurrentPosition(null);
+  if (position != null) {
+    sendPositionToFirebase(position.latitude, position.longitude);
+  }
+
+}
+
+void sendPositionToFirebase(double latitude, double longitude) async {
+  print('>>> DEBUG Position: $latitude, $longitude');
+  // TODO PK send position to firebase
 }
 
 class OobachtApp extends StatefulWidget {
@@ -34,6 +65,8 @@ class _OobachtAppState extends State<OobachtApp> {
     });
     loadDataFromSharedPrefs();
     startPositionListener();
+    initPlatformState();
+    BackgroundFetch.start();
   }
 
   @override
@@ -59,15 +92,28 @@ class _OobachtAppState extends State<OobachtApp> {
     });
   }
 
-  Future<void> startPositionListener() async {
-    Position? position = await getCurrentPosition(context);
-    if (position != null) {
-      sendPositionToFirebase(position.latitude, position.longitude);
-    }
-  }
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    await BackgroundFetch.configure(BackgroundFetchConfig(
+        minimumFetchInterval: 15,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiredNetworkType: NetworkType.ANY
+    ), (String taskId) async {  // <-- Event handler
+      await startPositionListener();
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {
+      // This task has exceeded its allowed running-time.
+      BackgroundFetch.finish(taskId);
+    });
 
-  void sendPositionToFirebase(double latitude, double longitude) async {
-      print('DEBUG Position: $latitude, $longitude');
-      // TODO PK send position to firebase
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
   }
 }
