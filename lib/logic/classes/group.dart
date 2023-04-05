@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+@JsonSerializable()
 class Group {
   final String id;
   final String name;
-  final IconData icon;
-  final Color color;
 
-  Group(this.id, this.name, this.icon, this.color);
+  Group(this.id, this.name);
 }

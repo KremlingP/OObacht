@@ -211,7 +211,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               _showCategoryPicker(context, theme);
             } else if (value == 1) {
               //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
-              ReportFunctions.oobacht();
+              ReportFunctions.getAllReports();
               showOnlyOwn = !showOnlyOwn;
             }
           }),

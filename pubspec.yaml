@@ -29,6 +29,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  json_annotation: ^4.8.0
   flutter:
     sdk: flutter
 
@@ -49,6 +50,8 @@ dependencies:
   numberpicker: ^2.1.1
   flutter_launcher_icons: ^0.12.0
   cloud_functions: ^4.1.0
+  build_runner: ^2.3.3
+  json_serializable: ^6.6.0
 
 dev_dependencies:
   flutter_test:
