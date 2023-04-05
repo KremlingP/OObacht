@@ -111,7 +111,46 @@ class ReportDetailsScreen extends StatelessWidget {
                         showMarkerDetails: false,
                         showMapCaption: false,
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 20.0),
+
+                    /// Alternatives
+                    Column(
+                      children: [
+                        Center(
+                          child: Text("Alternativen",
+                              style: TextStyle(
+                                color: theme.primaryColor,
+                                fontSize: 20,
+                              )),
+                        ),
+                        const SizedBox(height: 10),
+                        reportData.alternatives.isNotEmpty
+                            ? SizedBox(
+                                height: 150,
+                                child: ListView.builder(
+                                  itemCount: reportData.alternatives.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor:
+                                            theme.colorScheme.primary,
+                                        foregroundColor: theme.primaryColor,
+                                        child: Text('${index + 1}'),
+                                      ),
+                                      title:
+                                          Text(reportData.alternatives[index]),
+                                    );
+                                  },
+                                ),
+                              )
+                            : Center(
+                                child: Text("Keine Alternativen hinzugefügt.",
+                                    style: TextStyle(
+                                        color: theme.primaryColor,
+                                        fontSize: 15))),
+                      ],
+                    ),
                   ],
                 ),
               )

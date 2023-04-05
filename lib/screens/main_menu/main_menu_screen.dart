@@ -334,7 +334,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
           const LatLng(48.435166, 8.706739),
-          "", []),
+          "", ["Cosinus"]),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
@@ -344,7 +344,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("5", "Uhrwerker", Icons.watch, Colors.red),
           ],
           const LatLng(48.445166, 8.716739),
-          "http://", []),
+          "http://", ["Rolex", "Gucci", "Prada"]),
     ];
   }
 
