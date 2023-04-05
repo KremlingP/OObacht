@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
+import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
 import 'package:oobacht/screens/new_report/components/alternativepicker.dart';
 import 'package:oobacht/widgets/categorypicker.dart';
@@ -37,6 +38,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
   File imageFile = File('');
   LatLng? position;
   List<String> alternatives = [];
+  RepeatingReportsEnum repeatingReport = RepeatingReportsEnum.none;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +113,8 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       selectedCategories.map((e) => e as Group).toList(),
                       position!,
                       imageFile.path,
-                      alternatives
+                      alternatives,
+                      repeatingReport
                   );
                   // TODO: Save report to database
                   navigateToNewScreen(

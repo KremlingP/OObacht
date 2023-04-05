@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -324,7 +325,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
           ],
           const LatLng(48.455166, 8.706739),
-          "http://", []),
+          "http://", [], RepeatingReportsEnum.none),
       Report(
           "2",
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
@@ -334,7 +335,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
           const LatLng(48.435166, 8.706739),
-          "", ["Cosinus"]),
+          "", ["Cosinus"], RepeatingReportsEnum.hot),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
@@ -344,7 +345,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("5", "Uhrwerker", Icons.watch, Colors.red),
           ],
           const LatLng(48.445166, 8.716739),
-          "http://", ["Rolex", "Gucci", "Prada"]),
+          "http://", ["Rolex", "Gucci", "Prada"], RepeatingReportsEnum.rain),
     ];
   }
 

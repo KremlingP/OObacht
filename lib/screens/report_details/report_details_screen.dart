@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
+import '../../logic/classes/repeating_reports_enum.dart';
 import '../../utils/helper_methods.dart';
 
 class ReportDetailsScreen extends StatelessWidget {
@@ -114,6 +115,23 @@ class ReportDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20.0),
 
+                    /// Repeating report
+                    reportData.repeatingReport == RepeatingReportsEnum.none
+                        ? Container()
+                        : Chip(
+                            label: Text(
+                              "Diese Meldung wird bei ${getRepeatingReportName(reportData.repeatingReport)} ausgelöst.",
+                              style: TextStyle(color: theme.primaryColor),
+                            ),
+                            backgroundColor: theme.colorScheme.primary,
+                            avatar: CircleAvatar(
+                              backgroundColor: theme.colorScheme.primary,
+                              child:
+                                  Icon(getRepeatingReportIcon(reportData.repeatingReport), color: theme.primaryColor),
+                            ),
+                          ),
+                    const SizedBox(height: 20.0),
+
                     /// Alternatives
                     Column(
                       children: [
@@ -138,8 +156,10 @@ class ReportDetailsScreen extends StatelessWidget {
                                         foregroundColor: theme.primaryColor,
                                         child: Text('${index + 1}'),
                                       ),
-                                      title:
-                                          Text(reportData.alternatives[index]),
+                                      title: Text(
+                                          reportData.alternatives[index],
+                                          style: TextStyle(
+                                              color: theme.primaryColor)),
                                     );
                                   },
                                 ),
