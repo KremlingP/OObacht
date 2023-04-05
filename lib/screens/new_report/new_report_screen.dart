@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
+import 'package:oobacht/screens/new_report/components/alternativepicker.dart';
 import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
@@ -35,6 +36,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
   List<Object?> selectedCategories = [];
   File imageFile = File('');
   LatLng? position;
+  List<String> alternatives = [];
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +73,8 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
+                    const AlternativePicker(),
+                    const SizedBox(height: 20),
 
                     ///Map
                     Container(
@@ -106,7 +110,9 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       null,
                       selectedCategories.map((e) => e as Group).toList(),
                       position!,
-                      imageFile.path);
+                      imageFile.path,
+                      []
+                  );
                   // TODO: Save report to database
                   navigateToNewScreen(
                       newScreen: const MainMenuScreen(), context: context);

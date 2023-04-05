@@ -22,7 +22,7 @@ class _TitleInputFieldState extends State<TitleInputField> {
       maxLines: 1,
       maxLength: 50,
       autocorrect: true,
-      onSaved: (value) =>
+      onFieldSubmitted: (value) =>
           {title = value ?? "", NewReportScreen.of(context)?.title = title},
       decoration: InputDecoration(
         labelText: 'Titel',

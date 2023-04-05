@@ -292,14 +292,21 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   List<Report> _getFilteredReports() {
-    return selectedGroups.isNotEmpty
-        ? allReports
-            .where((report) =>
-                report.title.toLowerCase().contains(queryText.toLowerCase()) &&
+    List<Report> reports = allReports;
+    if(selectedGroups.isNotEmpty) {
+      reports = reports
+          .where((report) =>
                 report.groups.any((group) =>
                     selectedGroups.map((e) => e.id).contains(group.id)))
-            .toList()
-        : allReports;
+                .toList();
+    }
+    if(queryText.isNotEmpty) {
+      reports = reports
+          .where((report) =>
+                report.title.toLowerCase().contains(queryText.toLowerCase()))
+                .toList();
+    }
+    return reports;
   }
 
   ///MOCK DATA
@@ -317,7 +324,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
           ],
           const LatLng(48.455166, 8.706739),
-          "http://"),
+          "http://", []),
       Report(
           "2",
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
@@ -327,7 +334,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
           const LatLng(48.435166, 8.706739),
-          ""),
+          "", []),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
@@ -337,7 +344,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("5", "Uhrwerker", Icons.watch, Colors.red),
           ],
           const LatLng(48.445166, 8.716739),
-          "http://"),
+          "http://", []),
     ];
   }
 

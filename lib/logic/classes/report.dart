@@ -9,7 +9,8 @@ class Report {
   final List<Group> groups;
   final LatLng location;
   final String imageUrl;
+  final List<String> alternatives;
 
   Report(this.id, this.title, this.description, this.creationDate, this.groups,
-      this.location, this.imageUrl);
+      this.location, this.imageUrl, this.alternatives);
 }
