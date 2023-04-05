@@ -29,10 +29,11 @@ class ReportFunctions {
     try {
       final response = await callable.call();
       if (response.data != null) {
-        print("${response.data}");
-        final List<Map> resultList = response.data;
+        print(response.data);
 
-        return resultList.map((e) => Report.fromJson);
+        return response.data
+            .map((e) => Report.fromJson(Map<String?, dynamic>.from(e)))
+            .toList();
       }
     } on FirebaseFunctionsException catch (error) {
       FirebaseFunctionHelper.printFirebaseFunctionsException(
