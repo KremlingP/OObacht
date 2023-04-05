@@ -6,6 +6,7 @@ import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
+import '../../firebase/functions/report_functions.dart';
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
 import '../../widgets/map/map_widget.dart';
@@ -210,6 +211,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               _showCategoryPicker(context, theme);
             } else if (value == 1) {
               //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
+              ReportFunctions.oobacht();
               showOnlyOwn = !showOnlyOwn;
             }
           }),
