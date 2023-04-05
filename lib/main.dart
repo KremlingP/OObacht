@@ -1,10 +1,13 @@
+
 import 'package:background_fetch/background_fetch.dart';
+import 'package:context_holder/context_holder.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:oobacht/utils/auth_wrapper.dart';
 import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
+import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,7 +20,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const OobachtApp());
+  runApp(
+    MaterialApp(
+      navigatorKey: ContextHolder.key,
+      home: const OobachtApp()
+    )
+  );
 
   // Register to receive BackgroundFetch events after app is terminated.
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
@@ -42,7 +50,6 @@ Future<void> startPositionListener() async {
   if (position != null) {
     sendPositionToFirebase(position.latitude, position.longitude);
   }
-
 }
 
 void sendPositionToFirebase(double latitude, double longitude) async {
@@ -58,6 +65,8 @@ class OobachtApp extends StatefulWidget {
 }
 
 class _OobachtAppState extends State<OobachtApp> {
+  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +81,8 @@ class _OobachtAppState extends State<OobachtApp> {
 
   @override
   Widget build(BuildContext context) {
+    final pushNotificationService = PushNotificationService(_firebaseMessaging);
+    pushNotificationService.initialise();
     precacheImage(const AssetImage("assets/logo.png"), context);
     return MaterialApp(
       title: 'OObacht!',
@@ -95,16 +106,17 @@ class _OobachtAppState extends State<OobachtApp> {
 
   Future<void> initPlatformState() async {
     // Configure BackgroundFetch.
-    await BackgroundFetch.configure(BackgroundFetchConfig(
-        minimumFetchInterval: 15,
-        stopOnTerminate: false,
-        enableHeadless: true,
-        requiresBatteryNotLow: false,
-        requiresCharging: false,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        requiredNetworkType: NetworkType.ANY
-    ), (String taskId) async {  // <-- Event handler
+    await BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiredNetworkType: NetworkType.ANY), (String taskId) async {
+      // <-- Event handler
       await startPositionListener();
       BackgroundFetch.finish(taskId);
     }, (String taskId) async {
