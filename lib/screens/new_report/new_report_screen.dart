@@ -111,7 +111,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       selectedCategories.map((e) => e as Group).toList(),
                       position!,
                       imageFile.path,
-                      []
+                      alternatives
                   );
                   // TODO: Save report to database
                   navigateToNewScreen(
