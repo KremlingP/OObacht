@@ -1,13 +1,12 @@
-
 import 'package:background_fetch/background_fetch.dart';
 import 'package:context_holder/context_holder.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
-import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,11 +20,7 @@ Future<void> main() async {
   );
 
   runApp(
-    MaterialApp(
-      navigatorKey: ContextHolder.key,
-      home: const OobachtApp()
-    )
-  );
+      MaterialApp(navigatorKey: ContextHolder.key, home: const OobachtApp()));
 
   // Register to receive BackgroundFetch events after app is terminated.
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
@@ -46,7 +41,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 }
 
 Future<void> startPositionListener() async {
-  Position? position = await getCurrentPosition(null);
+  Position? position = await getCurrentPosition();
   if (position != null) {
     sendPositionToFirebase(position.latitude, position.longitude);
   }
@@ -65,7 +60,8 @@ class OobachtApp extends StatefulWidget {
 }
 
 class _OobachtAppState extends State<OobachtApp> {
-  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
 
   @override
   void initState() {
