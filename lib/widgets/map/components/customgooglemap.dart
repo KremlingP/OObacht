@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:oobacht/utils/theme.dart';
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({Key? key,required this.currentPosition,
@@ -38,6 +39,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> with WidgetsBindingOb
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    _setMapStyleByCustomTheme(theme);
     return GoogleMap(
       initialCameraPosition: CameraPosition(
         target: LatLng((widget.currentPosition?.latitude ?? 48.445166),
@@ -49,6 +51,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> with WidgetsBindingOb
         Factory<OneSequenceGestureRecognizer>(
           () => EagerGestureRecognizer(),
         ),
+      },
+      onMapCreated: (GoogleMapController controller) {
+        _controller.complete(controller);
       },
       myLocationEnabled: true,
       compassEnabled: true,
@@ -62,8 +67,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> with WidgetsBindingOb
 
   Future _setMapStyleByCustomTheme(ThemeData theme) async {
     final controller = await _controller.future;
-    final theme = WidgetsBinding.instance.window.platformBrightness;
-    if (theme == Brightness.dark) {
+    if (theme.primaryColor == Colors.white) {
       controller.setMapStyle(_darkMapStyle);
     } else {
       controller.setMapStyle(_lightMapStyle);
