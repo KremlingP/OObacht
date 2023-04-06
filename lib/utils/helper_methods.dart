@@ -28,22 +28,22 @@ List<Widget> getGroupChips(List<Group> groups) {
   return chips;
 }
 
-List<Widget> getRepeatingChips(List<RepeatingReportsEnum> repeatingList, ThemeData theme) {
+List<Widget> getRepeatingChips(
+    List<RepeatingReportsEnum> repeatingList, ThemeData theme) {
   List<Widget> chips = [];
   for (RepeatingReportsEnum value in repeatingList) {
     chips.add(
-        Chip(
-          label: Text(
-            getRepeatingReportName(value),
-            style: TextStyle(color: theme.primaryColor),
-          ),
-          backgroundColor: getRepeatingReportColor(value),
-          avatar: CircleAvatar(
-            backgroundColor: getRepeatingReportColor(value),
-            child:
-            Icon(getRepeatingReportIcon(value), color: theme.primaryColor),
-          ),
+      Chip(
+        label: Text(
+          getRepeatingReportName(value),
+          style: const TextStyle(color: Colors.white),
         ),
+        backgroundColor: getRepeatingReportColor(value),
+        avatar: CircleAvatar(
+          backgroundColor: getRepeatingReportColor(value),
+          child: Icon(getRepeatingReportIcon(value), color: Colors.white),
+        ),
+      ),
     );
   }
 
