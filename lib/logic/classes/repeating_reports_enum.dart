@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 enum RepeatingReportsEnum {
-  none,
   rain,
   wind,
   hot,
@@ -15,8 +14,6 @@ enum RepeatingReportsEnum {
 
 String getRepeatingReportName(RepeatingReportsEnum repeatingReport) {
   switch (repeatingReport) {
-    case RepeatingReportsEnum.none:
-      return "keinem Event";
     case RepeatingReportsEnum.rain:
       return "Regen";
     case RepeatingReportsEnum.wind:
@@ -38,8 +35,6 @@ String getRepeatingReportName(RepeatingReportsEnum repeatingReport) {
 
 IconData getRepeatingReportIcon(RepeatingReportsEnum repeatingReport) {
   switch (repeatingReport) {
-    case RepeatingReportsEnum.none:
-      return Icons.not_interested;
     case RepeatingReportsEnum.rain:
       return Icons.cloud;
     case RepeatingReportsEnum.wind:
@@ -56,5 +51,26 @@ IconData getRepeatingReportIcon(RepeatingReportsEnum repeatingReport) {
       return Icons.cloudy_snowing;
     case RepeatingReportsEnum.fog:
       return Icons.foggy;
+  }
+}
+
+Color getRepeatingReportColor(RepeatingReportsEnum repeatingReport) {
+  switch (repeatingReport) {
+    case RepeatingReportsEnum.rain:
+      return Colors.blue;
+    case RepeatingReportsEnum.wind:
+      return Colors.blueGrey;
+    case RepeatingReportsEnum.hot:
+      return Colors.red;
+    case RepeatingReportsEnum.frost:
+      return Colors.lightBlue;
+    case RepeatingReportsEnum.snow:
+      return Colors.blueAccent;
+    case RepeatingReportsEnum.thunder:
+      return Colors.orange;
+    case RepeatingReportsEnum.hail:
+      return Colors.white12;
+    case RepeatingReportsEnum.fog:
+      return Colors.white10;
   }
 }

@@ -11,7 +11,7 @@ class Report {
   final LatLng location;
   final String imageUrl;
   final List<String> alternatives;
-  final RepeatingReportsEnum repeatingReport;
+  final List<RepeatingReportsEnum> repeatingReport;
 
   Report(this.id, this.title, this.description, this.creationDate, this.groups,
       this.location, this.imageUrl, this.alternatives, this.repeatingReport);

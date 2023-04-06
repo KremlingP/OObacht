@@ -14,6 +14,7 @@ import 'package:oobacht/utils/navigator_helper.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../logic/classes/report.dart';
+import 'components/repeatingpicker.dart';
 
 class NewReportScreen extends StatefulWidget {
   const NewReportScreen({Key? key, required this.reports}) : super(key: key);
@@ -38,7 +39,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
   File imageFile = File('');
   LatLng? position;
   List<String> alternatives = [];
-  RepeatingReportsEnum repeatingReport = RepeatingReportsEnum.none;
+  List<Object?> repeatingReport = [];
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,16 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
-                    const AlternativePicker(),
+                    /// Alternative picker
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: theme.colorScheme.primary, width: 3.0)),
+                      child: const AlternativePicker(),
+                    ),
+                    const SizedBox(height: 20),
+                    const RepeatingPicker(),
                     const SizedBox(height: 20),
 
                     ///Map
@@ -114,8 +124,12 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       position!,
                       imageFile.path,
                       alternatives,
-                      repeatingReport
+                      repeatingReport.map((e) => e as RepeatingReportsEnum).toList(),
                   );
+                  print('>>> DEBUG Meldung: ${report.title}, ${report.description}, ${report.location}, ${report.imageUrl}');
+                  for (var element in report.groups) {print('>>> DEBUG Gruppe: ${element.name}');}
+                  for (var element in report.alternatives) {print('>>> DEBUG Alternative: $element');}
+                  for (var element in report.repeatingReport) {print('>>> DEBUG Wiederkehrend: ${getRepeatingReportName(element)}');}
                   // TODO: Save report to database
                   navigateToNewScreen(
                       newScreen: const MainMenuScreen(), context: context);

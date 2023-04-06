@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 
 import '../logic/classes/group.dart';
 
@@ -21,6 +22,28 @@ List<Widget> getGroupChips(List<Group> groups) {
           child: Icon(group.icon, color: Colors.white),
         ),
       ),
+    );
+  }
+
+  return chips;
+}
+
+List<Widget> getRepeatingChips(List<RepeatingReportsEnum> repeatingList, ThemeData theme) {
+  List<Widget> chips = [];
+  for (RepeatingReportsEnum value in repeatingList) {
+    chips.add(
+        Chip(
+          label: Text(
+            getRepeatingReportName(value),
+            style: TextStyle(color: theme.primaryColor),
+          ),
+          backgroundColor: getRepeatingReportColor(value),
+          avatar: CircleAvatar(
+            backgroundColor: getRepeatingReportColor(value),
+            child:
+            Icon(getRepeatingReportIcon(value), color: theme.primaryColor),
+          ),
+        ),
     );
   }
 

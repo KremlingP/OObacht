@@ -116,60 +116,73 @@ class ReportDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 20.0),
 
                     /// Repeating report
-                    reportData.repeatingReport == RepeatingReportsEnum.none
+                    reportData.repeatingReport.isEmpty
                         ? Container()
-                        : Chip(
-                            label: Text(
-                              "Diese Meldung wird bei ${getRepeatingReportName(reportData.repeatingReport)} ausgelöst.",
-                              style: TextStyle(color: theme.primaryColor),
-                            ),
-                            backgroundColor: theme.colorScheme.primary,
-                            avatar: CircleAvatar(
-                              backgroundColor: theme.colorScheme.primary,
-                              child:
-                                  Icon(getRepeatingReportIcon(reportData.repeatingReport), color: theme.primaryColor),
+                        : Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                    "Diese Meldung wird wiederholt ausgelöst bei:",
+                                    style: TextStyle(
+                                      color: theme.primaryColor,
+                                    )),
+                                Wrap(
+                                  spacing: 8.0,
+                                  runSpacing: -6.0,
+                                  alignment: WrapAlignment.start,
+                                  direction: Axis.horizontal,
+                                  children: getRepeatingChips(
+                                      reportData.repeatingReport, theme),
+                                ),
+                              ],
                             ),
                           ),
                     const SizedBox(height: 20.0),
 
                     /// Alternatives
-                    Column(
-                      children: [
-                        Center(
-                          child: Text("Alternativen",
-                              style: TextStyle(
-                                color: theme.primaryColor,
-                                fontSize: 20,
-                              )),
-                        ),
-                        const SizedBox(height: 10),
-                        reportData.alternatives.isNotEmpty
-                            ? SizedBox(
-                                height: 150,
-                                child: ListView.builder(
-                                  itemCount: reportData.alternatives.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundColor:
-                                            theme.colorScheme.primary,
-                                        foregroundColor: theme.primaryColor,
-                                        child: Text('${index + 1}'),
-                                      ),
-                                      title: Text(
-                                          reportData.alternatives[index],
-                                          style: TextStyle(
-                                              color: theme.primaryColor)),
-                                    );
-                                  },
-                                ),
-                              )
-                            : Center(
-                                child: Text("Keine Alternativen hinzugefügt.",
-                                    style: TextStyle(
-                                        color: theme.primaryColor,
-                                        fontSize: 15))),
-                      ],
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: theme.colorScheme.primary, width: 3.0)),
+                      child: Column(
+                        children: [
+                          Center(
+                            child: Text("Alternativen",
+                                style: TextStyle(
+                                  color: theme.primaryColor,
+                                  fontSize: 20,
+                                )),
+                          ),
+                          const SizedBox(height: 10),
+                          reportData.alternatives.isNotEmpty
+                              ? SizedBox(
+                                  height: 150,
+                                  child: ListView.builder(
+                                    itemCount: reportData.alternatives.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor:
+                                              theme.colorScheme.primary,
+                                          foregroundColor: theme.primaryColor,
+                                          child: Text('${index + 1}'),
+                                        ),
+                                        title: Text(
+                                            reportData.alternatives[index],
+                                            style: TextStyle(
+                                                color: theme.primaryColor)),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : Center(
+                                  child: Text("Keine Alternativen hinzugefügt.",
+                                      style: TextStyle(
+                                          color: theme.primaryColor,
+                                          fontSize: 15))),
+                        ],
+                      ),
                     ),
                   ],
                 ),
