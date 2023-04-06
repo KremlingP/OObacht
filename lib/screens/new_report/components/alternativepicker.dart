@@ -71,9 +71,10 @@ class _AlternativePickerState extends State<AlternativePicker> {
                           foregroundColor: theme.primaryColor,
                           child: Text('${index + 1}'),
                         ),
-                        title: Text(alternatives[index]),
+                        title: Text(alternatives[index], style: TextStyle(color: theme.primaryColor)),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
+                          color: theme.primaryColor,
                           onPressed: () {
                             setState(() {
                               alternatives.removeAt(index);
