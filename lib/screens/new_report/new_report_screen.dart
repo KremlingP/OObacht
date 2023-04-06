@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
@@ -93,33 +94,18 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
 
                     ///Map
-                    FutureBuilder(
-                        future: getCurrentPosition(context),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return const ErrorText(
-                                text: "Fehler beim Auslesen des aktuellen Standortes!");
-                          }
-                          if (snapshot.hasData) {
-                            position = LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
-                            return Container(
-                              height: shortestViewportWidth * 0.66,
-                              width: shortestViewportWidth * 0.66,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: theme.colorScheme.primary,
-                                      width: 3.0)),
-                              child: MapWidget(
-                                reports: widget.reports,
-                                showMarkerDetails: false,
-                                showMapCaption: false,
-                              ),
-                            );
-                          } else {
-                            return const LoadingHint(
-                                text: "Bestimme aktuellen Standort...");
-                          }
-                        }),
+                    Container(
+                      height: shortestViewportWidth * 0.66,
+                      width: shortestViewportWidth * 0.66,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: theme.colorScheme.primary, width: 3.0)),
+                      child: MapWidget(
+                        reports: widget.reports,
+                        showMarkerDetails: false,
+                        showMapCaption: false,
+                      ),
+                    ),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -129,11 +115,20 @@ class _NewReportScreenState extends State<NewReportScreen> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                if (_formKey.currentState!.validate() && position != null) {
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Meldung wurde gespeichert!')));
+
+                  Position? retrievedPosition = await getCurrentPosition();
+                  if (retrievedPosition == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Aktueller Standort konnte nicht ermittelt werden. Versuche es erneut.')));
+                    return;
+                  }
+                  position = LatLng(
+                      retrievedPosition.latitude, retrievedPosition.longitude);
+
                   Report report = Report(
                     null,
                     title,
@@ -160,6 +155,8 @@ class _NewReportScreenState extends State<NewReportScreen> {
                         '>>> DEBUG Wiederkehrend: ${getRepeatingReportName(element)}');
                   }
                   // TODO: Save report to database
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Meldung wurde gespeichert!')));
                   navigateToNewScreen(
                       newScreen: const MainMenuScreen(), context: context);
                 } else {
