@@ -6,6 +6,7 @@ import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
 import 'package:oobacht/screens/new_report/components/alternativepicker.dart';
+import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
@@ -14,6 +15,8 @@ import 'package:oobacht/utils/navigator_helper.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../logic/classes/report.dart';
+import '../../widgets/error_text.dart';
+import '../../widgets/loading_hint.dart';
 import 'components/repeatingpicker.dart';
 
 class NewReportScreen extends StatefulWidget {
@@ -76,6 +79,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
+
                     /// Alternative picker
                     Container(
                       padding: const EdgeInsets.all(10),
@@ -89,18 +93,33 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
 
                     ///Map
-                    Container(
-                      height: shortestViewportWidth * 0.66,
-                      width: shortestViewportWidth * 0.66,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: theme.colorScheme.primary, width: 3.0)),
-                      child: MapWidget(
-                        reports: widget.reports,
-                        showMarkerDetails: false,
-                        showMapCaption: false,
-                      ),
-                    ),
+                    FutureBuilder(
+                        future: getCurrentPosition(context),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return const ErrorText(
+                                text: "Fehler beim Auslesen des aktuellen Standortes!");
+                          }
+                          if (snapshot.hasData) {
+                            position = LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
+                            return Container(
+                              height: shortestViewportWidth * 0.66,
+                              width: shortestViewportWidth * 0.66,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: theme.colorScheme.primary,
+                                      width: 3.0)),
+                              child: MapWidget(
+                                reports: widget.reports,
+                                showMarkerDetails: false,
+                                showMapCaption: false,
+                              ),
+                            );
+                          } else {
+                            return const LoadingHint(
+                                text: "Bestimme aktuellen Standort...");
+                          }
+                        }),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -116,20 +135,30 @@ class _NewReportScreenState extends State<NewReportScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Meldung wurde gespeichert!')));
                   Report report = Report(
-                      null,
-                      title,
-                      description,
-                      null,
-                      selectedCategories.map((e) => e as Group).toList(),
-                      position!,
-                      imageFile.path,
-                      alternatives,
-                      repeatingReport.map((e) => e as RepeatingReportsEnum).toList(),
+                    null,
+                    title,
+                    description,
+                    null,
+                    selectedCategories.map((e) => e as Group).toList(),
+                    position!,
+                    imageFile.path,
+                    alternatives,
+                    repeatingReport
+                        .map((e) => e as RepeatingReportsEnum)
+                        .toList(),
                   );
-                  print('>>> DEBUG Meldung: ${report.title}, ${report.description}, ${report.location}, ${report.imageUrl}');
-                  for (var element in report.groups) {print('>>> DEBUG Gruppe: ${element.name}');}
-                  for (var element in report.alternatives) {print('>>> DEBUG Alternative: $element');}
-                  for (var element in report.repeatingReport) {print('>>> DEBUG Wiederkehrend: ${getRepeatingReportName(element)}');}
+                  print(
+                      '>>> DEBUG Meldung: ${report.title}, ${report.description}, ${report.location}, ${report.imageUrl}');
+                  for (var element in report.groups) {
+                    print('>>> DEBUG Gruppe: ${element.name}');
+                  }
+                  for (var element in report.alternatives) {
+                    print('>>> DEBUG Alternative: $element');
+                  }
+                  for (var element in report.repeatingReport) {
+                    print(
+                        '>>> DEBUG Wiederkehrend: ${getRepeatingReportName(element)}');
+                  }
                   // TODO: Save report to database
                   navigateToNewScreen(
                       newScreen: const MainMenuScreen(), context: context);

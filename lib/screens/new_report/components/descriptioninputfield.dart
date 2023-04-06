@@ -22,7 +22,7 @@ class _DescriptionInputFieldState extends State<DescriptionInputField> {
       maxLines: 10,
       maxLength: 500,
       autocorrect: true,
-      onFieldSubmitted: (value) => {
+      onChanged: (value) => {
         description = value ?? "",
         NewReportScreen.of(context)?.description = description
       },
