@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
+import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../widgets/error_text.dart';
 
 class LocationPermissionWrapper extends StatefulWidget {
   const LocationPermissionWrapper({Key? key}) : super(key: key);
@@ -36,22 +35,10 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
         if (snapshot.hasError) {
           return Scaffold(
               backgroundColor: theme.colorScheme.background,
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.red,
-                    size: 100,
-                  ),
-                  SizedBox(height: 50),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.0),
-                    child: ErrorText(
-                        text:
-                            "Fehler beim Auslesen der Standort-Berechtigungen, bitte aktiviere diese in den Optionen oder starte ggf. die App neu!"),
-                  ),
-                ],
+              body: const ErrorTextWithIcon(
+                icon: Icons.info_outline,
+                text:
+                    "Fehler beim Auslesen der Standort-Berechtigungen, bitte aktiviere diese in den Optionen oder starte ggf. die App neu!",
               ));
         }
         if (!locationPermissionGranted) {
