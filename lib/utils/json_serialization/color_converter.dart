@@ -3,15 +3,15 @@ import 'package:json_annotation/json_annotation.dart';
 
 //TODO Check if ColorConverter works correct
 
-class ColorConverter implements JsonConverter<Color, int> {
+class ColorConverter implements JsonConverter<Color, String> {
   const ColorConverter();
 
   @override
-  fromJson(int hexColorValue) => Color(hexColorValue);
+  fromJson(String hexColorValue) => const Color(0xFFFFFFFF);
 
   @override
-  int toJson(Color color) {
+  String toJson(Color color) {
     final colorString = color.toString();
-    return int.parse(colorString);
+    return int.parse(colorString).toString();
   }
 }

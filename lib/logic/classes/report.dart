@@ -23,7 +23,7 @@ class Report {
 
   /// Connect the generated [_$ReportFromJson] function to the `fromJson`
   /// factory.
-  factory Report.fromJson(Map<String?, dynamic> json) => _$ReportFromJson(json);
+  factory Report.fromJson(Map<dynamic, dynamic> json) => _$ReportFromJson(json);
 
   /// Connect the generated [_$ReportToJson] function to the `toJson` method.
   Map<dynamic, dynamic> toJson() => _$ReportToJson(this);

@@ -7,7 +7,7 @@ class IconConverter implements JsonConverter<IconData, String> {
   const IconConverter();
 
   @override
-  fromJson(String iconUrl) => Icons.ten_k;
+  fromJson(String? iconUrl) => Icons.ten_k;
 
   @override
   String toJson(IconData iconData) {

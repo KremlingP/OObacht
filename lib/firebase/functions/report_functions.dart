@@ -27,13 +27,13 @@ class ReportFunctions {
         FirebaseFunctionHelper.getFunctionUrl(functionName));
 
     try {
-      final response = await callable.call();
-      if (response.data != null) {
-        print(response.data);
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        print(result.data.toString());
 
-        return response.data
-            .map((e) => Report.fromJson(Map<String?, dynamic>.from(e)))
-            .toList();
+        final reports = result.data.map((e) => Report.fromJson(e)).toList();
+
+        return Future.value(reports);
       }
     } on FirebaseFunctionsException catch (error) {
       FirebaseFunctionHelper.printFirebaseFunctionsException(

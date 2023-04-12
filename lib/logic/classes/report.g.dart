@@ -6,17 +6,17 @@ part of 'report.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Report _$ReportFromJson(Map<String?, dynamic> json) => Report(
+Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
       json['id'] as String?,
       json['title'] as String,
       json['description'] as String,
-      _$JsonConverterFromJson<Map<String, int>, DateTime>(
+      _$JsonConverterFromJson<Map<dynamic, dynamic>, DateTime>(
           json['creationDate'], const DateTimeConverter().fromJson),
       (json['groups'] as List<dynamic>)
-          .map((e) => Group.fromJson(e as Map<String, dynamic>))
+          .map((e) => Group.fromJson(e as Map<dynamic, dynamic>))
           .toList(),
       const LocationConverter()
-          .fromJson(json['location'] as Map<String, double>),
+          .fromJson(json['location'] as Map<dynamic, dynamic>),
       json['imageUrl'] as String,
     );
 
@@ -24,7 +24,7 @@ Map<String, dynamic> _$ReportToJson(Report instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'creationDate': _$JsonConverterToJson<Map<String, int>, DateTime>(
+      'creationDate': _$JsonConverterToJson<Map<dynamic, dynamic>, DateTime>(
           instance.creationDate, const DateTimeConverter().toJson),
       'groups': instance.groups,
       'location': const LocationConverter().toJson(instance.location),
