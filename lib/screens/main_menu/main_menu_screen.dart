@@ -1,14 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../firebase/functions/report_functions.dart';
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
+import '../../widgets/error_text.dart';
+import '../../widgets/loading_hint.dart';
 import '../../widgets/map/map_widget.dart';
 import 'drawer/main_menu_drawer.dart';
 
@@ -55,62 +61,63 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     final theme = Theme.of(context);
     double viewportWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      key: _drawerKey,
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        leading: _isSearching ? const BackButton() : _buildLeading(),
-        title: _isSearching ? _buildSearchField() : _buildTitle(),
-        actions: _buildActions(theme),
-        centerTitle: true,
-      ),
-      drawer: SizedBox(
-        width: viewportWidth * 0.65,
-        child: const MainMenuDrawer(),
-      ),
-      body: SafeArea(
-          child: PageView(
-        controller: _pageViewController,
-        children: [
-          MapWidget(
-            reports: filteredReports,
-            showMarkerDetails: true,
-            showMapCaption: true,
-          ),
-          MainList(reports: filteredReports),
-        ],
-        onPageChanged: (index) {
-          setState(() {
-            _activePageIndex = index;
-          });
-        },
-      )),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Neue Meldung'),
-        backgroundColor: Colors.redAccent,
-        foregroundColor: Colors.white,
-        onPressed: _newReport,
-        tooltip: 'Neue Meldung erstellen',
-        elevation: 4.0,
-        icon: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _activePageIndex,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.orange,
-        selectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Karte',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Liste',
-          )
-        ],
-      ),
-    );
+            key: _drawerKey,
+            backgroundColor: theme.colorScheme.background,
+            appBar: AppBar(
+              leading: _isSearching ? const BackButton() : _buildLeading(),
+              title: _isSearching ? _buildSearchField() : _buildTitle(),
+              actions: _buildActions(theme),
+              centerTitle: true,
+            ),
+            drawer: SizedBox(
+              width: viewportWidth * 0.65,
+              child: const MainMenuDrawer(),
+            ),
+            body: SafeArea(
+                child: PageView(
+                  controller: _pageViewController,
+                  children: [
+                    MapWidget(
+                      reports: filteredReports,
+                      showMarkerDetails: true,
+                      showMapCaption: true,
+                    ),
+                    MainList(reports: filteredReports),
+                  ],
+              onPageChanged: (index) {
+                setState(() {
+                  _activePageIndex = index;
+                });
+              },
+            )),
+            floatingActionButton: FloatingActionButton.extended(
+              label: const Text('Neue Meldung'),
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              onPressed: _newReport,
+              tooltip: 'Neue Meldung erstellen',
+              elevation: 4.0,
+              icon: const Icon(Icons.add),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _activePageIndex,
+              onTap: _onItemTapped,
+              backgroundColor: Colors.orange,
+              selectedItemColor: Colors.white,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map),
+                  label: 'Karte',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Liste',
+                )
+              ],
+            ),
+          );
   }
 
   void _onItemTapped(int index) {
@@ -286,14 +293,21 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   List<Report> _getFilteredReports() {
-    return selectedGroups.isNotEmpty
-        ? allReports
-            .where((report) =>
-                report.title.toLowerCase().contains(queryText.toLowerCase()) &&
+    List<Report> reports = allReports;
+    if(selectedGroups.isNotEmpty) {
+      reports = reports
+          .where((report) =>
                 report.groups.any((group) =>
                     selectedGroups.map((e) => e.id).contains(group.id)))
-            .toList()
-        : allReports;
+                .toList();
+    }
+    if(queryText.isNotEmpty) {
+      reports = reports
+          .where((report) =>
+                report.title.toLowerCase().contains(queryText.toLowerCase()))
+                .toList();
+    }
+    return reports;
   }
 
   ///MOCK DATA
@@ -311,7 +325,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
           ],
           const LatLng(48.455166, 8.706739),
-          "http://"),
+          "http://", [], []),
       Report(
           "2",
           "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
@@ -321,7 +335,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("1", "Mathematiker", Icons.add, Colors.blue),
           ],
           const LatLng(48.435166, 8.706739),
-          ""),
+          "", ["Cosinus"], [RepeatingReportsEnum.hot]),
       Report(
           "3",
           "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
@@ -331,7 +345,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             Group("5", "Uhrwerker", Icons.watch, Colors.red),
           ],
           const LatLng(48.445166, 8.716739),
-          "http://"),
+          "http://", ["Rolex", "Gucci", "Prada"], [RepeatingReportsEnum.rain, RepeatingReportsEnum.thunder]),
     ];
   }
 

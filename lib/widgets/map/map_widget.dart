@@ -1,4 +1,8 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/widgets/error_text.dart';
 import 'package:oobacht/widgets/loading_hint.dart';
@@ -24,19 +28,29 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
+  late Future<HashMap<String, Marker>> markers;
+  late Future<Position?> currentPosition;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    markers =
+        generateMarkers(widget.reports, context, widget.showMarkerDetails);
+    currentPosition = getCurrentPosition();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return FutureBuilder(
-      future: generateMarkers(
-          widget.reports, theme, context, widget.showMarkerDetails),
+      future: markers,
       builder: (context, markerSnapshot) {
         if (markerSnapshot.hasError) {
           return const ErrorText(text: "Fehler beim Laden der Karte!");
         }
         if (markerSnapshot.hasData) {
           return FutureBuilder(
-            future: getCurrentPosition(context),
+            future: currentPosition,
             builder: (context, locationSnapshot) {
               if (locationSnapshot.hasError) {
                 return const ErrorText(
