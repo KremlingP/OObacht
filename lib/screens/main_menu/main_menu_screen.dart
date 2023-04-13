@@ -71,7 +71,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           child: FutureBuilder(
         future: filteredReports,
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          print('KARTE: aktualisiert\n filteredReports: ${snapshot.data}');
           if (snapshot.hasError) {
             return const ErrorTextWithIcon(
                 text:
@@ -251,8 +250,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     } else {
       results = await _getFilteredReports();
     }
-
-    print(results);
 
     setState(() {
       filteredReports = Future.value(results);

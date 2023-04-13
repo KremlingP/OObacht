@@ -7,19 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:oobacht/logic/classes/report.dart';
-import 'package:oobacht/utils/map_utils.dart';
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap(
       {Key? key,
       required this.currentPosition,
       required this.markers,
-      required this.showMarkerDetails,
-      required this.reports})
+      required this.showMarkerDetails})
       : super(key: key);
 
-  final List<Report> reports;
   final Position? currentPosition;
   final HashMap<String, Marker> markers;
 
@@ -39,8 +35,6 @@ class _CustomGoogleMapState extends State<CustomGoogleMap>
 
   final Completer<GoogleMapController> _controller = Completer();
 
-  late Future<HashMap<String, Marker>> markers;
-
   @override
   void initState() {
     super.initState();
@@ -49,15 +43,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    markers =
-        generateMarkers(widget.reports, context, widget.showMarkerDetails);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    print('CUSTOMGOOGLEMAP baut | \n ${widget.markers}');
     final theme = Theme.of(context);
     _setMapStyleByCustomTheme(theme);
     return GoogleMap(

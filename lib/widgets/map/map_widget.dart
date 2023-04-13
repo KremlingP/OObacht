@@ -29,21 +29,24 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   late Future<Position?> currentPosition;
+  late Future<HashMap<String, Marker>> markers;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    markers =
+        generateMarkers(widget.reports, context, widget.showMarkerDetails);
     currentPosition = getCurrentPosition();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('\n KARTE BAUT');
     final theme = Theme.of(context);
     return FutureBuilder(
-      future: markers,
+      initialData: markers,
+      future:
+          generateMarkers(widget.reports, context, widget.showMarkerDetails),
       builder: (context, AsyncSnapshot<dynamic> markerSnapshot) {
-        print('BUILDER läuft \n ${markerSnapshot.data} \n');
         if (markerSnapshot.hasError) {
           return const ErrorText(text: "Fehler beim Laden der Karte!");
         }
@@ -60,7 +63,6 @@ class _MapWidgetState extends State<MapWidget> {
                     ? Stack(
                         children: [
                           CustomGoogleMap(
-                              reports: widget.reports,
                               showMarkerDetails: widget.showMarkerDetails,
                               currentPosition: locationSnapshot.data,
                               markers: markerSnapshot.data),
@@ -68,7 +70,6 @@ class _MapWidgetState extends State<MapWidget> {
                         ],
                       )
                     : CustomGoogleMap(
-                        reports: widget.reports,
                         showMarkerDetails: widget.showMarkerDetails,
                         currentPosition: locationSnapshot.data,
                         markers: markerSnapshot.data);
