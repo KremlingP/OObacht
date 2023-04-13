@@ -7,23 +7,22 @@ import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
 import 'package:oobacht/screens/new_report/components/alternativepicker.dart';
-import 'package:oobacht/utils/map_utils.dart';
-import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
 import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
+import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/navigator_helper.dart';
+import 'package:oobacht/widgets/categorypicker.dart';
+import 'package:oobacht/widgets/error_text.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../logic/classes/report.dart';
-import '../../widgets/error_text.dart';
-import '../../widgets/loading_hint.dart';
 import 'components/repeatingpicker.dart';
 
 class NewReportScreen extends StatefulWidget {
   const NewReportScreen({Key? key, required this.reports}) : super(key: key);
 
-  final List<Report> reports;
+  final Future<List<Report>> reports;
 
   @override
   _NewReportScreenState createState() => _NewReportScreenState();
@@ -100,10 +99,24 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       decoration: BoxDecoration(
                           border: Border.all(
                               color: theme.colorScheme.primary, width: 3.0)),
-                      child: MapWidget(
-                        reports: widget.reports,
-                        showMarkerDetails: false,
-                        showMapCaption: false,
+                      child: FutureBuilder(
+                        future: widget.reports,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasError) {
+                            return const ErrorText(
+                                text: "Fehler beim Laden der Karte!");
+                          }
+                          if (snapshot.hasData) {
+                            return MapWidget(
+                              reports: snapshot.data,
+                              showMarkerDetails: false,
+                              showMapCaption: false,
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),

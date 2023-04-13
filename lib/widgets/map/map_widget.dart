@@ -28,30 +28,29 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-  late Future<HashMap<String, Marker>> markers;
   late Future<Position?> currentPosition;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    markers =
-        generateMarkers(widget.reports, context, widget.showMarkerDetails);
     currentPosition = getCurrentPosition();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('\n KARTE BAUT');
     final theme = Theme.of(context);
     return FutureBuilder(
       future: markers,
-      builder: (context, markerSnapshot) {
+      builder: (context, AsyncSnapshot<dynamic> markerSnapshot) {
+        print('BUILDER läuft \n ${markerSnapshot.data} \n');
         if (markerSnapshot.hasError) {
           return const ErrorText(text: "Fehler beim Laden der Karte!");
         }
         if (markerSnapshot.hasData) {
           return FutureBuilder(
             future: currentPosition,
-            builder: (context, locationSnapshot) {
+            builder: (context, AsyncSnapshot<dynamic> locationSnapshot) {
               if (locationSnapshot.hasError) {
                 return const ErrorText(
                     text: "Fehler beim Auslesen des aktuellen Standortes!");
@@ -61,14 +60,18 @@ class _MapWidgetState extends State<MapWidget> {
                     ? Stack(
                         children: [
                           CustomGoogleMap(
-                              currentPosition: locationSnapshot.data!,
-                              markers: markerSnapshot.data!),
+                              reports: widget.reports,
+                              showMarkerDetails: widget.showMarkerDetails,
+                              currentPosition: locationSnapshot.data,
+                              markers: markerSnapshot.data),
                           MapCaption(reportsList: widget.reports),
                         ],
                       )
                     : CustomGoogleMap(
-                        currentPosition: locationSnapshot.data!,
-                        markers: markerSnapshot.data!);
+                        reports: widget.reports,
+                        showMarkerDetails: widget.showMarkerDetails,
+                        currentPosition: locationSnapshot.data,
+                        markers: markerSnapshot.data);
               } else {
                 return const LoadingHint(
                     text: "Bestimme aktuellen Standort...");
