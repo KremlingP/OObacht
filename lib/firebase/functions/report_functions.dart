@@ -33,7 +33,7 @@ class ReportFunctions {
 
         final reports = result.data.map((e) => Report.fromJson(e)).toList();
 
-        return Future.value(reports);
+        return Future.value(List<Report>.from(reports));
       }
     } on FirebaseFunctionsException catch (error) {
       FirebaseFunctionHelper.printFirebaseFunctionsException(
