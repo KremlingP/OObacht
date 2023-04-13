@@ -8,8 +8,8 @@ class LocationConverter
   const LocationConverter();
 
   @override
-  LatLng fromJson(Map<dynamic, dynamic> map) => LatLng(
-      map.values.elementAt(0) as double, map.values.elementAt(1) as double);
+  LatLng fromJson(Map<dynamic, dynamic> map) =>
+      LatLng(map['_latitude'] as double, map['_longitude'] as double);
 
   @override
   Map<String, double> toJson(LatLng latLng) {
