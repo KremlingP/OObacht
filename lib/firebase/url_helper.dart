@@ -1,6 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 
-class FirebaseFunctionHelper {
+class UrlHelper {
   static String baseUrl =
       'https://europe-west1-oobacht-ea4d4.cloudfunctions.net';
 

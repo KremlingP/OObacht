@@ -1,12 +1,12 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:oobacht/firebase/firebase_function_helper.dart';
+import 'package:oobacht/firebase/url_helper.dart';
 import 'package:oobacht/logic/classes/report.dart';
 
 class ReportFunctions {
   ///Test only
   static Future<void> oobacht() async {
     HttpsCallable callable = FirebaseFunctions.instance
-        .httpsCallableFromUrl(FirebaseFunctionHelper.getFunctionUrl('oobacht'));
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl('oobacht'));
 
     try {
       final response = await callable.call();
@@ -24,7 +24,7 @@ class ReportFunctions {
     const functionName = 'getAllReports';
 
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
-        FirebaseFunctionHelper.getFunctionUrl(functionName));
+        UrlHelper.getFunctionUrl(functionName));
 
     try {
       final HttpsCallableResult result = await callable.call();
@@ -36,7 +36,7 @@ class ReportFunctions {
         return Future.value(List<Report>.from(reports));
       }
     } on FirebaseFunctionsException catch (error) {
-      FirebaseFunctionHelper.printFirebaseFunctionsException(
+      UrlHelper.printFirebaseFunctionsException(
           error, functionName);
     }
     return [];

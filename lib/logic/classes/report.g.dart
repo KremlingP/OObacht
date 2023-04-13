@@ -18,6 +18,8 @@ Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
       const LocationConverter()
           .fromJson(json['location'] as Map<dynamic, dynamic>),
       json['imageUrl'] as String,
+          [],
+          [],
     );
 
 Map<String, dynamic> _$ReportToJson(Report instance) => <String, dynamic>{
