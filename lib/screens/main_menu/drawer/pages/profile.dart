@@ -27,13 +27,14 @@ class ProfileDrawerPage extends StatefulWidget {
 
 class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
   late Future<int> currentRadius;
+  late Future<List<Object?>> selectedCategories;
 
-  List<Object?> selectedCategories = [];
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     currentRadius = UserFunctions.getRadius();
+    selectedCategories = GroupFunctions.getOwnGroups();
     super.initState();
   }
 
@@ -57,7 +58,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
               }
               if (radiusSnapshot.hasData) {
                 return FutureBuilder(
-                  future: GroupFunctions.getOwnGroups(),
+                  future: selectedCategories,
                   builder: (context, AsyncSnapshot<dynamic> groupSnapshot) {
                     if (groupSnapshot.hasError) {
                       return const ErrorTextWithIcon(
@@ -126,7 +127,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                           const SnackBar(
                                               content: Text(
                                                   'Interessensgebiete wurden gespeichert!')));
-                                      var categories = selectedCategories
+                                      var categories = groupSnapshot.data
                                           .map((e) => e as Group)
                                           .toList();
                                       await GroupFunctions.updateGroupPreferences(

@@ -94,7 +94,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                 widget.selectedCategories;
           } else if (widget.superScreen == "profile") {
             ProfileDrawerPage.of(context)?.selectedCategories =
-                widget.selectedCategories;
+                Future.value(widget.selectedCategories);
           } else {
             throw Exception("Unknown superScreen: ${widget.superScreen}");
           }
