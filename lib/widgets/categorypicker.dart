@@ -11,9 +11,10 @@ import '../screens/new_report/new_report_screen.dart';
 class CategoryPicker extends StatefulWidget {
   final String superScreen;
   final List<Group> categories;
+  List<Group> selectedCategories;
 
-  const CategoryPicker(
-      {Key? key, required this.superScreen, required this.categories})
+  CategoryPicker(
+      {Key? key, required this.superScreen, required this.categories, required this.selectedCategories})
       : super(key: key);
 
   @override
@@ -21,8 +22,6 @@ class CategoryPicker extends StatefulWidget {
 }
 
 class _CategoryPickerState extends State<CategoryPicker> {
-  List<Object?> selectedCategories = [];
-
   final _multiSelectKey = GlobalKey<FormFieldState>();
 
   @override
@@ -89,13 +88,13 @@ class _CategoryPickerState extends State<CategoryPicker> {
       items: categoryItems,
       onConfirm: (values) {
         setState(() {
-          selectedCategories = values;
+          widget.selectedCategories = values.map((e) => e as Group).toList();
           if (widget.superScreen == "newReport") {
             NewReportScreen.of(context)?.selectedCategories =
-                selectedCategories;
+                widget.selectedCategories;
           } else if (widget.superScreen == "profile") {
             ProfileDrawerPage.of(context)?.selectedCategories =
-                selectedCategories;
+                widget.selectedCategories;
           } else {
             throw Exception("Unknown superScreen: ${widget.superScreen}");
           }
@@ -105,9 +104,9 @@ class _CategoryPickerState extends State<CategoryPicker> {
       chipDisplay: MultiSelectChipDisplay(
         onTap: (value) {
           setState(() {
-            selectedCategories.remove(value);
+            widget.selectedCategories.remove(value);
             NewReportScreen.of(context)?.selectedCategories =
-                selectedCategories;
+                widget.selectedCategories;
           });
           _multiSelectKey.currentState?.validate();
         },

@@ -78,7 +78,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const DescriptionInputField(),
                     const SizedBox(height: 20),
-                    CategoryPicker(superScreen: "newReport", categories: widget.categories),
+                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: const []),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
