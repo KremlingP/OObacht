@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:oobacht/firebase/functions/user_functions.dart';
 import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
@@ -48,8 +50,7 @@ Future<void> startPositionListener() async {
 }
 
 void sendPositionToFirebase(double latitude, double longitude) async {
-  print('>>> DEBUG Position: $latitude, $longitude');
-  // TODO PK send position to firebase
+  UserFunctions.updateLocation(LatLng(latitude, longitude));
 }
 
 class OobachtApp extends StatefulWidget {

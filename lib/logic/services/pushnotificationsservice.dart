@@ -1,7 +1,7 @@
 import 'package:context_holder/context_holder.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:oobacht/firebase/functions/notification_functions.dart';
+import 'package:oobacht/firebase/functions/user_functions.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _fcm;
@@ -35,7 +35,7 @@ class PushNotificationService {
   }
 
   Future<void> sendFcmTokenToServer(String fcmToken) async {
-    NotificationFunctions.updateFcmToken(fcmToken);
+    UserFunctions.updateFcmToken(fcmToken);
   }
 
   Future<void> showNotificationWhileAppRunning(String title, String description) async {
