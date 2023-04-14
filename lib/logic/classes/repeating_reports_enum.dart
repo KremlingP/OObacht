@@ -1,14 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 enum RepeatingReportsEnum {
+  @JsonValue("Rain")
   rain,
+  @JsonValue("Wind")
   wind,
+  @JsonValue("Hot")
   hot,
+  @JsonValue("Frost")
   frost,
+  @JsonValue("Snow")
   snow,
+  @JsonValue("Thunder")
   thunder,
+  @JsonValue("Hail")
   hail,
+  @JsonValue("Fog")
   fog,
 }
 

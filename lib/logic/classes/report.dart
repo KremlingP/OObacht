@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oobacht/logic/classes/group.dart';
@@ -17,12 +19,12 @@ class Report {
   final List<Group> groups;
   @LocationConverter()
   final LatLng location;
-  final String imageUrl;
+  final String image;
   final List<String> alternatives;
   final List<RepeatingReportsEnum> repeatingReport;
 
   Report(this.id, this.title, this.description, this.creationDate, this.groups,
-      this.location, this.imageUrl, this.alternatives, this.repeatingReport);
+      this.location, this.image, this.alternatives, this.repeatingReport);
 
   /// Connect the generated [_$ReportFromJson] function to the `fromJson`
   /// factory.

@@ -9,7 +9,9 @@ import '../../../../widgets/categorypicker.dart';
 import '../components/drawer_page_app_bar.dart';
 
 class ProfileDrawerPage extends StatefulWidget {
-  const ProfileDrawerPage({Key? key}) : super(key: key);
+  const ProfileDrawerPage({Key? key, required this.categories}) : super(key: key);
+
+  final List<Group> categories;
 
   @override
   _ProfileDrawerPageState createState() => _ProfileDrawerPageState();
@@ -77,8 +79,9 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                 const SizedBox(height: 10),
                 Form(
                   key: _formKey,
-                  child: const CategoryPicker(
+                  child: CategoryPicker(
                     superScreen: "profile",
+                    categories: widget.categories,
                   ),
                 ),
                 ElevatedButton(

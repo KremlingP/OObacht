@@ -71,7 +71,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             ),
             drawer: SizedBox(
               width: viewportWidth * 0.65,
-              child: const MainMenuDrawer(),
+              child: MainMenuDrawer(categories: _getGroupsMock()),
             ),
             body: SafeArea(
                 child: PageView(
@@ -134,6 +134,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     navigator.navigateToNewScreen(
         newScreen: NewReportScreen(
           reports: _getMockReports(),
+          categories: _getGroupsMock(),
         ),
         context: context);
   }
@@ -351,7 +352,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
   static List<Group> _getGroupsMock() {
     return [
-      Group("1", "Mathematiker", Icons.add, Colors.blue),
+      Group("0PE80iTcWaNx2fYqVTSE", "Mathematiker", Icons.add, Colors.blue),
       Group("2", "Speicherwütiger!", Icons.save, Colors.green),
       Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
       Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),

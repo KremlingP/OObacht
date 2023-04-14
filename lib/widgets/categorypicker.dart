@@ -10,25 +10,17 @@ import '../screens/new_report/new_report_screen.dart';
 
 class CategoryPicker extends StatefulWidget {
   final String superScreen;
+  final List<Group> categories;
 
-  const CategoryPicker({Key? key, required this.superScreen}) : super(key: key);
+  const CategoryPicker(
+      {Key? key, required this.superScreen, required this.categories})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _CategoryPickerState();
 }
 
-// TODO get categories from backend
-final List<Group> categoriesMOCK = [
-  Group("general", "Allgemeine Gefahr", Icons.dangerous_rounded, Colors.red),
-  Group("childs", "Gefahr für Kinder", Icons.child_friendly, Colors.yellow),
-  Group("pets", "Gefahr für Tiere", Icons.pets, Colors.brown),
-  Group("traffic", "Gefahr für Verkehr", Icons.directions_car, Colors.green),
-  Group("climber", "Gefahr für Kletterer", Icons.sports, Colors.blue),
-  Group("other", "Sonstige Gefahr", Icons.warning, Colors.orange),
-];
-
 class _CategoryPickerState extends State<CategoryPicker> {
-  List<Group> categories = categoriesMOCK;
   List<Object?> selectedCategories = [];
 
   final _multiSelectKey = GlobalKey<FormFieldState>();
@@ -37,7 +29,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final categoryItems =
-        categories.map((e) => MultiSelectItem<Group>(e, e.name)).toList();
+        widget.categories.map((e) => MultiSelectItem<Group>(e, e.name)).toList();
     return MultiSelectBottomSheetField(
       key: _multiSelectKey,
       initialChildSize: 0.4,

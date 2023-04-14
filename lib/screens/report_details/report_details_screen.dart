@@ -55,7 +55,7 @@ class ReportDetailsScreen extends StatelessWidget {
           child: Column(
             children: [
               ///Show Picture if not null or empty
-              reportData.imageUrl == null || reportData.imageUrl.isEmpty
+              reportData.image == null || reportData.image.isEmpty
                   ? Container()
                   : SizedBox(
                       height: shortestViewportWidth * 0.5,

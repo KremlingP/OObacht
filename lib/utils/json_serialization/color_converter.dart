@@ -11,7 +11,6 @@ class ColorConverter implements JsonConverter<Color, String> {
 
   @override
   String toJson(Color color) {
-    final colorString = color.toString();
-    return int.parse(colorString).toString();
+    return color.toString();
   }
 }

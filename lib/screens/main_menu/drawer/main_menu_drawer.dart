@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:oobacht/screens/main_menu/drawer/components/logout_list_tile.dart';
 
+import '../../../logic/classes/group.dart';
 import 'components/drawer_list_tile.dart';
 import 'pages/informations.dart';
 import 'pages/profile.dart';
 import 'pages/settings.dart';
 
 class MainMenuDrawer extends StatelessWidget {
-  const MainMenuDrawer({Key? key}) : super(key: key);
+  const MainMenuDrawer({Key? key, required this.categories}) : super(key: key);
+
+  final List<Group> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class MainMenuDrawer extends StatelessWidget {
               text: 'Profil',
               icon: Icons.person,
               context: context,
-              site: const ProfileDrawerPage(),
+              site: ProfileDrawerPage(categories: categories),
             ),
             DrawerListTile(
               text: 'Einstellungen',
