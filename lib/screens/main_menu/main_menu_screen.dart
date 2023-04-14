@@ -55,30 +55,30 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     final theme = Theme.of(context);
     double viewportWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-            key: _drawerKey,
-            backgroundColor: theme.colorScheme.background,
-            appBar: AppBar(
-              leading: _isSearching ? const BackButton() : _buildLeading(),
-              title: _isSearching ? _buildSearchField() : _buildTitle(),
-              actions: _buildActions(theme),
-              centerTitle: true,
-            ),
-            drawer: SizedBox(
-              width: viewportWidth * 0.65,
-              child: MainMenuDrawer(categories: _getGroupsMock()),
-            ),
-            body: SafeArea(
-                child: FutureBuilder(
-                  future: filteredReports,
-                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasError) {
-                      return const ErrorTextWithIcon(
-                          text:
-                          "Fehler beim Laden der Daten! \n Bitte Verbindung überprüfen!",
-                          icon: Icons.wifi_off);
-                    }
-                    if (snapshot.hasData) {
-                      return PageView(
+      key: _drawerKey,
+      backgroundColor: theme.colorScheme.background,
+      appBar: AppBar(
+        leading: _isSearching ? const BackButton() : _buildLeading(),
+        title: _isSearching ? _buildSearchField() : _buildTitle(),
+        actions: _buildActions(theme),
+        centerTitle: true,
+      ),
+      drawer: SizedBox(
+        width: viewportWidth * 0.65,
+        child: MainMenuDrawer(categories: _getGroupsMock()),
+      ),
+      body: SafeArea(
+          child: FutureBuilder(
+            future: filteredReports,
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasError) {
+                return const ErrorTextWithIcon(
+                    text:
+                        "Fehler beim Laden der Daten! \n Bitte Verbindung überprüfen!",
+                    icon: Icons.wifi_off);
+              }
+              if (snapshot.hasData) {
+                return PageView(
                   controller: _pageViewController,
                   children: [
                     MapWidget(
@@ -88,18 +88,19 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     ),
                     MainList(reports: snapshot.data),
                   ],
-              onPageChanged: (index) {
-                setState(() {
-                  filteredReports = _getFilteredReports();
-                  _activePageIndex = index;
-                });
-              },
-            );
-          } else {
-            return const LoadingHint(text: "Lade Meldungen...");
-          }
-        },
-      )),
+                  onPageChanged: (index) {
+                    setState(() {
+                      filteredReports = _getFilteredReports();
+                      _activePageIndex = index;
+                    });
+                  },
+                );
+              } else {
+                return const LoadingHint(text: "Lade Meldungen...");
+              }
+            },
+          )
+      ),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Neue Meldung'),
         backgroundColor: Colors.redAccent,

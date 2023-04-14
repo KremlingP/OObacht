@@ -16,11 +16,15 @@ Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
           .map((e) => Group.fromJson(e as Map<dynamic, dynamic>))
           .toList(),
       const LocationConverter().fromJson(json['location'] as Map),
-      json['image'] as String,
-      (json['alternatives'] as List<dynamic>).map((e) => e as String).toList(),
-      (json['repeatingReport'] as List<dynamic>)
-          .map((e) => $enumDecode(_$RepeatingReportsEnumEnumMap, e))
-          .toList(),
+      json['imageUrl'] as String,
+      json['alternatives'] != null ?
+          (json['alternatives'] as List<dynamic>).map((e) => e as String).toList()
+          : [],
+      json['repeatingReport'] != null ?
+          (json['repeatingReport'] as List<dynamic>)
+              .map((e) => $enumDecode(_$RepeatingReportsEnumEnumMap, e))
+              .toList()
+          : [],
     );
 
 Map<String, dynamic> _$ReportToJson(Report instance) => <String, dynamic>{
