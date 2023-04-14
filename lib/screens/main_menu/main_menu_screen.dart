@@ -1,20 +1,15 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
+import 'package:oobacht/widgets/loading_hint.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
 import '../../firebase/functions/report_functions.dart';
 import '../../logic/classes/group.dart';
 import '../../logic/classes/report.dart';
-import '../../widgets/error_text.dart';
-import '../../widgets/loading_hint.dart';
 import '../../widgets/map/map_widget.dart';
 import 'drawer/main_menu_drawer.dart';
 
@@ -28,8 +23,7 @@ class MainMenuScreen extends StatefulWidget {
 class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  List<Report> allReports = _getMockReports();
-  List<Report> filteredReports = [];
+  late Future<List<Report>> filteredReports;
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
@@ -45,7 +39,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
   @override
   void initState() {
-    filteredReports = allReports;
+    filteredReports = ReportFunctions.getAllReports();
     super.initState();
   }
 
@@ -74,50 +68,65 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               child: MainMenuDrawer(categories: _getGroupsMock()),
             ),
             body: SafeArea(
-                child: PageView(
+                child: FutureBuilder(
+                  future: filteredReports,
+                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasError) {
+                      return const ErrorTextWithIcon(
+                          text:
+                          "Fehler beim Laden der Daten! \n Bitte Verbindung überprüfen!",
+                          icon: Icons.wifi_off);
+                    }
+                    if (snapshot.hasData) {
+                      return PageView(
                   controller: _pageViewController,
                   children: [
                     MapWidget(
-                      reports: filteredReports,
+                      reports: snapshot.data,
                       showMarkerDetails: true,
                       showMapCaption: true,
                     ),
-                    MainList(reports: filteredReports),
+                    MainList(reports: snapshot.data),
                   ],
               onPageChanged: (index) {
                 setState(() {
+                  filteredReports = _getFilteredReports();
                   _activePageIndex = index;
                 });
               },
-            )),
-            floatingActionButton: FloatingActionButton.extended(
-              label: const Text('Neue Meldung'),
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
-              onPressed: _newReport,
-              tooltip: 'Neue Meldung erstellen',
-              elevation: 4.0,
-              icon: const Icon(Icons.add),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: _activePageIndex,
-              onTap: _onItemTapped,
-              backgroundColor: Colors.orange,
-              selectedItemColor: Colors.white,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map),
-                  label: 'Karte',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.list),
-                  label: 'Liste',
-                )
-              ],
-            ),
-          );
+            );
+          } else {
+            return const LoadingHint(text: "Lade Meldungen...");
+          }
+        },
+      )),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Neue Meldung'),
+        backgroundColor: Colors.redAccent,
+        foregroundColor: Colors.white,
+        onPressed: _newReport,
+        tooltip: 'Neue Meldung erstellen',
+        elevation: 4.0,
+        icon: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _activePageIndex,
+        onTap: _onItemTapped,
+        backgroundColor: Colors.orange,
+        selectedItemColor: Colors.white,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Karte',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Liste',
+          )
+        ],
+      ),
+    );
   }
 
   void _onItemTapped(int index) {
@@ -130,10 +139,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
   }
 
-  void _newReport() {
+  void _newReport() async {
     navigator.navigateToNewScreen(
         newScreen: NewReportScreen(
-          reports: _getMockReports(),
+          reports: filteredReports,
           categories: _getGroupsMock(),
         ),
         context: context);
@@ -235,18 +244,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     });
   }
 
-  void updateSearchQuery() {
+  void updateSearchQuery() async {
     List<Report> results = [];
     if (queryText.isEmpty) {
-      results = allReports;
+      results = await ReportFunctions.getAllReports();
     } else {
-      results = _getFilteredReports();
+      results = await _getFilteredReports();
     }
 
-    print(results);
-
     setState(() {
-      filteredReports = results;
+      filteredReports = Future.value(results);
     });
   }
 
@@ -293,63 +300,24 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         });
   }
 
-  List<Report> _getFilteredReports() {
-    List<Report> reports = allReports;
-    if(selectedGroups.isNotEmpty) {
+  Future<List<Report>> _getFilteredReports() async {
+    List<Report> reports = await ReportFunctions.getAllReports();
+    if (selectedGroups.isNotEmpty) {
       reports = reports
-          .where((report) =>
-                report.groups.any((group) =>
-                    selectedGroups.map((e) => e.id).contains(group.id)))
-                .toList();
+          .where((report) => report.groups.any(
+              (group) => selectedGroups.map((e) => e.id).contains(group.id)))
+          .toList();
     }
-    if(queryText.isNotEmpty) {
+    if (queryText.isNotEmpty) {
       reports = reports
           .where((report) =>
-                report.title.toLowerCase().contains(queryText.toLowerCase()))
-                .toList();
+              report.title.toLowerCase().contains(queryText.toLowerCase()))
+          .toList();
     }
     return reports;
   }
 
   ///MOCK DATA
-  static List<Report> _getMockReports() {
-    return [
-      Report(
-          "1",
-          "Krasse Meldung",
-          "Ich hab etwas wirklich krasses gefunden, deshalb muss ich erst mal richtig viel Text drüber schreiben um meine UI testen zu können!",
-          DateTime.now(),
-          [
-            Group("1", "Mathematiker", Icons.add, Colors.blue),
-            Group("2", "Speicherwütiger!", Icons.save, Colors.green),
-            Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
-            Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
-          ],
-          const LatLng(48.455166, 8.706739),
-          "http://", [], []),
-      Report(
-          "2",
-          "Richtig langer Name der Meldung was geht denn hier ab??!?!?",
-          "Diese Meldung hat kein Bild hinterlegt, darum keine Anzeige oben!",
-          DateTime.now(),
-          [
-            Group("1", "Mathematiker", Icons.add, Colors.blue),
-          ],
-          const LatLng(48.435166, 8.706739),
-          "", ["Cosinus"], [RepeatingReportsEnum.hot]),
-      Report(
-          "3",
-          "Dritte Meldung, die komplett mit ihrem Titel übers Ziel hinaus schießt und hoffentlich richtig angezeigt wird",
-          "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et e",
-          DateTime.now(),
-          [
-            Group("5", "Uhrwerker", Icons.watch, Colors.red),
-          ],
-          const LatLng(48.445166, 8.716739),
-          "http://", ["Rolex", "Gucci", "Prada"], [RepeatingReportsEnum.rain, RepeatingReportsEnum.thunder]),
-    ];
-  }
-
   static List<Group> _getGroupsMock() {
     return [
       Group("0PE80iTcWaNx2fYqVTSE", "Mathematiker", Icons.add, Colors.blue),
