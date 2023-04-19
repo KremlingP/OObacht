@@ -35,7 +35,7 @@ class GroupFunctions {
     if (response.data == null) {
       return [];
     }
-    return response.data.map((e) => Group.fromJson(e)).toList();
+    return List<Group>.from(response.data.map((e) => Group.fromJson(e)));
   }
 
   static Future<List<Group>> getAllGroups() async {
