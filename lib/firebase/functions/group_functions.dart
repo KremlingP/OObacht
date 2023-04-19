@@ -11,8 +11,10 @@ class GroupFunctions {
       UrlHelper.getFunctionUrl("subscribeGroup"),
     );
 
+    print(">>> subscribeGroup: ${group.id}");
+
     final response = await callable.call(<String, dynamic>{
-      'group': group.id,
+      'groupId': group.id,
     });
   }
 
@@ -21,43 +23,66 @@ class GroupFunctions {
       UrlHelper.getFunctionUrl("unsubscribeGroup"),
     );
 
+    print(">>> unsubscribeGroup: ${group.id}");
+
     final response = await callable.call(<String, dynamic>{
-      'group': group.id,
+      'groupId': group.id,
     });
   }
 
   static Future<List<Group>> getOwnGroups() async {
+    const functionName = 'getOwnGroups';
+
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
-      UrlHelper.getFunctionUrl("getOwnGroups"),
+      UrlHelper.getFunctionUrl(functionName),
     );
 
-    final response = await callable.call();
-    if (response.data == null) {
-      return [];
+    try {
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        final groups = result.data.map((e) => Group.fromJson(e)).toList();
+
+        return Future.value(List<Group>.from(groups));
+      }
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
     }
-    return List<Group>.from(response.data.map((e) => Group.fromJson(e)));
+    return [];
   }
 
   static Future<List<Group>> getAllGroups() async {
+    const functionName = 'getAllGroups';
+
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
-      UrlHelper.getFunctionUrl("getAllGroups"),
+      UrlHelper.getFunctionUrl(functionName),
     );
 
-    final response = await callable.call();
-    if (response.data == null) {
-      return [];
+    try {
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        final groups = result.data.map((e) => Group.fromJson(e)).toList();
+
+        return Future.value(List<Group>.from(groups));
+      }
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
     }
-    return response.data.map((e) => Group.fromJson(e)).toList();
+    return [];
   }
 
   static Future<void> updateGroupPreferences(List<Group> selectedGroups) async {
     List<Group> subscribedGroups = await getOwnGroups();
-    List<Group> unsubscribedGroups = subscribedGroups
-        .where((group) => !selectedGroups.contains(group))
-        .toList();
-    List<Group> subscribedNewGroups = selectedGroups
-        .where((group) => !subscribedGroups.contains(group))
-        .toList();
+    List<Group> unsubscribedGroups = [];
+    for(var subscribedGroup in subscribedGroups) {
+      for(var group in selectedGroups) {
+        if(subscribedGroup.id == group.id) {
+          unsubscribedGroups.add(subscribedGroup);
+          selectedGroups.remove(group);
+          break;
+        }
+      }
+    }
+    List<Group> subscribedNewGroups = selectedGroups;
     for (var group in unsubscribedGroups) {
       await _unsubscribeGroup(group);
     }

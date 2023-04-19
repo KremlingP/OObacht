@@ -36,7 +36,7 @@ class MainMenuDrawer extends StatelessWidget {
               text: 'Profil',
               icon: Icons.person,
               context: context,
-              site: ProfileDrawerPage(categories: categories),
+              site: const ProfileDrawerPage(),
             ),
             DrawerListTile(
               text: 'Einstellungen',
