@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:oobacht/firebase/functions/group_functions.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
@@ -33,13 +32,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   final TextEditingController _searchQueryController = TextEditingController();
   String queryText = "";
   bool _isSearching = false;
-  List<Group> allGroups = _getGroupsMock();
+  late Future<List<Group>> allGroups;
   List<Group> selectedGroups = [];
   bool showOnlyOwn = false;
 
   @override
   void initState() {
     filteredReports = ReportFunctions.getAllReports();
+    allGroups = GroupFunctions.getAllGroups();
     super.initState();
   }
 
@@ -65,50 +65,56 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       ),
       drawer: SizedBox(
         width: viewportWidth * 0.65,
-        child: MainMenuDrawer(categories: _getGroupsMock()),
+        child: MainMenuDrawer(categories: []),
       ),
       body: SafeArea(
           child: FutureBuilder(
-            future: filteredReports,
-            builder: (context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasError) {
-                return const ErrorTextWithIcon(
-                    text:
-                        "Fehler beim Laden der Daten! \n Bitte Verbindung überprüfen!",
-                    icon: Icons.wifi_off);
-              }
-              if (snapshot.hasData) {
-                return PageView(
-                  controller: _pageViewController,
-                  children: [
-                    MapWidget(
-                      reports: snapshot.data,
-                      showMarkerDetails: true,
-                      showMapCaption: true,
-                    ),
-                    MainList(reports: snapshot.data),
-                  ],
-                  onPageChanged: (index) {
-                    setState(() {
-                      filteredReports = _getFilteredReports();
-                      _activePageIndex = index;
-                    });
-                  },
-                );
-              } else {
-                return const LoadingHint(text: "Lade Meldungen...");
-              }
-            },
-          )
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Neue Meldung'),
-        backgroundColor: Colors.redAccent,
-        foregroundColor: Colors.white,
-        onPressed: _newReport,
-        tooltip: 'Neue Meldung erstellen',
-        elevation: 4.0,
-        icon: const Icon(Icons.add),
+        future: filteredReports,
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasError) {
+            return const ErrorTextWithIcon(
+                text:
+                    "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
+                icon: Icons.wifi_off);
+          }
+          if (snapshot.hasData) {
+            return PageView(
+              controller: _pageViewController,
+              children: [
+                MapWidget(
+                  reports: snapshot.data,
+                  showMarkerDetails: true,
+                  showMapCaption: true,
+                ),
+                MainList(reports: snapshot.data),
+              ],
+              onPageChanged: (index) {
+                setState(() {
+                  filteredReports = _getFilteredReports();
+                  _activePageIndex = index;
+                });
+              },
+            );
+          } else {
+            return const LoadingHint(text: "Lade Meldungen...");
+          }
+        },
+      )),
+      floatingActionButton: FutureBuilder(
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            return FloatingActionButton.extended(
+              label: const Text('Neue Meldung'),
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              onPressed: () => _newReport(snapshot.data),
+              tooltip: 'Neue Meldung erstellen',
+              elevation: 4.0,
+              icon: const Icon(Icons.add),
+            );
+          }
+          return Container();
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: BottomNavigationBar(
@@ -140,11 +146,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         duration: const Duration(milliseconds: 200), curve: Curves.bounceOut);
   }
 
-  void _newReport() async {
+  void _newReport(List<Group> groups) async {
     navigator.navigateToNewScreen(
         newScreen: NewReportScreen(
           reports: filteredReports,
-          categories: _getGroupsMock(),
+          categories: groups,
         ),
         context: context);
   }
@@ -185,7 +191,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     );
   }
 
-  _buildActions(ThemeData theme) {
+  _buildActions(ThemeData theme) async {
     if (_isSearching) {
       return <Widget>[
         IconButton(
@@ -278,26 +284,31 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     await showDialog(
         context: context,
         builder: (ctx) {
-          return MultiSelectDialog(
-            items: allGroups.map((e) => MultiSelectItem(e, e.name)).toList(),
-            initialValue: selectedGroups,
-            onConfirm: (values) {
-              selectedGroups = values;
-              setState(() {
-                filteredReports = _getFilteredReports();
-              });
-            },
-            title: Text(
-              "Kategorie Filter",
-              style: TextStyle(color: theme.primaryColor),
+          return Container(
+            child: LoadingHint(
+              text: "Lade Gruppen...",
             ),
-            backgroundColor: theme.colorScheme.background,
-            checkColor: Colors.white,
-            selectedColor: Colors.orange,
-            unselectedColor: theme.primaryColor,
-            itemsTextStyle: TextStyle(color: theme.primaryColor),
-            selectedItemsTextStyle: TextStyle(color: theme.primaryColor),
           );
+          // return MultiSelectDialog(
+          //   items: snapshot.data.map((e) => MultiSelectItem(e, e.name)).toList(),
+          //   initialValue: selectedGroups,
+          //   onConfirm: (values) {
+          //     selectedGroups = values;
+          //     setState(() {
+          //       filteredReports = _getFilteredReports();
+          //     });
+          //   },
+          //   title: Text(
+          //     "Kategorie Filter",
+          //     style: TextStyle(color: theme.primaryColor),
+          //   ),
+          //   backgroundColor: theme.colorScheme.background,
+          //   checkColor: Colors.white,
+          //   selectedColor: Colors.orange,
+          //   unselectedColor: theme.primaryColor,
+          //   itemsTextStyle: TextStyle(color: theme.primaryColor),
+          //   selectedItemsTextStyle: TextStyle(color: theme.primaryColor),
+          // );
         });
   }
 
@@ -316,16 +327,5 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           .toList();
     }
     return reports;
-  }
-
-  ///MOCK DATA
-  static List<Group> _getGroupsMock() {
-    return [
-      Group("0PE80iTcWaNx2fYqVTSE", "Mathematiker", Icons.add, Colors.blue),
-      Group("2", "Speicherwütiger!", Icons.save, Colors.green),
-      Group("3", "Was auch immer?!", Icons.person, Colors.blueGrey),
-      Group("4", "Gute Frage", Icons.ten_k, Colors.yellow),
-      Group("5", "Uhrwerker", Icons.watch, Colors.red),
-    ];
   }
 }
