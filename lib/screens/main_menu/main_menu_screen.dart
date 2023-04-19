@@ -65,7 +65,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       ),
       drawer: SizedBox(
         width: viewportWidth * 0.65,
-        child: MainMenuDrawer(categories: []),
+        child: const MainMenuDrawer(),
       ),
       body: SafeArea(
           child: FutureBuilder(
