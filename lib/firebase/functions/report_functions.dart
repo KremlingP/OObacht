@@ -43,20 +43,20 @@ class ReportFunctions {
   static Future<bool> createReport(Report report) async {
     const functionName = 'createReport';
 
-    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
-        UrlHelper.getFunctionUrl(functionName));
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
 
     try {
-      var map = <String, dynamic>
-      {
+      var map = <String, dynamic>{
         'title': report.title,
         'description': report.description,
         'groups': report.groups.map((e) => e.id).toList(),
         'location': const LocationConverter().toJson(report.location),
         'alternatives': report.alternatives,
-        'repeatingReport': report.repeatingReport.map((e) => e.toString()).toList(),
+        'repeatingReport':
+            report.repeatingReport.map((e) => e.toString()).toList(),
       };
-      if(report.image != null && report.image.isNotEmpty) {
+      if (report.image != null && report.image.isNotEmpty) {
         map.addAll(<String, dynamic>{'image': report.image});
       }
       print("DEBUG: ${report.image}");
@@ -67,8 +67,7 @@ class ReportFunctions {
         return result.data;
       }
     } on FirebaseFunctionsException catch (error) {
-      UrlHelper.printFirebaseFunctionsException(
-          error, functionName);
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
     }
     return false;
   }
