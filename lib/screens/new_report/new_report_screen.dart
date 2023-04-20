@@ -41,7 +41,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
 
   String title = "";
   String description = "";
-  List<Object?> selectedCategories = [];
+  List<Group> selectedCategories = [];
   File imageFile = File('');
   LatLng? position;
   List<String> alternatives = [];
@@ -78,7 +78,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const DescriptionInputField(),
                     const SizedBox(height: 20),
-                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: const []),
+                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: selectedCategories),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
@@ -155,7 +155,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     title,
                     description,
                     null,
-                    selectedCategories.map((e) => e as Group).toList(),
+                    selectedCategories,
                     position!,
                     base64Image,
                     alternatives,
