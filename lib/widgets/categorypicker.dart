@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
-import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:multi_select_flutter/util/multi_select_list_type.dart';
-import 'package:oobacht/screens/main_menu/drawer/pages/profile.dart';
+import 'package:oobacht/firebase/functions/group_functions.dart';
 
 import '../logic/classes/group.dart';
 import '../screens/new_report/new_report_screen.dart';
@@ -14,7 +10,10 @@ class CategoryPicker extends StatefulWidget {
   List<Group> selectedCategories;
 
   CategoryPicker(
-      {Key? key, required this.superScreen, required this.categories, required this.selectedCategories})
+      {Key? key,
+      required this.superScreen,
+      required this.categories,
+      required this.selectedCategories})
       : super(key: key);
 
   @override
@@ -24,92 +23,246 @@ class CategoryPicker extends StatefulWidget {
 class _CategoryPickerState extends State<CategoryPicker> {
   final _multiSelectKey = GlobalKey<FormFieldState>();
 
+  final TextEditingController _searchQueryController = TextEditingController();
+  String queryText = "";
+  bool _isSearching = false;
+  List<Group> shownCategories = [];
+
+  @override
+  void initState() {
+    shownCategories = widget.categories;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final categoryItems =
-        widget.categories.map((e) => MultiSelectItem<Group>(e, e.name)).toList();
-    return MultiSelectBottomSheetField(
-      key: _multiSelectKey,
-      initialChildSize: 0.4,
-      maxChildSize: 0.95,
-      listType: MultiSelectListType.CHIP,
-      searchable: true,
-      validator: (values) {
-        if (values == null || values.isEmpty) {
-          return "Bitte mindestens eine Kategorie auswählen.";
-        }
-        return null;
-      },
-      title: Text(
-        "Kategorien",
-        style: TextStyle(
-          color: theme.primaryColor,
-          fontSize: 20,
-        ),
-      ),
-      backgroundColor: theme.colorScheme.background,
-      selectedColor: theme.colorScheme.primary.withOpacity(0.1),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.1),
-        borderRadius: const BorderRadius.all(Radius.circular(40)),
-        border: Border.all(
-          color: theme.colorScheme.primary,
-          width: 2,
-        ),
-      ),
-      buttonIcon: Icon(
-        Icons.category,
-        color: theme.primaryColor,
-      ),
-      buttonText: Text(
-        "Kategorien auswählen",
-        style: TextStyle(
-          color: theme.primaryColor,
-          fontSize: 16,
-        ),
-      ),
-      confirmText:
-          Text("Auswählen", style: TextStyle(color: theme.primaryColor)),
-      cancelText:
-          Text("Abbrechen", style: TextStyle(color: theme.primaryColor)),
-      searchHint: "Suche nach Kategorien...",
-      searchHintStyle: TextStyle(
-        color: theme.primaryColor,
-      ),
-      searchIcon: Icon(
-        Icons.search,
-        color: theme.primaryColor,
-      ),
-      closeSearchIcon: Icon(
-        Icons.close,
-        color: theme.primaryColor,
-      ),
-      items: categoryItems,
-      onConfirm: (values) {
-        setState(() {
-          widget.selectedCategories = values.map((e) => e as Group).toList();
-          if (widget.superScreen == "newReport") {
-            NewReportScreen.of(context)?.selectedCategories =
-                widget.selectedCategories;
-          } else if (widget.superScreen == "profile") {
-            ProfileDrawerPage.of(context)?.selectedCategories =
-                Future.value(widget.selectedCategories);
-          } else {
-            throw Exception("Unknown superScreen: ${widget.superScreen}");
-          }
-        });
-        _multiSelectKey.currentState?.validate();
-      },
-      chipDisplay: MultiSelectChipDisplay(
-        onTap: (value) {
-          setState(() {
-            widget.selectedCategories.remove(value);
-            NewReportScreen.of(context)?.selectedCategories =
-                widget.selectedCategories;
-          });
-          _multiSelectKey.currentState?.validate();
-        },
+    double shortestViewportWidth = MediaQuery.of(context).size.shortestSide;
+
+    return Container(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          /// Button to open the bottom sheet
+          ElevatedButton(
+              child: const Text("Kategorien auswählen"),
+              onPressed: () {
+                showModalBottomSheet(
+                  backgroundColor: theme.colorScheme.background,
+                  enableDrag: true,
+                  elevation: 0,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    /// StatefulBuilder to rebuild the bottom sheet
+                    return StatefulBuilder(builder: (BuildContext context, StateSetter setModalState) {
+                      /// Padding to make the bottom sheet move with the keyboard
+                      return Padding(
+                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: SizedBox(
+                              height: shortestViewportWidth * 0.7,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  /// Search bar
+                                  SizedBox(
+                                    height: shortestViewportWidth * 0.15,
+                                    width: double.infinity,
+                                    child: Container(
+                                        color: theme.colorScheme.primary,
+                                        child: Row(
+                                          children: [
+                                            const Spacer(),
+                                            _isSearching
+                                                ?
+
+                                                /// Search bar
+                                                SizedBox(
+                                                    width: 200,
+                                                    child: TextField(
+                                                      controller: _searchQueryController,
+                                                      autofocus: true,
+                                                      decoration: InputDecoration(
+                                                        hintText: "Suchen...",
+                                                        border: InputBorder.none,
+                                                        hintStyle: TextStyle(color: theme.primaryColor),
+                                                      ),
+                                                      cursorColor: theme.primaryColor,
+                                                      style: TextStyle(
+                                                          color: theme.primaryColor,
+                                                          fontSize: 16.0
+                                                      ),
+                                                      onChanged: (query) {
+                                                        queryText = query;
+                                                        shownCategories = widget.categories.where((element) =>
+                                                            element.name.toLowerCase().contains(queryText.toLowerCase())
+                                                        ).toList();
+                                                        setModalState(() {});
+                                                      },
+                                                    ))
+                                                :
+
+                                                /// Title
+                                               Text(
+                                                'Kategorien',
+                                                style: TextStyle(
+                                                    color: theme.primaryColor,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 20.0
+                                                ),
+                                                maxLines: 1,
+                                              ),
+
+                                            const Spacer(),
+
+                                            _isSearching
+                                                ?
+
+                                                /// Close search button
+                                                IconButton(
+                                                    icon:
+                                                        const Icon(Icons.clear),
+                                                    onPressed: () {
+                                                      setModalState(() {
+                                                        _searchQueryController.clear();
+                                                        queryText = "";
+                                                        shownCategories = widget.categories.where((element) =>
+                                                            element.name.toLowerCase().contains(queryText.toLowerCase())
+                                                        ).toList();
+                                                        setModalState(() {
+                                                          _isSearching = false;
+                                                        });
+                                                      });
+                                                    },
+                                                  )
+                                                :
+
+                                                /// Search button
+                                                IconButton(
+                                                    icon: const Icon(
+                                                        Icons.search),
+                                                    onPressed: () {
+                                                      setModalState(() {
+                                                        _isSearching = true;
+                                                      });
+                                                    },
+                                                  )
+                                          ],
+                                        )),
+                                  ),
+
+                                  /// All available categories as chips
+                                  SingleChildScrollView(
+                                    child: Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: -6.0,
+                                      alignment: WrapAlignment.start,
+                                      direction: Axis.horizontal,
+                                      children: shownCategories
+                                          .map((group) => ActionChip(
+                                              label: Text(
+                                                group.name,
+                                                style: const TextStyle(color: Colors.black),
+                                              ),
+                                              backgroundColor:
+                                                widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty
+                                                  ? theme.colorScheme.primary
+                                                  : theme.colorScheme.primary.withOpacity(0.4),
+                                              avatar: CircleAvatar(
+                                                backgroundColor:
+                                                  widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty
+                                                    ? theme.colorScheme.primary
+                                                    : theme.colorScheme.primary.withOpacity(0.4),
+                                                child: Icon(group.icon, color: Colors.white),
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty) {
+                                                    widget.selectedCategories.remove(widget.selectedCategories
+                                                        .where((element) => element.id == group.id).first);
+                                                    if (widget.superScreen == "profile") {
+                                                      GroupFunctions.unsubscribeGroup(group);
+                                                    }
+                                                  } else {
+                                                    widget.selectedCategories.add(group);
+                                                    if (widget.superScreen == "profile") {
+                                                      GroupFunctions.subscribeGroup(group);
+                                                    }
+                                                  }
+                                                  if (widget.superScreen == "newReport") {
+                                                    NewReportScreen.of(context)?.selectedCategories =
+                                                        widget.selectedCategories;
+                                                  } else if (widget.superScreen == "profile") {
+                                                  } else {
+                                                    throw Exception("Unknown superScreen: ${widget.superScreen}");
+                                                  }
+                                                });
+                                                setModalState(() {});
+                                              },
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  ),
+                                  const Spacer(),
+
+                                  /// Button to close the bottom sheet
+                                  SizedBox(
+                                      height: shortestViewportWidth * 0.1,
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            setState(() {
+                                              _isSearching = false;
+                                            });
+                                          },
+                                          child: const Text("Fertig"))),
+                                ],
+                              )));
+                    });
+                  },
+                );
+              }),
+          const SizedBox(height: 5.0),
+
+          /// Chips to show selected items
+          Wrap(
+            spacing: 8.0,
+            runSpacing: -6.0,
+            alignment: WrapAlignment.start,
+            direction: Axis.horizontal,
+            children: widget.selectedCategories
+                .map((group) => ActionChip(
+                  label: Text(
+                    group.name,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: group.color,
+                  avatar: CircleAvatar(
+                    backgroundColor: group.color,
+                    child: Icon(group.icon, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty) {
+                        widget.selectedCategories.remove(widget.selectedCategories
+                            .where((element) => element.id == group.id).first);
+                      }
+                      if (widget.superScreen == "newReport") {
+                        NewReportScreen.of(context)?.selectedCategories =
+                            widget.selectedCategories;
+                      } else if (widget.superScreen == "profile") {
+                        GroupFunctions.unsubscribeGroup(group);
+                      } else {
+                        throw Exception("Unknown superScreen: ${widget.superScreen}");
+                      }
+                    });
+                  },
+                ),
+            ).toList(),
+          )
+        ],
       ),
     );
   }

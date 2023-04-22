@@ -24,7 +24,8 @@ class ProfileDrawerPage extends StatefulWidget {
 
 class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
   late Future<int> currentRadius;
-  late Future<List<Object?>> selectedCategories;
+  late Future<List<Object?>> preselectedCategories;
+  late List<Object?> selectedCategories;
   late Future<List<Group>> categories;
 
   final _formKey = GlobalKey<FormState>();
@@ -32,7 +33,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
   @override
   void initState() {
     currentRadius = UserFunctions.getRadius();
-    selectedCategories = GroupFunctions.getOwnGroups();
+    preselectedCategories = GroupFunctions.getOwnGroups();
     categories = GroupFunctions.getAllGroups();
     super.initState();
   }
@@ -67,7 +68,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                   }
                   if (allGroupsSnapshot.hasData) {
                     return FutureBuilder(
-                      future: selectedCategories,
+                      future: preselectedCategories,
                       builder:
                           (context, AsyncSnapshot<dynamic> ownGroupsSnapshot) {
                         if (ownGroupsSnapshot.hasError) {
@@ -77,6 +78,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                               icon: Icons.wifi_off);
                         }
                         if (ownGroupsSnapshot.hasData) {
+                          selectedCategories = ownGroupsSnapshot.data;
                           return Scaffold(
                             resizeToAvoidBottomInset: false,
                             backgroundColor: theme.colorScheme.background,
@@ -131,31 +133,9 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                     child: CategoryPicker(
                                       superScreen: "profile",
                                       categories: allGroupsSnapshot.data,
-                                      selectedCategories:
-                                          ownGroupsSnapshot.data,
+                                      selectedCategories: ownGroupsSnapshot.data,
                                     ),
                                   ),
-                                  ElevatedButton(
-                                      onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          _formKey.currentState!.save();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Interessensgebiete wurden gespeichert!')));
-
-                                          List<Group> categories = List<Group>.from(ownGroupsSnapshot.data.map((e) => e as Group).toList());
-
-                                          await GroupFunctions
-                                              .updateGroupPreferences(categories);
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Bitte mindestens eine Kategorie auswählen.')));
-                                        }
-                                      },
-                                      child: const Text('Speichern')),
                                   const SizedBox(height: 100),
                                   Text("Account und zugehörige Daten löschen",
                                       style: TextStyle(

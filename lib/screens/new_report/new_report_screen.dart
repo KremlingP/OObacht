@@ -41,7 +41,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
 
   String title = "";
   String description = "";
-  List<Object?> selectedCategories = [];
+  List<Group> selectedCategories = [];
   File imageFile = File('');
   LatLng? position;
   List<String> alternatives = [];
@@ -78,7 +78,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const DescriptionInputField(),
                     const SizedBox(height: 20),
-                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: const []),
+                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: selectedCategories),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
@@ -135,6 +135,13 @@ class _NewReportScreenState extends State<NewReportScreen> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
+                  if (selectedCategories.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Bitte wähle mindestens eine Kategorie aus.')));
+                    return;
+                  }
+
                   Position? retrievedPosition = await getCurrentPosition();
                   if (retrievedPosition == null) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -155,7 +162,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     title,
                     description,
                     null,
-                    selectedCategories.map((e) => e as Group).toList(),
+                    selectedCategories,
                     position!,
                     base64Image,
                     alternatives,

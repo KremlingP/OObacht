@@ -3,7 +3,7 @@ import 'package:oobacht/firebase/url_helper.dart';
 import 'package:oobacht/logic/classes/group.dart';
 
 class GroupFunctions {
-  static Future<void> _subscribeGroup(Group group) async {
+  static Future<void> subscribeGroup(Group group) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
       UrlHelper.getFunctionUrl("subscribeGroup"),
     );
@@ -15,7 +15,7 @@ class GroupFunctions {
     });
   }
 
-  static Future<void> _unsubscribeGroup(Group group) async {
+  static Future<void> unsubscribeGroup(Group group) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
       UrlHelper.getFunctionUrl("unsubscribeGroup"),
     );
@@ -70,21 +70,21 @@ class GroupFunctions {
   static Future<void> updateGroupPreferences(List<Group> selectedGroups) async {
     List<Group> subscribedGroups = await getOwnGroups();
     List<Group> unsubscribedGroups = [];
-    for (var subscribedGroup in subscribedGroups) {
-      for (var group in selectedGroups) {
-        if (subscribedGroup.id == group.id) {
-          unsubscribedGroups.add(subscribedGroup);
-          selectedGroups.remove(group);
-          break;
-        }
+    List<Group> subscribedNewGroups = [];
+    for (var group in subscribedGroups) {
+      if (! selectedGroups.where((element) => element.id == group.id).isNotEmpty) {
+        unsubscribedGroups.add(group);
+      } else {
+        selectedGroups.remove(selectedGroups.where((element) => element.id == group.id).first);
       }
     }
-    List<Group> subscribedNewGroups = selectedGroups;
+    subscribedNewGroups = selectedGroups;
+
     for (var group in unsubscribedGroups) {
-      await _unsubscribeGroup(group);
+      await unsubscribeGroup(group);
     }
     for (var group in subscribedNewGroups) {
-      await _subscribeGroup(group);
+      await subscribeGroup(group);
     }
   }
 }
