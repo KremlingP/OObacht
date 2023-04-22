@@ -151,12 +151,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   void _newReport(List<Group> groups) async {
-    navigator.navigateToNewScreen(
-        newScreen: NewReportScreen(
-          reports: filteredReports,
-          categories: groups,
-        ),
-        context: context);
+    navigator
+        .navigateToNewScreen(
+            newScreen: NewReportScreen(
+              reports: filteredReports,
+              categories: groups,
+            ),
+            context: context)
+        .then((value) {
+      setState(() {});
+    });
   }
 
   ///For Searching
