@@ -133,7 +133,8 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                     child: CategoryPicker(
                                       superScreen: "profile",
                                       categories: allGroupsSnapshot.data,
-                                      selectedCategories: ownGroupsSnapshot.data,
+                                      selectedCategories:
+                                          ownGroupsSnapshot.data,
                                     ),
                                   ),
                                   const SizedBox(height: 100),
@@ -165,16 +166,19 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                             ),
                           );
                         } else {
-                          return const LoadingHint(text: "Lade Profildaten...");
+                          return const Center(
+                              child: LoadingHint(text: "Lade Profildaten..."));
                         }
                       },
                     );
                   } else {
-                    return const LoadingHint(text: "Lade Profildaten...");
+                    return const Center(
+                        child: LoadingHint(text: "Lade Profildaten..."));
                   }
                 });
           } else {
-            return const LoadingHint(text: "Lade Profildaten...");
+            return const Center(
+                child: LoadingHint(text: "Lade Profildaten..."));
           }
         },
       )),

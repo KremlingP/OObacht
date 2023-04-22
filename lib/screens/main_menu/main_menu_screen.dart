@@ -99,7 +99,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               },
             );
           } else {
-            return const LoadingHint(text: "Lade Meldungen...");
+            return const Center(child: LoadingHint(text: "Lade Meldungen..."));
           }
         },
       )),
