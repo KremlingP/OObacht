@@ -43,9 +43,7 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return FutureBuilder(
-      initialData: markers,
-      future:
-          generateMarkers(widget.reports, context, widget.showMarkerDetails),
+      future: markers,
       builder: (context, AsyncSnapshot<dynamic> markerSnapshot) {
         if (markerSnapshot.hasError) {
           return const ErrorText(text: "Fehler beim Laden der Karte!");
