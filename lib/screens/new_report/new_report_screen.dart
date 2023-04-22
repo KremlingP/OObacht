@@ -135,6 +135,13 @@ class _NewReportScreenState extends State<NewReportScreen> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 
+                  if (selectedCategories.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Bitte wähle mindestens eine Kategorie aus.')));
+                    return;
+                  }
+
                   Position? retrievedPosition = await getCurrentPosition();
                   if (retrievedPosition == null) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
