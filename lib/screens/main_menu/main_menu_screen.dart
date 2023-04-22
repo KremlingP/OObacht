@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/firebase/functions/group_functions.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
+import 'package:oobacht/widgets/error_text.dart';
 import 'package:oobacht/widgets/loading_hint.dart';
 
 import '../../../../utils/navigator_helper.dart' as navigator;
@@ -101,6 +104,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         },
       )),
       floatingActionButton: FutureBuilder(
+        future: allGroups,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return FloatingActionButton.extended(
@@ -191,7 +195,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     );
   }
 
-  _buildActions(ThemeData theme) async {
+  _buildActions(ThemeData theme) {
     if (_isSearching) {
       return <Widget>[
         IconButton(
@@ -280,35 +284,54 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     });
   }
 
-  void _showCategoryPicker(BuildContext context, ThemeData theme) async {
-    await showDialog(
+  void _showCategoryPicker(BuildContext context, ThemeData theme) {
+    showDialog(
         context: context,
         builder: (ctx) {
-          return Container(
-            child: LoadingHint(
-              text: "Lade Gruppen...",
-            ),
-          );
-          // return MultiSelectDialog(
-          //   items: snapshot.data.map((e) => MultiSelectItem(e, e.name)).toList(),
-          //   initialValue: selectedGroups,
-          //   onConfirm: (values) {
-          //     selectedGroups = values;
-          //     setState(() {
-          //       filteredReports = _getFilteredReports();
-          //     });
-          //   },
-          //   title: Text(
-          //     "Kategorie Filter",
-          //     style: TextStyle(color: theme.primaryColor),
-          //   ),
-          //   backgroundColor: theme.colorScheme.background,
-          //   checkColor: Colors.white,
-          //   selectedColor: Colors.orange,
-          //   unselectedColor: theme.primaryColor,
-          //   itemsTextStyle: TextStyle(color: theme.primaryColor),
-          //   selectedItemsTextStyle: TextStyle(color: theme.primaryColor),
-          // );
+          return FutureBuilder(
+              future: allGroups,
+              builder: (context, AsyncSnapshot<List<Group>> snapshot) {
+                if (snapshot.hasError) {
+                  return Scaffold(
+                    body: Container(
+                        child: const ErrorText(
+                            text:
+                                "Es ist ein Fehler aufgetreten! Drücken Sie \"Zurück\"!")),
+                  );
+                }
+                if (snapshot.hasData) {
+                  return MultiSelectDialog(
+                    items: snapshot.data!
+                        .map((g) => MultiSelectItem(g, g.name))
+                        .toList(),
+                    initialValue: selectedGroups,
+                    onConfirm: (values) {
+                      selectedGroups = values;
+                      setState(() {
+                        filteredReports = _getFilteredReports();
+                      });
+                    },
+                    title: Text(
+                      "Kategorie Filter",
+                      style: TextStyle(color: theme.primaryColor),
+                    ),
+                    backgroundColor: theme.colorScheme.background,
+                    checkColor: Colors.white,
+                    selectedColor: Colors.orange,
+                    unselectedColor: theme.primaryColor,
+                    itemsTextStyle: TextStyle(color: theme.primaryColor),
+                    selectedItemsTextStyle:
+                        TextStyle(color: theme.primaryColor),
+                  );
+                } else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                    ],
+                  );
+                }
+              });
         });
   }
 

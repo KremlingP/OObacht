@@ -1,9 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/url_helper.dart';
 import 'package:oobacht/logic/classes/group.dart';
-
-import '../../utils/json_serialization/location_converter.dart';
 
 class GroupFunctions {
   static Future<void> _subscribeGroup(Group group) async {
@@ -73,9 +70,9 @@ class GroupFunctions {
   static Future<void> updateGroupPreferences(List<Group> selectedGroups) async {
     List<Group> subscribedGroups = await getOwnGroups();
     List<Group> unsubscribedGroups = [];
-    for(var subscribedGroup in subscribedGroups) {
-      for(var group in selectedGroups) {
-        if(subscribedGroup.id == group.id) {
+    for (var subscribedGroup in subscribedGroups) {
+      for (var group in selectedGroups) {
+        if (subscribedGroup.id == group.id) {
           unsubscribedGroups.add(subscribedGroup);
           selectedGroups.remove(group);
           break;
