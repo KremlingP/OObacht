@@ -34,7 +34,7 @@ class UserFunctions {
     if(response.data == null) {
       return -1;
     }
-    return response.data;
+    return response.data["radius"];
   }
 
   static Future<void> updateRadius(int radius) async {
