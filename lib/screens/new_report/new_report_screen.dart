@@ -22,7 +22,9 @@ import '../../logic/classes/report.dart';
 import 'components/repeatingpicker.dart';
 
 class NewReportScreen extends StatefulWidget {
-  const NewReportScreen({Key? key, required this.reports, required this.categories}) : super(key: key);
+  const NewReportScreen(
+      {Key? key, required this.reports, required this.categories})
+      : super(key: key);
 
   final Future<List<Report>> reports;
   final List<Group> categories;
@@ -78,7 +80,10 @@ class _NewReportScreenState extends State<NewReportScreen> {
                     const SizedBox(height: 20),
                     const DescriptionInputField(),
                     const SizedBox(height: 20),
-                    CategoryPicker(superScreen: "newReport", categories: widget.categories, selectedCategories: selectedCategories),
+                    CategoryPicker(
+                        superScreen: "newReport",
+                        categories: widget.categories,
+                        selectedCategories: selectedCategories),
                     const SizedBox(height: 20),
                     const PhotoPicker(),
                     const SizedBox(height: 20),
@@ -153,23 +158,23 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       retrievedPosition.latitude, retrievedPosition.longitude);
 
                   String base64Image = "";
-                  if(imageFile.path != "") {
+                  if (imageFile.path != "") {
                     List<int> imageBytes = await imageFile.readAsBytes();
                     base64Image = base64Encode(imageBytes);
                   }
                   Report report = Report(
-                    null,
-                    title,
-                    description,
-                    null,
-                    selectedCategories,
-                    position!,
-                    base64Image,
-                    alternatives,
-                    repeatingReport
-                        .map((e) => e as RepeatingReportsEnum)
-                        .toList(),
-                  );
+                      null,
+                      title,
+                      description,
+                      null,
+                      selectedCategories,
+                      position!,
+                      base64Image,
+                      alternatives,
+                      repeatingReport
+                          .map((e) => e as RepeatingReportsEnum)
+                          .toList(),
+                      null);
                   ReportFunctions.createReport(report);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Meldung wurde gespeichert!')));

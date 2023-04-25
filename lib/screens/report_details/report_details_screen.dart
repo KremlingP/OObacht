@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
-import '../../logic/classes/repeating_reports_enum.dart';
 import '../../utils/helper_methods.dart';
 
 class ReportDetailsScreen extends StatelessWidget {
@@ -184,6 +184,37 @@ class ReportDetailsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+
+                    ///Delete Button (only showed if isOwnReport)
+                    reportData.isOwnReport ?? false
+                        ? Container(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                showLoadingSnackBar(
+                                    context, 'Löschen wird übermittelt...');
+                                bool successful =
+                                    await ReportFunctions.deleteReport(
+                                        reportData.id!);
+                                print('REPORT LÖSCHEN: $successful');
+                                showResponseSnackBar(
+                                    context,
+                                    successful,
+                                    'Meldung wurde erfolgreich gelöscht!',
+                                    'Fehler beim Löschen der Meldung!');
+                                if (successful) {}
+                                Navigator.pop(context);
+                              },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.red),
+                              ),
+                              child: const Text(
+                                "Meldung löschen",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ))
+                        : Container()
                   ],
                 ),
               )

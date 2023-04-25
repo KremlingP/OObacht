@@ -49,3 +49,31 @@ List<Widget> getRepeatingChips(
 
   return chips;
 }
+
+void showLoadingSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),
+    ),
+  );
+}
+
+void showResponseSnackBar(BuildContext context, bool successful,
+    String successString, String failString) {
+  if (successful) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(successString),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(failString),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+}
