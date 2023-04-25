@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/report.dart';
+import 'package:oobacht/utils/dialoges.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
@@ -190,21 +191,7 @@ class ReportDetailsScreen extends StatelessWidget {
                         ? Container(
                             padding: const EdgeInsets.only(top: 10.0),
                             child: ElevatedButton(
-                              onPressed: () async {
-                                showLoadingSnackBar(
-                                    context, 'Löschen wird übermittelt...');
-                                bool successful =
-                                    await ReportFunctions.deleteReport(
-                                        reportData.id!);
-                                print('REPORT LÖSCHEN: $successful');
-                                showResponseSnackBar(
-                                    context,
-                                    successful,
-                                    'Meldung wurde erfolgreich gelöscht!',
-                                    'Fehler beim Löschen der Meldung!');
-                                if (successful) {}
-                                Navigator.pop(context);
-                              },
+                              onPressed: () => _deleteReport(context),
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all(Colors.red),
@@ -223,5 +210,24 @@ class ReportDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _deleteReport(BuildContext context) async {
+    //Approve Dialog
+    final action = await Dialogs.yesAbortDialog(
+        context,
+        Icons.delete,
+        "Meldung löschen?",
+        "Wollen Sie die Meldung wirklich unwiderruflich löschen?");
+    if (action == DialogAction.yes) {
+      showLoadingSnackBar(context, 'Löschen wird übermittelt...');
+      bool successful = await ReportFunctions.deleteReport(reportData.id!);
+      showResponseSnackBar(
+          context,
+          successful,
+          'Meldung wurde erfolgreich gelöscht!',
+          'Fehler beim Löschen der Meldung!');
+      Navigator.pop(context);
+    }
   }
 }
