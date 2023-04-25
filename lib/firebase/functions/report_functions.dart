@@ -40,6 +40,25 @@ class ReportFunctions {
     return [];
   }
 
+  static Future<List<Report>> getOwnReports() async {
+    const functionName = 'getOwnReports';
+
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
+
+    try {
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        final reports = result.data.map((e) => Report.fromJson(e)).toList();
+
+        return Future.value(List<Report>.from(reports));
+      }
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
+    }
+    return [];
+  }
+
   static Future<bool> createReport(Report report) async {
     const functionName = 'createReport';
 
@@ -80,7 +99,7 @@ class ReportFunctions {
 
     try {
       final HttpsCallableResult result =
-          await callable.call(<String, String>{'id': reportId});
+      await callable.call(<String, String>{'id': reportId});
 
       return result.data;
     } on FirebaseFunctionsException catch (error) {
@@ -88,5 +107,29 @@ class ReportFunctions {
     }
 
     return false;
+  }
+
+  static Future<bool> createComplaint(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createComplaint"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
+  }
+
+  static Future<bool> createConcluded(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createConcluded"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
   }
 }
