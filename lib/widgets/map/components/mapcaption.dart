@@ -1,8 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
+import '/utils/list_unique.dart';
 import '../../../../../logic/classes/report.dart';
 
 class MapCaption extends StatelessWidget {
@@ -17,6 +15,7 @@ class MapCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Positioned(
       top: 10,
       left: 10,
@@ -36,22 +35,27 @@ class MapCaption extends StatelessWidget {
             DataColumn(label: Text('Icon')),
             DataColumn(label: Text('NAME')),
           ],
-          rows: reportsList.map((e) => getDataRowForReport(e)).toList(),
+          rows: reportsList
+              .map((e) => getDataRowForReport(e, theme))
+              .toList()
+              //compares toString of child => name of group and eliminates duplicates
+              .unique((dr) => dr.cells.last.child.toString()),
         ),
       ),
     );
   }
 
-  DataRow getDataRowForReport(Report report) {
+  DataRow getDataRowForReport(Report report, ThemeData theme) {
     if (report.groups.length > 1 && !multipleCategoriesSet) {
       multipleCategoriesSet = true;
-      return const DataRow(
+      return DataRow(
         cells: [
-          DataCell(
+          const DataCell(
             Icon(Icons.category, color: Colors.grey),
           ),
           DataCell(
-            Text("Mehrere Kategorien"),
+            Text("Mehrere Kategorien",
+                style: TextStyle(color: theme.primaryColor)),
           ),
         ],
       );
@@ -62,7 +66,8 @@ class MapCaption extends StatelessWidget {
           Icon(report.groups[0].icon, color: report.groups[0].color),
         ),
         DataCell(
-          Text(report.groups[0].name),
+          Text(report.groups[0].name,
+              style: TextStyle(color: theme.primaryColor)),
         ),
       ],
     );

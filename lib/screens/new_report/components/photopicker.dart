@@ -89,7 +89,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
 
   imageFromGallery() async {
     XFile? pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
+        .pickImage(source: ImageSource.gallery, imageQuality: 100);
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
@@ -100,7 +100,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
 
   imageFromCamera() async {
     XFile? pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.camera, maxHeight: 200, maxWidth: 200);
+        .pickImage(source: ImageSource.camera, imageQuality: 100);
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);

@@ -5,6 +5,8 @@ CustomTheme currentTheme = CustomTheme();
 class CustomTheme with ChangeNotifier {
   static bool _isDarkTheme = false;
 
+  static Color darkModeBackgroundColor = const Color.fromRGBO(53, 52, 51, 1);
+
   ThemeMode get currentTheme => _isDarkTheme ? ThemeMode.dark : ThemeMode.light;
 
   void toggleTheme() {
@@ -25,6 +27,7 @@ class CustomTheme with ChangeNotifier {
       ),
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
           .copyWith(background: Colors.white),
+      cardColor: Colors.white,
     );
   }
 
@@ -40,7 +43,8 @@ class CustomTheme with ChangeNotifier {
             UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
       ),
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
-          .copyWith(background: const Color.fromRGBO(53, 52, 51, 1)),
+          .copyWith(background: darkModeBackgroundColor),
+      cardColor: darkModeBackgroundColor,
     );
   }
 }

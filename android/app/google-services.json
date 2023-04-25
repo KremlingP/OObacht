@@ -45,6 +45,13 @@
             {
               "client_id": "786574581911-d96ng3pahcg3ae3c5ee2i4g0q668b0v0.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "786574581911-308lt9s32btheh1i2fkr7knnv45182jn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "de.dhbw.oobacht"
+              }
             }
           ]
         }
