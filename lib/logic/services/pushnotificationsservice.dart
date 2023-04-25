@@ -2,6 +2,7 @@ import 'package:context_holder/context_holder.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
+import 'package:oobacht/globals.dart' as globals;
 
 class PushNotificationService {
   final FirebaseMessaging _fcm;
@@ -35,7 +36,11 @@ class PushNotificationService {
   }
 
   Future<void> sendFcmTokenToServer(String fcmToken) async {
-    UserFunctions.updateFcmToken(fcmToken);
+    if(globals.pushNotificationsActivated) {
+      UserFunctions.updateFcmToken(fcmToken);
+    } else {
+      UserFunctions.updateFcmToken("");
+    }
   }
 
   Future<void> showNotificationWhileAppRunning(String title, String description) async {
