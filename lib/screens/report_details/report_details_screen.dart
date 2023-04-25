@@ -130,13 +130,9 @@ class ReportDetailsScreen extends StatelessWidget {
                   ? Container()
                   : SizedBox(
                       height: shortestViewportWidth * 0.5,
-                      child: Container(
-                        color: Colors.cyanAccent,
-                      ),
-                      // child: Image.file(
-                      //   imageFile!,
-                      //   fit: BoxFit.cover,
-                      // ),
+                      child: Image.network(reportData.image,
+                      fit: BoxFit.cover,
+                        ),
                     ),
               Container(
                 padding: const EdgeInsets.all(10.0),
