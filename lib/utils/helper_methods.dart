@@ -19,7 +19,7 @@ List<Widget> getGroupChips(List<Group> groups) {
         backgroundColor: group.color,
         avatar: CircleAvatar(
           backgroundColor: group.color,
-          child: Icon(group.icon, color: Colors.white),
+          child: ImageIcon(group.icon, color: Colors.white),
         ),
       ),
     );

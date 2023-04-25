@@ -63,7 +63,7 @@ class MapCaption extends StatelessWidget {
     return DataRow(
       cells: [
         DataCell(
-          Icon(report.groups[0].icon, color: report.groups[0].color),
+          ImageIcon(report.groups[0].icon, color: report.groups[0].color),
         ),
         DataCell(
           Text(report.groups[0].name,

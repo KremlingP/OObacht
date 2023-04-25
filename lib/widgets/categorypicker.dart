@@ -56,10 +56,12 @@ class _CategoryPickerState extends State<CategoryPicker> {
                   context: context,
                   builder: (context) {
                     /// StatefulBuilder to rebuild the bottom sheet
-                    return StatefulBuilder(builder: (BuildContext context, StateSetter setModalState) {
+                    return StatefulBuilder(builder:
+                        (BuildContext context, StateSetter setModalState) {
                       /// Padding to make the bottom sheet move with the keyboard
                       return Padding(
-                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
                           child: SizedBox(
                               height: shortestViewportWidth * 0.7,
                               child: Column(
@@ -81,41 +83,51 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                                 SizedBox(
                                                     width: 200,
                                                     child: TextField(
-                                                      controller: _searchQueryController,
+                                                      controller:
+                                                          _searchQueryController,
                                                       autofocus: true,
-                                                      decoration: InputDecoration(
+                                                      decoration:
+                                                          InputDecoration(
                                                         hintText: "Suchen...",
-                                                        border: InputBorder.none,
-                                                        hintStyle: TextStyle(color: theme.primaryColor),
+                                                        border:
+                                                            InputBorder.none,
+                                                        hintStyle: TextStyle(
+                                                            color: theme
+                                                                .primaryColor),
                                                       ),
-                                                      cursorColor: theme.primaryColor,
+                                                      cursorColor:
+                                                          theme.primaryColor,
                                                       style: TextStyle(
-                                                          color: theme.primaryColor,
-                                                          fontSize: 16.0
-                                                      ),
+                                                          color: theme
+                                                              .primaryColor,
+                                                          fontSize: 16.0),
                                                       onChanged: (query) {
                                                         queryText = query;
-                                                        shownCategories = widget.categories.where((element) =>
-                                                            element.name.toLowerCase().contains(queryText.toLowerCase())
-                                                        ).toList();
+                                                        shownCategories = widget
+                                                            .categories
+                                                            .where((element) => element
+                                                                .name
+                                                                .toLowerCase()
+                                                                .contains(queryText
+                                                                    .toLowerCase()))
+                                                            .toList();
                                                         setModalState(() {});
                                                       },
                                                     ))
                                                 :
 
                                                 /// Title
-                                               Text(
-                                                'Kategorien',
-                                                style: TextStyle(
-                                                    color: theme.primaryColor,
-                                                    fontWeight: FontWeight.w900,
-                                                    fontSize: 20.0
-                                                ),
-                                                maxLines: 1,
-                                              ),
-
+                                                Text(
+                                                    'Kategorien',
+                                                    style: TextStyle(
+                                                        color:
+                                                            theme.primaryColor,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        fontSize: 20.0),
+                                                    maxLines: 1,
+                                                  ),
                                             const Spacer(),
-
                                             _isSearching
                                                 ?
 
@@ -125,11 +137,17 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                                         const Icon(Icons.clear),
                                                     onPressed: () {
                                                       setModalState(() {
-                                                        _searchQueryController.clear();
+                                                        _searchQueryController
+                                                            .clear();
                                                         queryText = "";
-                                                        shownCategories = widget.categories.where((element) =>
-                                                            element.name.toLowerCase().contains(queryText.toLowerCase())
-                                                        ).toList();
+                                                        shownCategories = widget
+                                                            .categories
+                                                            .where((element) => element
+                                                                .name
+                                                                .toLowerCase()
+                                                                .contains(queryText
+                                                                    .toLowerCase()))
+                                                            .toList();
                                                         setModalState(() {
                                                           _isSearching = false;
                                                         });
@@ -160,42 +178,78 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                       alignment: WrapAlignment.start,
                                       direction: Axis.horizontal,
                                       children: shownCategories
-                                          .map((group) => ActionChip(
+                                          .map(
+                                            (group) => ActionChip(
                                               label: Text(
                                                 group.name,
-                                                style: const TextStyle(color: Colors.black),
+                                                style: const TextStyle(
+                                                    color: Colors.black),
                                               ),
-                                              backgroundColor:
-                                                widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty
+                                              backgroundColor: widget
+                                                      .selectedCategories
+                                                      .where((element) =>
+                                                          element.id ==
+                                                          group.id)
+                                                      .isNotEmpty
                                                   ? theme.colorScheme.primary
-                                                  : theme.colorScheme.primary.withOpacity(0.4),
+                                                  : theme.colorScheme.primary
+                                                      .withOpacity(0.4),
                                               avatar: CircleAvatar(
-                                                backgroundColor:
-                                                  widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty
-                                                    ? theme.colorScheme.primary
-                                                    : theme.colorScheme.primary.withOpacity(0.4),
-                                                child: Icon(group.icon, color: Colors.white),
-                                              ),
+                                                  backgroundColor: widget
+                                                          .selectedCategories
+                                                          .where((element) =>
+                                                              element.id ==
+                                                              group.id)
+                                                          .isNotEmpty
+                                                      ? theme
+                                                          .colorScheme.primary
+                                                      : theme
+                                                          .colorScheme.primary
+                                                          .withOpacity(0.4),
+                                                  child: ImageIcon(group.icon,
+                                                      color: Colors.white)),
                                               onPressed: () {
                                                 setState(() {
-                                                  if (widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty) {
-                                                    widget.selectedCategories.remove(widget.selectedCategories
-                                                        .where((element) => element.id == group.id).first);
-                                                    if (widget.superScreen == "profile") {
-                                                      GroupFunctions.unsubscribeGroup(group);
+                                                  if (widget.selectedCategories
+                                                      .where((element) =>
+                                                          element.id ==
+                                                          group.id)
+                                                      .isNotEmpty) {
+                                                    widget.selectedCategories
+                                                        .remove(widget
+                                                            .selectedCategories
+                                                            .where((element) =>
+                                                                element.id ==
+                                                                group.id)
+                                                            .first);
+                                                    if (widget.superScreen ==
+                                                        "profile") {
+                                                      GroupFunctions
+                                                          .unsubscribeGroup(
+                                                              group);
                                                     }
                                                   } else {
-                                                    widget.selectedCategories.add(group);
-                                                    if (widget.superScreen == "profile") {
-                                                      GroupFunctions.subscribeGroup(group);
+                                                    widget.selectedCategories
+                                                        .add(group);
+                                                    if (widget.superScreen ==
+                                                        "profile") {
+                                                      GroupFunctions
+                                                          .subscribeGroup(
+                                                              group);
                                                     }
                                                   }
-                                                  if (widget.superScreen == "newReport") {
-                                                    NewReportScreen.of(context)?.selectedCategories =
-                                                        widget.selectedCategories;
-                                                  } else if (widget.superScreen == "profile") {
+                                                  if (widget.superScreen ==
+                                                      "newReport") {
+                                                    NewReportScreen.of(context)
+                                                            ?.selectedCategories =
+                                                        widget
+                                                            .selectedCategories;
+                                                  } else if (widget
+                                                          .superScreen ==
+                                                      "profile") {
                                                   } else {
-                                                    throw Exception("Unknown superScreen: ${widget.superScreen}");
+                                                    throw Exception(
+                                                        "Unknown superScreen: ${widget.superScreen}");
                                                   }
                                                 });
                                                 setModalState(() {});
@@ -233,34 +287,41 @@ class _CategoryPickerState extends State<CategoryPicker> {
             alignment: WrapAlignment.start,
             direction: Axis.horizontal,
             children: widget.selectedCategories
-                .map((group) => ActionChip(
-                  label: Text(
-                    group.name,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: group.color,
-                  avatar: CircleAvatar(
+                .map(
+                  (group) => ActionChip(
+                    label: Text(
+                      group.name,
+                      style: const TextStyle(color: Colors.white),
+                    ),
                     backgroundColor: group.color,
-                    child: Icon(group.icon, color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: group.color,
+                      child: ImageIcon(group.icon, color: Colors.white),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (widget.selectedCategories
+                            .where((element) => element.id == group.id)
+                            .isNotEmpty) {
+                          widget.selectedCategories.remove(widget
+                              .selectedCategories
+                              .where((element) => element.id == group.id)
+                              .first);
+                        }
+                        if (widget.superScreen == "newReport") {
+                          NewReportScreen.of(context)?.selectedCategories =
+                              widget.selectedCategories;
+                        } else if (widget.superScreen == "profile") {
+                          GroupFunctions.unsubscribeGroup(group);
+                        } else {
+                          throw Exception(
+                              "Unknown superScreen: ${widget.superScreen}");
+                        }
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      if (widget.selectedCategories.where((element) => element.id == group.id).isNotEmpty) {
-                        widget.selectedCategories.remove(widget.selectedCategories
-                            .where((element) => element.id == group.id).first);
-                      }
-                      if (widget.superScreen == "newReport") {
-                        NewReportScreen.of(context)?.selectedCategories =
-                            widget.selectedCategories;
-                      } else if (widget.superScreen == "profile") {
-                        GroupFunctions.unsubscribeGroup(group);
-                      } else {
-                        throw Exception("Unknown superScreen: ${widget.superScreen}");
-                      }
-                    });
-                  },
-                ),
-            ).toList(),
+                )
+                .toList(),
           )
         ],
       ),

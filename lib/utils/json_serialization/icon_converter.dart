@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-//TODO implement ColorConverter
-
-class IconConverter implements JsonConverter<IconData, String> {
+class IconConverter implements JsonConverter<NetworkImage, String> {
   const IconConverter();
 
   @override
-  fromJson(String? iconUrl) => Icons.ten_k;
+  fromJson(String? iconUrl) => NetworkImage(iconUrl ?? '');
 
   @override
-  String toJson(IconData iconData) {
+  String toJson(NetworkImage imageIcon) {
     return "";
   }
 }

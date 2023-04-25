@@ -23,8 +23,14 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList,
           Colors.grey,
           theme.colorScheme.background);
     } else {
+      //TODO FH NetworkImage irgendwie zu IconData umwandeln oder direkt anders implementieren
+      //https://stackoverflow.com/questions/60202118/how-to-show-network-image-also-customize-this-image-as-marker-in-map-flutter
+      //report.groups[0].icon
+
+      IconData iconData = Icons.ten_k;
+
       icon = await markerGenerator.createBitmapDescriptorFromIconData(
-          report.groups[0].icon,
+          iconData,
           theme.primaryColor,
           report.groups[0].color,
           theme.colorScheme.background);
