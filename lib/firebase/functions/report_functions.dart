@@ -40,6 +40,25 @@ class ReportFunctions {
     return [];
   }
 
+  static Future<List<Report>> getOwnReports() async {
+    const functionName = 'getOwnReports';
+
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
+
+    try {
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        final reports = result.data.map((e) => Report.fromJson(e)).toList();
+
+        return Future.value(List<Report>.from(reports));
+      }
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
+    }
+    return [];
+  }
+
   static Future<bool> createReport(Report report) async {
     const functionName = 'createReport';
 
