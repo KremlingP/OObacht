@@ -91,6 +91,24 @@ class ReportFunctions {
     return false;
   }
 
+  static Future<bool> deleteReport(String reportId) async {
+    const functionName = 'deleteReport';
+
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
+
+    try {
+      final HttpsCallableResult result =
+      await callable.call(<String, String>{'id': reportId});
+
+      return result.data;
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
+    }
+
+    return false;
+  }
+
   static Future<bool> createComplaint(String reportId) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
       UrlHelper.getFunctionUrl("createComplaint"),
