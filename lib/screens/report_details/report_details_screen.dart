@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
@@ -33,11 +34,81 @@ class ReportDetailsScreen extends StatelessWidget {
                       value: 0,
                       textStyle: TextStyle(color: theme.primaryColor),
                       child: const Text("Als veraltet melden"),
+                      onTap: () async {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Deine Meldung wird übermittelt...'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                        bool success = await ReportFunctions.createConcluded(reportData.id!);
+                        if(success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Die Meldung wurde als veraltet gemeldet.'),
+                              duration: const Duration(seconds: 3),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Du hast diese Meldung bereits gemeldet.'),
+                              duration: const Duration(seconds: 3),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     PopupMenuItem<int>(
                       value: 1,
                       textStyle: TextStyle(color: theme.primaryColor),
                       child: const Text("Als unangemessen melden"),
+                      onTap: () async {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Deine Meldung wird übermittelt...'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                        bool success = await ReportFunctions.createComplaint(reportData.id!);
+                        if(success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Die Meldung wurde als unangemessen gemeldet.'),
+                              duration: const Duration(seconds: 3),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Du hast diese Meldung bereits gemeldet.'),
+                              duration: const Duration(seconds: 3),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ];
                 },

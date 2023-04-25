@@ -71,4 +71,28 @@ class ReportFunctions {
     }
     return false;
   }
+
+  static Future<bool> createComplaint(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createComplaint"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
+  }
+
+  static Future<bool> createConcluded(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createConcluded"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
+  }
 }
