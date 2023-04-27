@@ -174,7 +174,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       repeatingReport
                           .map((e) => e as RepeatingReportsEnum)
                           .toList(),
-                      null,
+                      true,
                       '');
                   ReportFunctions.createReport(report);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
