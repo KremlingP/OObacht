@@ -333,8 +333,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     List<Report> reports = showOnlyOwn
         ? await ReportFunctions.getOwnReports()
         : await ReportFunctions.getAllReports();
-    print('>>>GROUPS: $selectedGroups');
-    print('>>>QueryText: $queryText');
 
     if (selectedGroups.isNotEmpty) {
       reports = reports
