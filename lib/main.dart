@@ -11,6 +11,7 @@ import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:oobacht/globals.dart' as globals;
 
 import 'firebase/firebase_options.dart';
 
@@ -97,6 +98,10 @@ class _OobachtAppState extends State<OobachtApp> {
       if (prefs.getBool('darkMode') != null) {
         //standard is LightMode, if DarkMode is true toggle theme
         if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
+      }
+      if(prefs.getBool('pushNotifications') != null){
+        //standard is true
+        if(prefs.getBool('pushNotifications') == false) globals.pushNotificationsActivated = false;
       }
     });
   }
