@@ -27,7 +27,8 @@ Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
             .map((e) => $enumDecode(_$RepeatingReportsEnumEnumMap, e))
             .toList()
         : [],
-    json['isOwnReport'] as bool?);
+    json['isOwnReport'] as bool?,
+    json['institution'] as String);
 
 Map<String, dynamic> _$ReportToJson(Report instance) => <String, dynamic>{
       'id': instance.id,

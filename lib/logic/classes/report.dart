@@ -21,6 +21,7 @@ class Report {
   final List<String> alternatives;
   final List<RepeatingReportsEnum> repeatingReport;
   final bool? isOwnReport;
+  final String institution;
 
   Report(
       this.id,
@@ -32,7 +33,8 @@ class Report {
       this.image,
       this.alternatives,
       this.repeatingReport,
-      this.isOwnReport);
+      this.isOwnReport,
+      this.institution);
 
   /// Connect the generated [_$ReportFromJson] function to the `fromJson`
   /// factory.
