@@ -182,8 +182,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white, fontSize: 16.0),
       onChanged: (query) {
-        queryText = query;
-        updateSearchQuery();
+        setState(() {
+          queryText = query;
+          filteredReports = _getFilteredReports();
+        });
       },
     );
   }
@@ -242,9 +244,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             if (value == 0) {
               _showCategoryPicker(context, theme);
             } else if (value == 1) {
-              //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
-              ReportFunctions.getAllReports();
-              showOnlyOwn = !showOnlyOwn;
+              setState(() {
+                showOnlyOwn = !showOnlyOwn;
+                filteredReports = _getFilteredReports();
+              });
             }
           }),
     ];
@@ -256,19 +259,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
     setState(() {
       _isSearching = true;
-    });
-  }
-
-  void updateSearchQuery() async {
-    List<Report> results = [];
-    if (queryText.isEmpty) {
-      results = await ReportFunctions.getAllReports();
-    } else {
-      results = await _getFilteredReports();
-    }
-
-    setState(() {
-      filteredReports = Future.value(results);
     });
   }
 
@@ -284,7 +274,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     setState(() {
       _searchQueryController.clear();
       queryText = "";
-      updateSearchQuery();
+      filteredReports = _getFilteredReports();
     });
   }
 
@@ -340,7 +330,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   Future<List<Report>> _getFilteredReports() async {
-    List<Report> reports = await ReportFunctions.getAllReports();
+    List<Report> reports = showOnlyOwn
+        ? await ReportFunctions.getOwnReports()
+        : await ReportFunctions.getAllReports();
+    print('>>>GROUPS: $selectedGroups');
+    print('>>>QueryText: $queryText');
+
     if (selectedGroups.isNotEmpty) {
       reports = reports
           .where((report) => report.groups.any(
