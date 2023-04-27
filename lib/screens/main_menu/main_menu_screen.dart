@@ -109,7 +109,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           if (snapshot.hasData) {
             return FloatingActionButton.extended(
               label: const Text('Neue Meldung'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               onPressed: () => _newReport(snapshot.data),
               tooltip: 'Neue Meldung erstellen',
