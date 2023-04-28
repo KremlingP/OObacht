@@ -6,11 +6,18 @@ import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
 
-class ReportDetailsScreen extends StatelessWidget {
+class ReportDetailsScreen extends StatefulWidget {
   final Report reportData;
 
   const ReportDetailsScreen({Key? key, required this.reportData})
       : super(key: key);
+
+  @override
+  State<ReportDetailsScreen> createState() => _ReportDetailsScreenState();
+}
+
+class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
+  bool isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +33,7 @@ class ReportDetailsScreen extends StatelessWidget {
           ),
           centerTitle: true,
           actions: [
-            reportData.isOwnReport
+            widget.reportData.isOwnReport
                 ? Container()
                 : PopupMenuButton(
                     icon: const Icon(Icons.error),
@@ -46,7 +53,7 @@ class ReportDetailsScreen extends StatelessWidget {
                             );
                             bool success =
                                 await ReportFunctions.createConcluded(
-                                    reportData.id!);
+                                    widget.reportData.id!);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -83,18 +90,18 @@ class ReportDetailsScreen extends StatelessWidget {
                               const SnackBar(
                                 content:
                                     Text('Deine Meldung wird übermittelt...'),
-                                duration: Duration(seconds: 3),
+                                duration: Duration(seconds: 2),
                               ),
                             );
                             bool success =
                                 await ReportFunctions.createComplaint(
-                                    reportData.id!);
+                                    widget.reportData.id!);
                             if (success) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text(
                                       'Die Meldung wurde als unangemessen gemeldet.'),
-                                  duration: const Duration(seconds: 3),
+                                  duration: const Duration(seconds: 2),
                                   action: SnackBarAction(
                                     label: 'OK',
                                     onPressed: () {},
@@ -106,7 +113,7 @@ class ReportDetailsScreen extends StatelessWidget {
                                 SnackBar(
                                   content: const Text(
                                       'Du hast diese Meldung bereits gemeldet.'),
-                                  duration: const Duration(seconds: 3),
+                                  duration: const Duration(seconds: 2),
                                   action: SnackBarAction(
                                     label: 'OK',
                                     onPressed: () {},
@@ -125,12 +132,12 @@ class ReportDetailsScreen extends StatelessWidget {
           child: Column(
             children: [
               ///Show Picture if not null or empty
-              reportData.image == null || reportData.image.isEmpty
+              widget.reportData.image == null || widget.reportData.image.isEmpty
                   ? Container()
                   : SizedBox(
                       height: shortestViewportWidth * 0.5,
                       child: Image.network(
-                        reportData.image,
+                        widget.reportData.image,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -141,7 +148,7 @@ class ReportDetailsScreen extends StatelessWidget {
                   children: [
                     ///Title
                     Text(
-                      reportData.title,
+                      widget.reportData.title,
                       style: TextStyle(
                           fontWeight: FontWeight.w900,
                           color: theme.primaryColor),
@@ -155,13 +162,13 @@ class ReportDetailsScreen extends StatelessWidget {
                       runSpacing: -6.0,
                       alignment: WrapAlignment.start,
                       direction: Axis.horizontal,
-                      children: getGroupChips(reportData.groups),
+                      children: getGroupChips(widget.reportData.groups),
                     ),
                     const SizedBox(height: 5.0),
 
                     ///Description
                     Text(
-                      reportData.description,
+                      widget.reportData.description,
                       style: TextStyle(color: theme.primaryColor),
                       overflow: TextOverflow.visible,
                     ),
@@ -175,7 +182,7 @@ class ReportDetailsScreen extends StatelessWidget {
                           border: Border.all(
                               color: theme.colorScheme.primary, width: 3.0)),
                       child: MapWidget(
-                        reports: [reportData],
+                        reports: [widget.reportData],
                         showMarkerDetails: false,
                         showMapCaption: false,
                       ),
@@ -183,7 +190,7 @@ class ReportDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 20.0),
 
                     /// Repeating report
-                    reportData.repeatingReport.isEmpty
+                    widget.reportData.repeatingReport.isEmpty
                         ? Container()
                         : Center(
                             child: Column(
@@ -199,7 +206,7 @@ class ReportDetailsScreen extends StatelessWidget {
                                   alignment: WrapAlignment.start,
                                   direction: Axis.horizontal,
                                   children: getRepeatingChips(
-                                      reportData.repeatingReport, theme),
+                                      widget.reportData.repeatingReport, theme),
                                 ),
                               ],
                             ),
@@ -222,11 +229,12 @@ class ReportDetailsScreen extends StatelessWidget {
                                 )),
                           ),
                           const SizedBox(height: 10),
-                          reportData.alternatives.isNotEmpty
+                          widget.reportData.alternatives.isNotEmpty
                               ? SizedBox(
                                   height: 150,
                                   child: ListView.builder(
-                                    itemCount: reportData.alternatives.length,
+                                    itemCount:
+                                        widget.reportData.alternatives.length,
                                     itemBuilder: (context, index) {
                                       return ListTile(
                                         leading: CircleAvatar(
@@ -236,7 +244,8 @@ class ReportDetailsScreen extends StatelessWidget {
                                           child: Text('${index + 1}'),
                                         ),
                                         title: Text(
-                                            reportData.alternatives[index],
+                                            widget
+                                                .reportData.alternatives[index],
                                             style: TextStyle(
                                                 color: theme.primaryColor)),
                                       );
@@ -253,15 +262,15 @@ class ReportDetailsScreen extends StatelessWidget {
                     ),
 
                     ///Delete Button (only showed if isOwnReport)
-                    reportData.isOwnReport
+                    widget.reportData.isOwnReport
                         ? Container(
                             padding: const EdgeInsets.only(top: 10.0),
                             child: ElevatedButton(
-                              onPressed: () => _deleteReport(context),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.red),
-                              ),
+                              onPressed: () =>
+                                  isDeleting ? null : _deleteReport(context),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      isDeleting ? Colors.grey : Colors.red),
                               child: const Text(
                                 "Meldung löschen",
                                 style: TextStyle(color: Colors.white),
@@ -286,14 +295,18 @@ class ReportDetailsScreen extends StatelessWidget {
         "Meldung löschen?",
         "Wollen Sie die Meldung wirklich unwiderruflich löschen?");
     if (action == DialogAction.yes) {
+      setState(() {
+        isDeleting = true;
+      });
       showLoadingSnackBar(context, 'Löschen wird übermittelt...');
-      bool successful = await ReportFunctions.deleteReport(reportData.id!);
+      bool successful =
+          await ReportFunctions.deleteReport(widget.reportData.id!);
+      Navigator.pop(context);
       showResponseSnackBar(
           context,
           successful,
           'Meldung wurde erfolgreich gelöscht!',
           'Fehler beim Löschen der Meldung!');
-      Navigator.pop(context);
     }
   }
 }

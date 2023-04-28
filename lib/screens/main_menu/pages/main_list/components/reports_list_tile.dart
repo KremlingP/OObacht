@@ -6,8 +6,11 @@ import 'package:oobacht/utils/navigator_helper.dart' as navigator;
 
 class ReportsListTile extends StatelessWidget {
   final Report data;
+  final VoidCallback refreshMethod;
 
-  const ReportsListTile({Key? key, required this.data}) : super(key: key);
+  const ReportsListTile(
+      {Key? key, required this.data, required this.refreshMethod})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +106,9 @@ class ReportsListTile extends StatelessWidget {
   }
 
   goToReportDetails(BuildContext context, Report data) {
-    navigator.navigateToNewScreen(
-        newScreen: ReportDetailsScreen(reportData: data), context: context);
+    navigator
+        .navigateToNewScreen(
+            newScreen: ReportDetailsScreen(reportData: data), context: context)
+        .then((value) => {refreshMethod()});
   }
 }

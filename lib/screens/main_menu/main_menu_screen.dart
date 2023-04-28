@@ -188,7 +188,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             ),
             context: context)
         .then((value) {
-      setState(() {});
+      updateFilteredReports();
     });
   }
 
