@@ -32,99 +32,98 @@ class ReportDetailsScreen extends StatelessWidget {
           ),
           centerTitle: true,
           actions: [
-            PopupMenuButton(
-                icon: const Icon(Icons.error),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem<int>(
-                      value: 0,
-                      textStyle: TextStyle(color: theme.primaryColor),
-                      child: const Text("Als veraltet melden"),
-                      onTap: () async {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Deine Meldung wird übermittelt...'),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
-                        bool success = await ReportFunctions.createConcluded(reportData.id!);
-                        if(success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                  'Die Meldung wurde als veraltet gemeldet.'),
-                              duration: const Duration(seconds: 3),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
+            reportData.isOwnReport
+                ? Container()
+                : PopupMenuButton(
+                    icon: const Icon(Icons.error),
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem<int>(
+                          value: 0,
+                          textStyle: TextStyle(color: theme.primaryColor),
+                          child: const Text("Als veraltet melden"),
+                          onTap: () async {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Deine Meldung wird übermittelt...'),
+                                duration: Duration(seconds: 3),
                               ),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                  'Du hast diese Meldung bereits gemeldet.'),
-                              duration: const Duration(seconds: 3),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
+                            );
+                            bool success =
+                                await ReportFunctions.createConcluded(
+                                    reportData.id!);
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                      'Die Meldung wurde als veraltet gemeldet.'),
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                      'Du hast diese Meldung bereits gemeldet.'),
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        PopupMenuItem<int>(
+                          value: 1,
+                          textStyle: TextStyle(color: theme.primaryColor),
+                          child: const Text("Als unangemessen melden"),
+                          onTap: () async {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Deine Meldung wird übermittelt...'),
+                                duration: Duration(seconds: 3),
                               ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    PopupMenuItem<int>(
-                      value: 1,
-                      textStyle: TextStyle(color: theme.primaryColor),
-                      child: const Text("Als unangemessen melden"),
-                      onTap: () async {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Deine Meldung wird übermittelt...'),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
-                        bool success = await ReportFunctions.createComplaint(reportData.id!);
-                        if(success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                  'Die Meldung wurde als unangemessen gemeldet.'),
-                              duration: const Duration(seconds: 3),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                  'Du hast diese Meldung bereits gemeldet.'),
-                              duration: const Duration(seconds: 3),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ];
-                },
-                onSelected: (value) {
-                  if (value == 0) {
-                    //TODO "Veraltet" ans Backend senden
-                  } else if (value == 1) {
-                    //TODO "Unangemessen" ans Backend senden
-                  }
-                }),
+                            );
+                            bool success =
+                                await ReportFunctions.createComplaint(
+                                    reportData.id!);
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                      'Die Meldung wurde als unangemessen gemeldet.'),
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text(
+                                      'Du hast diese Meldung bereits gemeldet.'),
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ];
+                    }),
           ]),
       backgroundColor: theme.colorScheme.background,
       body: SafeArea(
@@ -273,7 +272,7 @@ class ReportDetailsScreen extends StatelessWidget {
                     ),
 
                     ///Delete Button (only showed if isOwnReport)
-                    reportData.isOwnReport ?? false
+                    reportData.isOwnReport
                         ? Container(
                             padding: const EdgeInsets.only(top: 10.0),
                             child: ElevatedButton(

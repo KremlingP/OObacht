@@ -26,6 +26,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   late Future<List<Report>> filteredReports;
+  bool _isCurrentlyUpdating = false;
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
@@ -70,38 +71,66 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         width: viewportWidth * 0.65,
         child: const MainMenuDrawer(),
       ),
+      onDrawerChanged: (wasOpened) => {
+        if (!wasOpened) {updateFilteredReports()}
+      },
       body: SafeArea(
-          child: FutureBuilder(
-        future: filteredReports,
-        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasError) {
-            return const ErrorTextWithIcon(
-                text:
-                    "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
-                icon: Icons.wifi_off);
-          }
-          if (snapshot.hasData) {
-            return PageView(
-              controller: _pageViewController,
-              children: [
-                MapWidget(
-                  reports: snapshot.data,
-                  showMarkerDetails: true,
-                  showMapCaption: true,
-                ),
-                MainList(reports: snapshot.data),
-              ],
-              onPageChanged: (index) {
-                setState(() {
-                  filteredReports = _getFilteredReports();
-                  _activePageIndex = index;
-                });
-              },
-            );
-          } else {
-            return const Center(child: LoadingHint(text: "Lade Meldungen..."));
-          }
-        },
+          child: Stack(
+        children: [
+          FutureBuilder(
+            future: filteredReports,
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasError) {
+                return const ErrorTextWithIcon(
+                    text:
+                        "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
+                    icon: Icons.wifi_off);
+              }
+              if (snapshot.hasData) {
+                return PageView(
+                  controller: _pageViewController,
+                  children: [
+                    MapWidget(
+                      reports: snapshot.data,
+                      showMarkerDetails: true,
+                      showMapCaption: true,
+                    ),
+                    MainList(
+                        reports: snapshot.data,
+                        refreshMethod: updateFilteredReports),
+                  ],
+                  onPageChanged: (index) {
+                    setState(() {
+                      updateFilteredReports();
+                      _activePageIndex = index;
+                    });
+                  },
+                );
+              } else {
+                return const Center(
+                    child: LoadingHint(text: "Lade Meldungen..."));
+              }
+            },
+          ),
+          _isCurrentlyUpdating
+              ? Container(
+                  color: Colors.black54,
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        "Aktualisiere Meldungen...",
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  )))
+              : Container(),
+        ],
       )),
       floatingActionButton: FutureBuilder(
         future: allGroups,
@@ -109,7 +138,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           if (snapshot.hasData) {
             return FloatingActionButton.extended(
               label: const Text('Neue Meldung'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               onPressed: () => _newReport(snapshot.data),
               tooltip: 'Neue Meldung erstellen',
@@ -182,8 +211,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white, fontSize: 16.0),
       onChanged: (query) {
-        queryText = query;
-        updateSearchQuery();
+        setState(() {
+          queryText = query;
+          updateFilteredReports();
+        });
       },
     );
   }
@@ -242,9 +273,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             if (value == 0) {
               _showCategoryPicker(context, theme);
             } else if (value == 1) {
-              //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
-              ReportFunctions.getAllReports();
-              showOnlyOwn = !showOnlyOwn;
+              setState(() {
+                showOnlyOwn = !showOnlyOwn;
+                updateFilteredReports();
+              });
             }
           }),
     ];
@@ -256,19 +288,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
     setState(() {
       _isSearching = true;
-    });
-  }
-
-  void updateSearchQuery() async {
-    List<Report> results = [];
-    if (queryText.isEmpty) {
-      results = await ReportFunctions.getAllReports();
-    } else {
-      results = await _getFilteredReports();
-    }
-
-    setState(() {
-      filteredReports = Future.value(results);
     });
   }
 
@@ -284,7 +303,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     setState(() {
       _searchQueryController.clear();
       queryText = "";
-      updateSearchQuery();
+      updateFilteredReports();
     });
   }
 
@@ -312,7 +331,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     onConfirm: (values) {
                       selectedGroups = values;
                       setState(() {
-                        filteredReports = _getFilteredReports();
+                        updateFilteredReports();
                       });
                     },
                     title: Text(
@@ -340,7 +359,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   Future<List<Report>> _getFilteredReports() async {
-    List<Report> reports = await ReportFunctions.getAllReports();
+    _isCurrentlyUpdating = true;
+    List<Report> reports = showOnlyOwn
+        ? await ReportFunctions.getOwnReports()
+        : await ReportFunctions.getAllReports();
+
     if (selectedGroups.isNotEmpty) {
       reports = reports
           .where((report) => report.groups.any(
@@ -353,6 +376,15 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               report.title.toLowerCase().contains(queryText.toLowerCase()))
           .toList();
     }
+    setState(() {
+      _isCurrentlyUpdating = false;
+    });
     return reports;
+  }
+
+  void updateFilteredReports() {
+    setState(() {
+      filteredReports = _getFilteredReports();
+    });
   }
 }

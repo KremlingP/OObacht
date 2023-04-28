@@ -7,13 +7,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/group.dart';
 import 'package:oobacht/logic/classes/repeating_reports_enum.dart';
-import 'package:oobacht/screens/main_menu/main_menu_screen.dart';
 import 'package:oobacht/screens/new_report/components/alternativepicker.dart';
 import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart';
+import 'package:oobacht/screens/new_report/components/input_component.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
 import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
 import 'package:oobacht/utils/map_utils.dart';
-import 'package:oobacht/utils/navigator_helper.dart';
 import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/widgets/error_text.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
@@ -72,62 +71,78 @@ class _NewReportScreenState extends State<NewReportScreen> {
             child: Form(
               key: _formKey,
               child: Padding(
-                padding: const EdgeInsets.all(50),
+                padding: const EdgeInsets.all(25),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     const TitleInputField(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     const DescriptionInputField(),
-                    const SizedBox(height: 20),
-                    CategoryPicker(
-                        superScreen: "newReport",
-                        categories: widget.categories,
-                        selectedCategories: selectedCategories),
-                    const SizedBox(height: 20),
-                    const PhotoPicker(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+
+                    /// Category Picker
+                    InputComponent(
+                      title: "Kategorien",
+                      child: CategoryPicker(
+                          superScreen: "newReport",
+                          categories: widget.categories,
+                          selectedCategories: selectedCategories),
+                    ),
+
+                    /// Photo Picker
+                    const InputComponent(
+                      title: "Bild",
+                      child: PhotoPicker(),
+                    ),
 
                     /// Alternative picker
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: theme.colorScheme.primary, width: 3.0)),
-                      child: const AlternativePicker(),
+                    const InputComponent(
+                      title: "Alternativen",
+                      child: AlternativePicker(),
                     ),
-                    const SizedBox(height: 20),
-                    const RepeatingPicker(),
-                    const SizedBox(height: 20),
+                    const SizedBox(
+                      height: 15.0,
+                    ),
+
+                    /// Repeating
+                    const InputComponent(
+                        title: "Wiederholung", child: RepeatingPicker()),
+
+                    const SizedBox(
+                      height: 15.0,
+                    ),
 
                     ///Map
-                    Container(
-                      height: shortestViewportWidth * 0.66,
-                      width: shortestViewportWidth * 0.66,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: theme.colorScheme.primary, width: 3.0)),
-                      child: FutureBuilder(
-                        future: widget.reports,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<dynamic> snapshot) {
-                          if (snapshot.hasError) {
-                            return const ErrorText(
-                                text: "Fehler beim Laden der Karte!");
-                          }
-                          if (snapshot.hasData) {
-                            return MapWidget(
-                              reports: snapshot.data,
-                              showMarkerDetails: false,
-                              showMapCaption: false,
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
+                    InputComponent(
+                      title: "Karte",
+                      child: Container(
+                        height: shortestViewportWidth * 0.66,
+                        width: shortestViewportWidth * 0.66,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: theme.colorScheme.primary, width: 3.0)),
+                        child: FutureBuilder(
+                          future: widget.reports,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return const ErrorText(
+                                  text: "Fehler beim Laden der Karte!");
+                            }
+                            if (snapshot.hasData) {
+                              return MapWidget(
+                                reports: snapshot.data,
+                                showMarkerDetails: false,
+                                showMapCaption: false,
+                              );
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
+                          },
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 55.0),
                   ],
                 ),
               ),
@@ -174,21 +189,21 @@ class _NewReportScreenState extends State<NewReportScreen> {
                       repeatingReport
                           .map((e) => e as RepeatingReportsEnum)
                           .toList(),
-                      null,
+                      true,
                       '');
                   ReportFunctions.createReport(report);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Meldung wurde gespeichert!')));
-                  navigateToNewScreen(
-                      newScreen: const MainMenuScreen(), context: context);
+                  Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Bitte alle Felder ausfüllen.')));
                 }
               },
-              label: const Text('Meldung erstellen'),
-              icon: const Icon(Icons.save),
-              backgroundColor: theme.colorScheme.primary,
+              label: const Text('Meldung erstellen',
+                  style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.save, color: Colors.white),
+              backgroundColor: Colors.green,
               foregroundColor: theme.primaryColor),
         ),
       ),

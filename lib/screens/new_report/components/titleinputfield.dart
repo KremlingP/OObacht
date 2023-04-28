@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../new_report_screen.dart';
@@ -22,10 +20,8 @@ class _TitleInputFieldState extends State<TitleInputField> {
       maxLines: 1,
       maxLength: 50,
       autocorrect: true,
-      onChanged: (value) => {
-        title = value ?? "",
-        NewReportScreen.of(context)?.title = title
-      },
+      onChanged: (value) =>
+          {title = value ?? "", NewReportScreen.of(context)?.title = title},
       decoration: InputDecoration(
         labelText: 'Titel',
         hintText: 'Gebe den Titel der Meldung ein...',
