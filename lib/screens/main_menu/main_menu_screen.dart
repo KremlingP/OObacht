@@ -26,6 +26,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   late Future<List<Report>> filteredReports;
+  bool _isCurrentlyUpdating = false;
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
@@ -71,37 +72,62 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         child: const MainMenuDrawer(),
       ),
       body: SafeArea(
-          child: FutureBuilder(
-        future: filteredReports,
-        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasError) {
-            return const ErrorTextWithIcon(
-                text:
-                    "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
-                icon: Icons.wifi_off);
-          }
-          if (snapshot.hasData) {
-            return PageView(
-              controller: _pageViewController,
-              children: [
-                MapWidget(
-                  reports: snapshot.data,
-                  showMarkerDetails: true,
-                  showMapCaption: true,
-                ),
-                MainList(reports: snapshot.data),
-              ],
-              onPageChanged: (index) {
-                setState(() {
-                  filteredReports = _getFilteredReports();
-                  _activePageIndex = index;
-                });
-              },
-            );
-          } else {
-            return const Center(child: LoadingHint(text: "Lade Meldungen..."));
-          }
-        },
+          child: Stack(
+        children: [
+          FutureBuilder(
+            future: filteredReports,
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasError) {
+                return const ErrorTextWithIcon(
+                    text:
+                        "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
+                    icon: Icons.wifi_off);
+              }
+              if (snapshot.hasData) {
+                return PageView(
+                  controller: _pageViewController,
+                  children: [
+                    MapWidget(
+                      reports: snapshot.data,
+                      showMarkerDetails: true,
+                      showMapCaption: true,
+                    ),
+                    MainList(
+                        reports: snapshot.data,
+                        refreshMethod: updateFilteredReports),
+                  ],
+                  onPageChanged: (index) {
+                    setState(() {
+                      updateFilteredReports();
+                      _activePageIndex = index;
+                    });
+                  },
+                );
+              } else {
+                return const Center(
+                    child: LoadingHint(text: "Lade Meldungen..."));
+              }
+            },
+          ),
+          _isCurrentlyUpdating
+              ? Container(
+                  color: Colors.black54,
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        "Aktualisiere Meldungen...",
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  )))
+              : Container(),
+        ],
       )),
       floatingActionButton: FutureBuilder(
         future: allGroups,
@@ -184,7 +210,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       onChanged: (query) {
         setState(() {
           queryText = query;
-          filteredReports = _getFilteredReports();
+          updateFilteredReports();
         });
       },
     );
@@ -246,7 +272,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             } else if (value == 1) {
               setState(() {
                 showOnlyOwn = !showOnlyOwn;
-                filteredReports = _getFilteredReports();
+                updateFilteredReports();
               });
             }
           }),
@@ -274,7 +300,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     setState(() {
       _searchQueryController.clear();
       queryText = "";
-      filteredReports = _getFilteredReports();
+      updateFilteredReports();
     });
   }
 
@@ -302,7 +328,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     onConfirm: (values) {
                       selectedGroups = values;
                       setState(() {
-                        filteredReports = _getFilteredReports();
+                        updateFilteredReports();
                       });
                     },
                     title: Text(
@@ -330,6 +356,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   Future<List<Report>> _getFilteredReports() async {
+    _isCurrentlyUpdating = true;
     List<Report> reports = showOnlyOwn
         ? await ReportFunctions.getOwnReports()
         : await ReportFunctions.getAllReports();
@@ -346,6 +373,17 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               report.title.toLowerCase().contains(queryText.toLowerCase()))
           .toList();
     }
+    setState(() {
+      _isCurrentlyUpdating = false;
+    });
     return reports;
+  }
+
+  void updateFilteredReports() {
+    print('neue filteredReports');
+
+    setState(() {
+      filteredReports = _getFilteredReports();
+    });
   }
 }

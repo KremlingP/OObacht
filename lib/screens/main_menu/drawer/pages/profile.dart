@@ -53,7 +53,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
           if (radiusSnapshot.hasError) {
             return const ErrorTextWithIcon(
                 text:
-                    "Fehler beim Laden der Profildaten (Radius)! \n Bitte Verbindung überprüfen!",
+                    "Fehler beim Laden der Profildaten (Radius)! \nBitte Verbindung überprüfen!",
                 icon: Icons.wifi_off);
           }
           if (radiusSnapshot.hasData) {
@@ -63,7 +63,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                   if (allGroupsSnapshot.hasError) {
                     return const ErrorTextWithIcon(
                         text:
-                            "Fehler beim Laden der Profildaten (Interessensgebiete)! \n Bitte Verbindung überprüfen!",
+                            "Fehler beim Laden der Profildaten (Interessensgebiete)! \nBitte Verbindung überprüfen!",
                         icon: Icons.wifi_off);
                   }
                   if (allGroupsSnapshot.hasData) {
@@ -74,7 +74,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                         if (ownGroupsSnapshot.hasError) {
                           return const ErrorTextWithIcon(
                               text:
-                                  "Fehler beim Laden der Profildaten (Eigene Interessensgebiete)! \n Bitte Verbindung überprüfen!",
+                                  "Fehler beim Laden der Profildaten (Eigene Interessensgebiete)! \nBitte Verbindung überprüfen!",
                               icon: Icons.wifi_off);
                         }
                         if (ownGroupsSnapshot.hasData) {
