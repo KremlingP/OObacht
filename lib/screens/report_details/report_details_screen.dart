@@ -5,12 +5,18 @@ import 'package:oobacht/utils/dialoges.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
+import '../../widgets/ErrorTextWithIcon.dart';
+import '../../widgets/loading_hint.dart';
 
 class ReportDetailsScreen extends StatelessWidget {
   final Report reportData;
+  late Future<String> picture;
 
-  const ReportDetailsScreen({Key? key, required this.reportData})
-      : super(key: key);
+  ReportDetailsScreen({Key? key, required this.reportData})
+      : super(key: key) {
+
+    picture = ReportFunctions.downloadReportImage(reportData);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,12 +134,26 @@ class ReportDetailsScreen extends StatelessWidget {
               ///Show Picture if not null or empty
               reportData.image == null || reportData.image.isEmpty
                   ? Container()
-                  : SizedBox(
-                      height: shortestViewportWidth * 0.5,
-                      child: Image.network(reportData.image,
-                      fit: BoxFit.cover,
-                        ),
-                    ),
+                  : FutureBuilder(
+                      future: picture,
+                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasError) {
+                        return const ErrorTextWithIcon(
+                          text: "Fehler beim Laden des Bilds! \n Bitte Verbindung überprüfen!",
+                          icon: Icons.file_download_off
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        return SizedBox(
+                          height: shortestViewportWidth * 0.5,
+                          child: Image.network(snapshot.data,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      } else {
+                        return const Center(child: LoadingHint(text: "Lade Bild..."));
+                      }
+                    }),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
