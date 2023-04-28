@@ -5,16 +5,12 @@ import 'package:oobacht/utils/dialoges.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
-import '../../widgets/ErrorTextWithIcon.dart';
-import '../../widgets/loading_hint.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Report reportData;
   late Future<String> picture;
 
-  ReportDetailsScreen({Key? key, required this.reportData})
-      : super(key: key) {
-
+  ReportDetailsScreen({Key? key, required this.reportData}) : super(key: key) {
     picture = ReportFunctions.downloadReportImage(reportData);
   }
 
@@ -139,22 +135,23 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             children: [
               ///Show Picture
               FutureBuilder(
-                future: picture,
-                builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.hasError) {
-                  return Container();
-                }
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    height: shortestViewportWidth * 0.5,
-                    child: Image.network(snapshot.data,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              }),
+                  future: widget.picture,
+                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.hasError) {
+                      return Container();
+                    }
+                    if (snapshot.hasData) {
+                      return SizedBox(
+                        height: shortestViewportWidth * 0.5,
+                        child: Image.network(
+                          snapshot.data,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
