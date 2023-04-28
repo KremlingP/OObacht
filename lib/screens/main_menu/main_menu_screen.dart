@@ -71,6 +71,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         width: viewportWidth * 0.65,
         child: const MainMenuDrawer(),
       ),
+      onDrawerChanged: (wasOpened) => {
+        if (!wasOpened) {updateFilteredReports()}
+      },
       body: SafeArea(
           child: Stack(
         children: [
@@ -380,8 +383,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   void updateFilteredReports() {
-    print('neue filteredReports');
-
     setState(() {
       filteredReports = _getFilteredReports();
     });
