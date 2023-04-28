@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oobacht/firebase/functions/group_functions.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
+import 'package:oobacht/utils/dialoges.dart';
 
 import '../../../../logic/classes/group.dart';
 import '../../../../utils/navigator_helper.dart';
@@ -79,90 +80,79 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                         }
                         if (ownGroupsSnapshot.hasData) {
                           selectedCategories = ownGroupsSnapshot.data;
-                          return Scaffold(
-                            resizeToAvoidBottomInset: false,
-                            backgroundColor: theme.colorScheme.background,
-                            body: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  const SizedBox(height: 20),
-                                  Text("Umkreis setzen",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                        color: theme.primaryColor,
-                                      )),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    "Du erhältst für Gefahren im Radius von ${radiusSnapshot.data.toStringAsFixed(0)} km Benachrichtigungen.",
+                          return SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                const SizedBox(height: 20),
+                                Text("Umkreis setzen",
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
                                       color: theme.primaryColor,
-                                    ),
-                                    textAlign: TextAlign.center,
+                                    )),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Du erhältst für Gefahren im Radius von ${radiusSnapshot.data.toStringAsFixed(0)} km Benachrichtigungen.",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: theme.primaryColor,
                                   ),
-                                  const SizedBox(height: 10),
-                                  Slider(
-                                    value: radiusSnapshot.data.toDouble(),
-                                    min: 1.0,
-                                    max: 100.0,
-                                    onChangeEnd: (value) async => {
-                                      await UserFunctions.updateRadius(
-                                          value.round()),
-                                      setState(() => {
-                                            currentRadius =
-                                                UserFunctions.getRadius()
-                                          })
-                                    },
-                                    onChanged: (value) => setState(() => {
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 10),
+                                Slider(
+                                  value: radiusSnapshot.data.toDouble(),
+                                  min: 1.0,
+                                  max: 100.0,
+                                  onChangeEnd: (value) async => {
+                                    await UserFunctions.updateRadius(
+                                        value.round()),
+                                    setState(() => {
                                           currentRadius =
-                                              Future.value(value.round())
-                                        }),
+                                              UserFunctions.getRadius()
+                                        })
+                                  },
+                                  onChanged: (value) => setState(() => {
+                                        currentRadius =
+                                            Future.value(value.round())
+                                      }),
+                                ),
+                                const SizedBox(height: 100),
+                                Text("Interessensgebiete setzen",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: theme.primaryColor,
+                                    )),
+                                const SizedBox(height: 10),
+                                Form(
+                                  key: _formKey,
+                                  child: CategoryPicker(
+                                    superScreen: "profile",
+                                    categories: allGroupsSnapshot.data,
+                                    selectedCategories: ownGroupsSnapshot.data,
                                   ),
-                                  const SizedBox(height: 100),
-                                  Text("Interessensgebiete setzen",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                        color: theme.primaryColor,
-                                      )),
-                                  const SizedBox(height: 10),
-                                  Form(
-                                    key: _formKey,
-                                    child: CategoryPicker(
-                                      superScreen: "profile",
-                                      categories: allGroupsSnapshot.data,
-                                      selectedCategories:
-                                          ownGroupsSnapshot.data,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 100),
-                                  Text("Account und zugehörige Daten löschen",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                        color: theme.primaryColor,
-                                      )),
-                                  const SizedBox(height: 10),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      UserFunctions.deleteUser();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Account wird gelöscht...')));
-                                      await GoogleSignIn().signOut();
-                                      FirebaseAuth.instance.signOut();
-                                      navigateToNewScreen(
-                                          newScreen: const AuthWrapper(),
-                                          context: context);
-                                    },
-                                    child: Text("Account löschen"),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 100),
+                                Text("Account und zugehörige Daten löschen",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: theme.primaryColor,
+                                    )),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.red)),
+                                  onPressed: () => _deleteUser(),
+                                  child: const Text("Account löschen",
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                                const SizedBox(height: 20),
+                              ],
                             ),
                           );
                         } else {
@@ -183,5 +173,21 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
         },
       )),
     );
+  }
+
+  _deleteUser() async {
+    final action = await Dialogs.yesAbortDialog(
+        context,
+        Icons.person_off,
+        "Account löschen?",
+        "Wollen Sie Ihren Account und Ihre persönlichen Daten wirklich unwiderruflich löschen?\nEine Löschung kann nicht rückgängig gemacht werden!");
+    if (action == DialogAction.yes) {
+      UserFunctions.deleteUser();
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account wird gelöscht...')));
+      await GoogleSignIn().signOut();
+      FirebaseAuth.instance.signOut();
+      navigateToNewScreen(newScreen: const AuthWrapper(), context: context);
+    }
   }
 }
