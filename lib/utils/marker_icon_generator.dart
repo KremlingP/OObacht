@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MarkerGenerator {
@@ -28,19 +31,19 @@ class MarkerGenerator {
   }
 
   /// Creates a BitmapDescriptor from an IconData
-  Future<BitmapDescriptor> createBitmapDescriptorFromIconData(IconData iconData,
+  Future<BitmapDescriptor> createBitmapDescriptorFromIconData(ImageProvider imageProvider,
       Color iconColor, Color circleColor, Color backgroundColor) async {
-    final pictureRecorder = PictureRecorder();
+    final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
 
     _paintCircleFill(canvas, backgroundColor);
     _paintCircleStroke(canvas, circleColor);
-    _paintIcon(canvas, iconColor, iconData);
+    await _paintIcon(canvas, iconColor, imageProvider);
 
     final picture = pictureRecorder.endRecording();
     final image =
         await picture.toImage(_markerSize.round(), _markerSize.round());
-    final bytes = await image.toByteData(format: ImageByteFormat.png);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
 
     return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
   }
@@ -65,18 +68,24 @@ class MarkerGenerator {
   }
 
   /// Paints the icon
-  void _paintIcon(Canvas canvas, Color color, IconData iconData) {
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-    textPainter.text = TextSpan(
-        text: String.fromCharCode(iconData.codePoint),
-        style: TextStyle(
-          letterSpacing: 0.0,
-          fontSize: _iconSize,
-          fontFamily: iconData.fontFamily,
-          package: iconData.fontPackage,
-          color: color,
-        ));
-    textPainter.layout();
-    textPainter.paint(canvas, Offset(_iconOffset, _iconOffset));
+  Future<void> _paintIcon(Canvas canvas, Color color, ImageProvider imageProvider) async {
+    final paint = Paint()
+      ..color = color
+      ..filterQuality = FilterQuality.high;
+    ui.Image uiImage = await getImage(imageProvider);
+    canvas.drawImageRect(
+        uiImage,
+        Rect.fromLTRB(0, 0, uiImage.width.toDouble(), uiImage.height.toDouble()),
+        Rect.fromLTWH(_iconOffset, _iconOffset, _iconSize, _iconSize),
+        paint);
+  }
+
+  Future<ui.Image> getImage(ImageProvider img) async {
+    var completer = Completer<ImageInfo>();
+    img.resolve(const ImageConfiguration()).addListener(ImageStreamListener((info, _) {
+      completer.complete(info);
+    }));
+    ImageInfo imageInfo = await completer.future;
+    return imageInfo.image;
   }
 }
