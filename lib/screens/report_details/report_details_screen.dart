@@ -130,29 +130,24 @@ class ReportDetailsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ///Show Picture if not null or empty
-              reportData.image == null || reportData.image.isEmpty
-                  ? Container()
-                  : FutureBuilder(
-                      future: picture,
-                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasError) {
-                        return const ErrorTextWithIcon(
-                          text: "Fehler beim Laden des Bilds! \n Bitte Verbindung überprüfen!",
-                          icon: Icons.file_download_off
-                        );
-                      }
-                      if (snapshot.hasData) {
-                        return SizedBox(
-                          height: shortestViewportWidth * 0.5,
-                          child: Image.network(snapshot.data,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      } else {
-                        return const Center(child: LoadingHint(text: "Lade Bild..."));
-                      }
-                    }),
+              ///Show Picture
+              FutureBuilder(
+                future: picture,
+                builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                if (snapshot.hasError) {
+                  return Container();
+                }
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    height: shortestViewportWidth * 0.5,
+                    child: Image.network(snapshot.data,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
