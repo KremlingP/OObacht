@@ -7,6 +7,8 @@ import 'package:oobacht/globals.dart' as globals;
 class PushNotificationService {
   final FirebaseMessaging _fcm;
 
+  static int semaphore = 0;
+
   PushNotificationService(this._fcm);
 
   Future initialise() async {
@@ -28,11 +30,22 @@ class PushNotificationService {
     }).onError((err) {});
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      String title = notification?.title ?? '';
-      String body = notification?.body ?? '';
-      showNotificationWhileAppRunning(title, body);
+      // This workaround is needed because of a FirebaseMessaging bug
+      // where messages are received twice or more often
+      if (semaphore != 0) {
+        return;
+      }
+      semaphore = 1;
+      Future.delayed(const Duration(seconds: 1)).then((_) => semaphore = 0);
+      handleMessage(message);
     });
+  }
+
+  void handleMessage(RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    String title = notification?.title ?? '';
+    String body = notification?.body ?? '';
+    showNotificationWhileAppRunning(title, body);
   }
 
   Future<void> sendFcmTokenToServer(String fcmToken) async {
