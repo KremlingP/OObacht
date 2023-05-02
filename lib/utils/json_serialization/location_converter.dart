@@ -1,8 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-//TODO check if LocationConverter works correct
-
 class LocationConverter
     implements JsonConverter<LatLng, Map<dynamic, dynamic>> {
   const LocationConverter();
