@@ -144,8 +144,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                             ImageChunkEvent? loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const Center(
-                            child: LoadingHint(text: "Lade Bild...")
-                            );
+                              child: LoadingHint(text: "Lade Bild..."));
                         },
                       ),
                     ),
@@ -279,9 +278,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       isDeleting ? Colors.grey : Colors.red),
-                              child: const Text(
-                                "Meldung löschen",
-                                style: TextStyle(color: Colors.white),
+                              child: Text(
+                                isDeleting
+                                    ? "Löschung wird übermittelt..."
+                                    : "Meldung löschen",
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ))
                         : Container()
@@ -306,10 +307,19 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       setState(() {
         isDeleting = true;
       });
-      showLoadingSnackBar(context, 'Löschen wird übermittelt...');
+
+      //TODO Verzögerung raus nehmen (für Präsi bisschen anschaulicher, wenn nicht direkt lädt)
+      await Future.delayed(const Duration(seconds: 1));
+
       bool successful =
           await ReportFunctions.deleteReport(widget.reportData.id!);
-      Navigator.pop(context);
+      if (successful) {
+        Navigator.pop(context);
+      } else {
+        setState(() {
+          isDeleting = false;
+        });
+      }
       showResponseSnackBar(
           context,
           successful,
