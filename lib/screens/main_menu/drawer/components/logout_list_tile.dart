@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oobacht/utils/dialoges.dart';
 
+import '../../../../firebase/firebase_options.dart';
+
 class LogoutListTile extends StatelessWidget {
   const LogoutListTile({Key? key}) : super(key: key);
 
@@ -18,7 +20,7 @@ class LogoutListTile extends StatelessWidget {
         final action = await Dialogs.yesAbortDialog(context, Icons.logout,
             "Wirklich abmelden?", "Wollen Sie sich wirklich abmelden?");
         if (action == DialogAction.yes) {
-          await GoogleSignIn().signOut();
+          await GoogleSignIn(clientId: DefaultFirebaseOptions.currentPlatform.iosClientId).signOut();
           FirebaseAuth.instance.signOut();
         }
       },
