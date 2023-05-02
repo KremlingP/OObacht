@@ -11,7 +11,11 @@ class LoadingHint extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const CircularProgressIndicator(),
+        Image.asset(
+          'assets/logo_animated.gif',
+          height: 50,
+          width: 50,
+        ),
         const SizedBox(
           height: 10.0,
         ),

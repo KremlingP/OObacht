@@ -20,7 +20,7 @@ class Report {
   final String image;
   final List<String> alternatives;
   final List<RepeatingReportsEnum> repeatingReport;
-  final bool? isOwnReport;
+  final bool isOwnReport;
   final String institution;
 
   Report(

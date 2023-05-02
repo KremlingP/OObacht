@@ -48,6 +48,14 @@ class InformationsDrawerPage extends StatelessWidget {
                 Text(
                   "by OOBacht! Group",
                   style: TextStyle(color: theme.primaryColor),
+                ),
+                Text(
+                  "Ein großer Dank geht an Torsten! Ohne ihn hätten unsere Bilder noch immer eine schlechte Qualität!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: theme.primaryColor,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold),
                 )
               ],
             ),

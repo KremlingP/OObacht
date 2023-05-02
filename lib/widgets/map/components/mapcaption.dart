@@ -11,22 +11,20 @@ class MapCaption extends StatelessWidget {
     required this.reportsList,
   }) : super(key: key);
 
-  bool multipleCategoriesSet = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Positioned(
       top: 10,
       left: 10,
-      height: 105,
+      height: 103,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: DataTable(
           headingRowHeight: 0,
           dataRowHeight: 25,
           dataRowColor: MaterialStateProperty.all<Color>(
-              const Color.fromRGBO(147, 150, 153, 0.5)),
+              const Color.fromRGBO(255, 255, 255, 0.50)),
           columnSpacing: 1,
           border: TableBorder.all(
             color: Colors.transparent,
@@ -46,8 +44,7 @@ class MapCaption extends StatelessWidget {
   }
 
   DataRow getDataRowForReport(Report report, ThemeData theme) {
-    if (report.groups.length > 1 && !multipleCategoriesSet) {
-      multipleCategoriesSet = true;
+    if (report.groups.length > 1) {
       return DataRow(
         cells: [
           const DataCell(

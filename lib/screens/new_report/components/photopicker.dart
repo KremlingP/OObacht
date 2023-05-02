@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
@@ -17,74 +18,72 @@ class _PhotoPickerState extends State<PhotoPicker> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SizedBox(
-        height: 100,
-        child: Scaffold(
-            backgroundColor: theme.colorScheme.background,
-            body: imageFile == null
-                ? Column(
-                    children: [
-                      Center(
-                        child: Text("Foto hinzufügen",
-                            style: TextStyle(
-                              color: theme.primaryColor,
-                              fontSize: 20,
-                            )),
+    return Container(
+        child: imageFile == null
+            ? Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          imageFromGallery();
+                        },
+                        icon: const Icon(Icons.photo, color: Colors.white),
+                        label: const Text("Foto auswählen",
+                            maxLines: 1, style: TextStyle(color: Colors.white)),
                       ),
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  imageFromGallery();
-                                },
-                                child: const Text("Foto auswählen"),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  imageFromCamera();
-                                },
-                                child: const Text("Foto aufnehmen"),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          imageFromCamera();
+                        },
+                        icon:
+                            const Icon(Icons.photo_camera, color: Colors.white),
+                        label: const Text("Foto aufnehmen",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : Center(
+                child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: theme.colorScheme.primary, width: 3.0)),
+                    child: GestureDetector(
+                      onTap: () {
+                        showImageViewer(context, Image.file(imageFile!).image, swipeDismissible: true, doubleTapZoomable: true);
+                      },
+                      child: Image.file(
+                        imageFile!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          imageFile = null;
+                        });
+                      },
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
                   )
-                : Center(
-                    child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        width: 100,
-                        child: Image.file(
-                          imageFile!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              imageFile = null;
-                            });
-                          },
-                          child: Icon(Icons.delete,
-                              color: theme.colorScheme.onPrimary),
-                        ),
-                      )
-                    ],
-                  ))));
+                ],
+              )));
   }
 
   imageFromGallery() async {

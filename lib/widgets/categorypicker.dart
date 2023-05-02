@@ -39,139 +39,141 @@ class _CategoryPickerState extends State<CategoryPicker> {
     final theme = Theme.of(context);
     double shortestViewportWidth = MediaQuery.of(context).size.shortestSide;
 
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          /// Button to open the bottom sheet
-          ElevatedButton(
-              child: const Text("Kategorien auswählen"),
-              onPressed: () {
-                showModalBottomSheet(
-                  backgroundColor: theme.colorScheme.background,
-                  enableDrag: true,
-                  elevation: 0,
-                  isScrollControlled: true,
-                  context: context,
-                  builder: (context) {
-                    /// StatefulBuilder to rebuild the bottom sheet
-                    return StatefulBuilder(builder:
-                        (BuildContext context, StateSetter setModalState) {
-                      /// Padding to make the bottom sheet move with the keyboard
-                      return Padding(
-                          padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                          child: SizedBox(
-                              height: shortestViewportWidth * 0.7,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  /// Search bar
-                                  SizedBox(
-                                    height: shortestViewportWidth * 0.15,
-                                    width: double.infinity,
-                                    child: Container(
-                                        color: theme.colorScheme.primary,
-                                        child: Row(
-                                          children: [
-                                            const Spacer(),
-                                            _isSearching
-                                                ?
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        /// Button to open the bottom sheet
+        ElevatedButton.icon(
+            icon: const Icon(Icons.category, color: Colors.white),
+            label: const Text(
+              "Kategorien auswählen",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                backgroundColor: theme.colorScheme.background,
+                enableDrag: true,
+                elevation: 0,
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  /// StatefulBuilder to rebuild the bottom sheet
+                  return StatefulBuilder(builder:
+                      (BuildContext context, StateSetter setModalState) {
+                    /// Padding to make the bottom sheet move with the keyboard
+                    return Padding(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom),
+                        child: SizedBox(
+                            height: shortestViewportWidth,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                /// Search bar
+                                SizedBox(
+                                  height: shortestViewportWidth * 0.15,
+                                  width: double.infinity,
+                                  child: Container(
+                                      color: theme.colorScheme.primary,
+                                      child: Row(
+                                        children: [
+                                          const Spacer(),
+                                          _isSearching
+                                              ?
 
-                                                /// Search bar
-                                                SizedBox(
-                                                    width: 200,
-                                                    child: TextField(
-                                                      controller:
-                                                          _searchQueryController,
-                                                      autofocus: true,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        hintText: "Suchen...",
-                                                        border:
-                                                            InputBorder.none,
-                                                        hintStyle: TextStyle(
-                                                            color: theme
-                                                                .primaryColor),
-                                                      ),
-                                                      cursorColor:
-                                                          theme.primaryColor,
-                                                      style: TextStyle(
-                                                          color: theme
-                                                              .primaryColor,
-                                                          fontSize: 16.0),
-                                                      onChanged: (query) {
-                                                        queryText = query;
-                                                        shownCategories = widget
-                                                            .categories
-                                                            .where((element) => element
-                                                                .name
-                                                                .toLowerCase()
-                                                                .contains(queryText
-                                                                    .toLowerCase()))
-                                                            .toList();
-                                                        setModalState(() {});
-                                                      },
-                                                    ))
-                                                :
+                                              /// Search bar
+                                              SizedBox(
+                                                  width: 200,
+                                                  child: TextField(
+                                                    controller:
+                                                        _searchQueryController,
+                                                    autofocus: true,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      hintText: "Suchen...",
+                                                      border: InputBorder.none,
+                                                      hintStyle: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    cursorColor: Colors.white,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16.0),
+                                                    onChanged: (query) {
+                                                      queryText = query;
+                                                      shownCategories = widget
+                                                          .categories
+                                                          .where((element) => element
+                                                              .name
+                                                              .toLowerCase()
+                                                              .contains(queryText
+                                                                  .toLowerCase()))
+                                                          .toList();
+                                                      setModalState(() {});
+                                                    },
+                                                  ))
+                                              :
 
-                                                /// Title
-                                                Text(
-                                                    'Kategorien',
-                                                    style: TextStyle(
-                                                        color:
-                                                            theme.primaryColor,
-                                                        fontWeight:
-                                                            FontWeight.w900,
-                                                        fontSize: 20.0),
-                                                    maxLines: 1,
+                                              /// Title
+                                              const Text(
+                                                  'Kategorien',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      fontSize: 20.0),
+                                                  maxLines: 1,
+                                                ),
+                                          const Spacer(),
+                                          _isSearching
+                                              ?
+
+                                              /// Close search button
+                                              IconButton(
+                                                  icon: const Icon(
+                                                    Icons.clear,
+                                                    color: Colors.white,
                                                   ),
-                                            const Spacer(),
-                                            _isSearching
-                                                ?
-
-                                                /// Close search button
-                                                IconButton(
-                                                    icon:
-                                                        const Icon(Icons.clear),
-                                                    onPressed: () {
+                                                  onPressed: () {
+                                                    setModalState(() {
+                                                      _searchQueryController
+                                                          .clear();
+                                                      queryText = "";
+                                                      shownCategories = widget
+                                                          .categories
+                                                          .where((element) => element
+                                                              .name
+                                                              .toLowerCase()
+                                                              .contains(queryText
+                                                                  .toLowerCase()))
+                                                          .toList();
                                                       setModalState(() {
-                                                        _searchQueryController
-                                                            .clear();
-                                                        queryText = "";
-                                                        shownCategories = widget
-                                                            .categories
-                                                            .where((element) => element
-                                                                .name
-                                                                .toLowerCase()
-                                                                .contains(queryText
-                                                                    .toLowerCase()))
-                                                            .toList();
-                                                        setModalState(() {
-                                                          _isSearching = false;
-                                                        });
+                                                        _isSearching = false;
                                                       });
-                                                    },
-                                                  )
-                                                :
+                                                    });
+                                                  },
+                                                )
+                                              :
 
-                                                /// Search button
-                                                IconButton(
-                                                    icon: const Icon(
-                                                        Icons.search),
-                                                    onPressed: () {
-                                                      setModalState(() {
-                                                        _isSearching = true;
-                                                      });
-                                                    },
-                                                  )
-                                          ],
-                                        )),
-                                  ),
+                                              /// Search button
+                                              IconButton(
+                                                  icon: const Icon(Icons.search,
+                                                      color: Colors.white),
+                                                  onPressed: () {
+                                                    setModalState(() {
+                                                      _isSearching = true;
+                                                    });
+                                                  },
+                                                )
+                                        ],
+                                      )),
+                                ),
 
-                                  /// All available categories as chips
-                                  SingleChildScrollView(
+                                /// All available categories as chips
+                                SizedBox(
+                                  height: shortestViewportWidth * 0.7,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
                                     child: Wrap(
                                       spacing: 8.0,
                                       runSpacing: -6.0,
@@ -183,7 +185,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                               label: Text(
                                                 group.name,
                                                 style: const TextStyle(
-                                                    color: Colors.black),
+                                                    color: Colors.white),
                                               ),
                                               backgroundColor: widget
                                                       .selectedCategories
@@ -191,21 +193,11 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                                           element.id ==
                                                           group.id)
                                                       .isNotEmpty
-                                                  ? theme.colorScheme.primary
-                                                  : theme.colorScheme.primary
-                                                      .withOpacity(0.4),
+                                                  ? group.color
+                                                  : Colors.grey,
                                               avatar: CircleAvatar(
-                                                  backgroundColor: widget
-                                                          .selectedCategories
-                                                          .where((element) =>
-                                                              element.id ==
-                                                              group.id)
-                                                          .isNotEmpty
-                                                      ? theme
-                                                          .colorScheme.primary
-                                                      : theme
-                                                          .colorScheme.primary
-                                                          .withOpacity(0.4),
+                                                  backgroundColor:
+                                                      Colors.transparent,
                                                   child: ImageIcon(group.icon,
                                                       color: Colors.white)),
                                               onPressed: () {
@@ -259,72 +251,76 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                           .toList(),
                                     ),
                                   ),
-                                  const Spacer(),
+                                ),
+                                const Spacer(),
 
-                                  /// Button to close the bottom sheet
-                                  SizedBox(
-                                      height: shortestViewportWidth * 0.1,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            setState(() {
-                                              _isSearching = false;
-                                            });
-                                          },
-                                          child: const Text("Fertig"))),
-                                ],
-                              )));
+                                /// Button to close the bottom sheet
+                                Container(
+                                    margin: const EdgeInsets.only(bottom: 10.0),
+                                    height: shortestViewportWidth * 0.1,
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            _isSearching = false;
+                                          });
+                                        },
+                                        child: const Text(
+                                          "Fertig",
+                                          style: TextStyle(color: Colors.white),
+                                        ))),
+                              ],
+                            )));
+                  });
+                },
+              );
+            }),
+        const SizedBox(height: 5.0),
+
+        /// Chips to show selected items
+        Wrap(
+          spacing: 8.0,
+          runSpacing: -6.0,
+          alignment: WrapAlignment.start,
+          direction: Axis.horizontal,
+          children: widget.selectedCategories
+              .map(
+                (group) => ActionChip(
+                  label: Text(
+                    group.name,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: group.color,
+                  avatar: CircleAvatar(
+                    backgroundColor: group.color,
+                    child: ImageIcon(group.icon, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (widget.selectedCategories
+                          .where((element) => element.id == group.id)
+                          .isNotEmpty) {
+                        widget.selectedCategories.remove(widget
+                            .selectedCategories
+                            .where((element) => element.id == group.id)
+                            .first);
+                      }
+                      if (widget.superScreen == "newReport") {
+                        NewReportScreen.of(context)?.selectedCategories =
+                            widget.selectedCategories;
+                      } else if (widget.superScreen == "profile") {
+                        GroupFunctions.unsubscribeGroup(group);
+                      } else {
+                        throw Exception(
+                            "Unknown superScreen: ${widget.superScreen}");
+                      }
                     });
                   },
-                );
-              }),
-          const SizedBox(height: 5.0),
-
-          /// Chips to show selected items
-          Wrap(
-            spacing: 8.0,
-            runSpacing: -6.0,
-            alignment: WrapAlignment.start,
-            direction: Axis.horizontal,
-            children: widget.selectedCategories
-                .map(
-                  (group) => ActionChip(
-                    label: Text(
-                      group.name,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: group.color,
-                    avatar: CircleAvatar(
-                      backgroundColor: group.color,
-                      child: ImageIcon(group.icon, color: Colors.white),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (widget.selectedCategories
-                            .where((element) => element.id == group.id)
-                            .isNotEmpty) {
-                          widget.selectedCategories.remove(widget
-                              .selectedCategories
-                              .where((element) => element.id == group.id)
-                              .first);
-                        }
-                        if (widget.superScreen == "newReport") {
-                          NewReportScreen.of(context)?.selectedCategories =
-                              widget.selectedCategories;
-                        } else if (widget.superScreen == "profile") {
-                          GroupFunctions.unsubscribeGroup(group);
-                        } else {
-                          throw Exception(
-                              "Unknown superScreen: ${widget.superScreen}");
-                        }
-                      });
-                    },
-                  ),
-                )
-                .toList(),
-          )
-        ],
-      ),
+                ),
+              )
+              .toList(),
+        )
+      ],
     );
   }
 }

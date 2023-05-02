@@ -11,7 +11,7 @@ class Group {
   final String name;
   @JsonKey(name: 'iconPath')
   @IconConverter()
-  final NetworkImage icon;
+  final ImageProvider icon;
   @ColorConverter()
   final Color color;
 
