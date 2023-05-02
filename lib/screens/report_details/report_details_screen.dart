@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/utils/dialoges.dart';
+import 'package:oobacht/widgets/loading_hint.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
 
 import '../../utils/helper_methods.dart';
@@ -9,7 +10,8 @@ import '../../utils/helper_methods.dart';
 class ReportDetailsScreen extends StatefulWidget {
   final Report reportData;
 
-  const ReportDetailsScreen({Key? key, required this.reportData}) : super(key: key);
+  const ReportDetailsScreen({Key? key, required this.reportData})
+      : super(key: key);
 
   @override
   State<ReportDetailsScreen> createState() => _ReportDetailsScreenState();
@@ -134,11 +136,19 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               widget.reportData.image == null || widget.reportData.image.isEmpty
                   ? Container()
                   : SizedBox(
-                height: shortestViewportWidth * 0.5,
-                child: Image.network(widget.reportData.image,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                      height: shortestViewportWidth * 0.5,
+                      child: Image.network(
+                        widget.reportData.image,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: LoadingHint(text: "Lade Bild...")
+                            );
+                        },
+                      ),
+                    ),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
