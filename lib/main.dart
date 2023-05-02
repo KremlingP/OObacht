@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
+import 'package:oobacht/globals.dart' as globals;
 import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/utils/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:oobacht/globals.dart' as globals;
 
 import 'firebase/firebase_options.dart';
 
@@ -81,7 +81,11 @@ class _OobachtAppState extends State<OobachtApp> {
   Widget build(BuildContext context) {
     final pushNotificationService = PushNotificationService(_firebaseMessaging);
     pushNotificationService.initialise();
+    precacheImage(const AssetImage("assets/logo_animated.png"), context);
     precacheImage(const AssetImage("assets/logo.png"), context);
+    precacheImage(const AssetImage("assets/icon.png"), context);
+    precacheImage(const AssetImage("assets/multiple_groups_icon.png"), context);
+    precacheImage(const AssetImage("assets/default_group_icon.png"), context);
     return MaterialApp(
       title: 'OObacht!',
       theme: CustomTheme.lightTheme,
@@ -99,9 +103,10 @@ class _OobachtAppState extends State<OobachtApp> {
         //standard is LightMode, if DarkMode is true toggle theme
         if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
       }
-      if(prefs.getBool('pushNotifications') != null){
+      if (prefs.getBool('pushNotifications') != null) {
         //standard is true
-        if(prefs.getBool('pushNotifications') == false) globals.pushNotificationsActivated = false;
+        if (prefs.getBool('pushNotifications') == false)
+          globals.pushNotificationsActivated = false;
       }
     });
   }
