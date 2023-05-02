@@ -65,7 +65,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                         padding: EdgeInsets.only(
                             bottom: MediaQuery.of(context).viewInsets.bottom),
                         child: SizedBox(
-                            height: shortestViewportWidth * 0.7,
+                            height: shortestViewportWidth,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -130,7 +130,10 @@ class _CategoryPickerState extends State<CategoryPicker> {
 
                                               /// Close search button
                                               IconButton(
-                                                  icon: const Icon(Icons.clear),
+                                                  icon: const Icon(
+                                                    Icons.clear,
+                                                    color: Colors.white,
+                                                  ),
                                                   onPressed: () {
                                                     setModalState(() {
                                                       _searchQueryController
@@ -167,77 +170,86 @@ class _CategoryPickerState extends State<CategoryPicker> {
                                 ),
 
                                 /// All available categories as chips
-                                SingleChildScrollView(
-                                  child: Wrap(
-                                    spacing: 8.0,
-                                    runSpacing: -6.0,
-                                    alignment: WrapAlignment.start,
-                                    direction: Axis.horizontal,
-                                    children: shownCategories
-                                        .map(
-                                          (group) => ActionChip(
-                                            label: Text(
-                                              group.name,
-                                              style: const TextStyle(
-                                                  color: Colors.white),
+                                SizedBox(
+                                  height: shortestViewportWidth * 0.7,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: -6.0,
+                                      alignment: WrapAlignment.start,
+                                      direction: Axis.horizontal,
+                                      children: shownCategories
+                                          .map(
+                                            (group) => ActionChip(
+                                              label: Text(
+                                                group.name,
+                                                style: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              backgroundColor: widget
+                                                      .selectedCategories
+                                                      .where((element) =>
+                                                          element.id ==
+                                                          group.id)
+                                                      .isNotEmpty
+                                                  ? group.color
+                                                  : Colors.grey,
+                                              avatar: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  child: ImageIcon(group.icon,
+                                                      color: Colors.white)),
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (widget.selectedCategories
+                                                      .where((element) =>
+                                                          element.id ==
+                                                          group.id)
+                                                      .isNotEmpty) {
+                                                    widget.selectedCategories
+                                                        .remove(widget
+                                                            .selectedCategories
+                                                            .where((element) =>
+                                                                element.id ==
+                                                                group.id)
+                                                            .first);
+                                                    if (widget.superScreen ==
+                                                        "profile") {
+                                                      GroupFunctions
+                                                          .unsubscribeGroup(
+                                                              group);
+                                                    }
+                                                  } else {
+                                                    widget.selectedCategories
+                                                        .add(group);
+                                                    if (widget.superScreen ==
+                                                        "profile") {
+                                                      GroupFunctions
+                                                          .subscribeGroup(
+                                                              group);
+                                                    }
+                                                  }
+                                                  if (widget.superScreen ==
+                                                      "newReport") {
+                                                    NewReportScreen.of(context)
+                                                            ?.selectedCategories =
+                                                        widget
+                                                            .selectedCategories;
+                                                  } else if (widget
+                                                          .superScreen ==
+                                                      "profile") {
+                                                  } else {
+                                                    throw Exception(
+                                                        "Unknown superScreen: ${widget.superScreen}");
+                                                  }
+                                                });
+                                                setModalState(() {});
+                                              },
                                             ),
-                                            backgroundColor: widget
-                                                    .selectedCategories
-                                                    .where((element) =>
-                                                        element.id == group.id)
-                                                    .isNotEmpty
-                                                ? group.color
-                                                : Colors.grey,
-                                            avatar: CircleAvatar(
-                                                backgroundColor:
-                                                    Colors.transparent,
-                                                child: ImageIcon(group.icon,
-                                                    color: Colors.white)),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (widget.selectedCategories
-                                                    .where((element) =>
-                                                        element.id == group.id)
-                                                    .isNotEmpty) {
-                                                  widget.selectedCategories
-                                                      .remove(widget
-                                                          .selectedCategories
-                                                          .where((element) =>
-                                                              element.id ==
-                                                              group.id)
-                                                          .first);
-                                                  if (widget.superScreen ==
-                                                      "profile") {
-                                                    GroupFunctions
-                                                        .unsubscribeGroup(
-                                                            group);
-                                                  }
-                                                } else {
-                                                  widget.selectedCategories
-                                                      .add(group);
-                                                  if (widget.superScreen ==
-                                                      "profile") {
-                                                    GroupFunctions
-                                                        .subscribeGroup(group);
-                                                  }
-                                                }
-                                                if (widget.superScreen ==
-                                                    "newReport") {
-                                                  NewReportScreen.of(context)
-                                                          ?.selectedCategories =
-                                                      widget.selectedCategories;
-                                                } else if (widget.superScreen ==
-                                                    "profile") {
-                                                } else {
-                                                  throw Exception(
-                                                      "Unknown superScreen: ${widget.superScreen}");
-                                                }
-                                              });
-                                              setModalState(() {});
-                                            },
-                                          ),
-                                        )
-                                        .toList(),
+                                          )
+                                          .toList(),
+                                    ),
                                   ),
                                 ),
                                 const Spacer(),
