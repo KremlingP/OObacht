@@ -11,8 +11,6 @@ class MapCaption extends StatelessWidget {
     required this.reportsList,
   }) : super(key: key);
 
-  bool multipleCategoriesSet = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,8 +44,7 @@ class MapCaption extends StatelessWidget {
   }
 
   DataRow getDataRowForReport(Report report, ThemeData theme) {
-    if (report.groups.length > 1 && !multipleCategoriesSet) {
-      multipleCategoriesSet = true;
+    if (report.groups.length > 1) {
       return DataRow(
         cells: [
           const DataCell(
