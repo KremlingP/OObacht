@@ -12,6 +12,7 @@ import 'package:oobacht/screens/new_report/components/descriptioninputfield.dart
 import 'package:oobacht/screens/new_report/components/input_component.dart';
 import 'package:oobacht/screens/new_report/components/photopicker.dart';
 import 'package:oobacht/screens/new_report/components/titleinputfield.dart';
+import 'package:oobacht/utils/helper_methods.dart';
 import 'package:oobacht/utils/map_utils.dart';
 import 'package:oobacht/widgets/categorypicker.dart';
 import 'package:oobacht/widgets/error_text.dart';
@@ -47,6 +48,8 @@ class _NewReportScreenState extends State<NewReportScreen> {
   LatLng? position;
   List<String> alternatives = [];
   List<Object?> repeatingReport = [];
+
+  bool isCreating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -151,62 +154,78 @@ class _NewReportScreenState extends State<NewReportScreen> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FloatingActionButton.extended(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-
-                  if (selectedCategories.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                            'Bitte wähle mindestens eine Kategorie aus.')));
-                    return;
-                  }
-
-                  Position? retrievedPosition = await getCurrentPosition();
-                  if (retrievedPosition == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                            'Aktueller Standort konnte nicht ermittelt werden. Versuche es erneut.')));
-                    return;
-                  }
-                  position = LatLng(
-                      retrievedPosition.latitude, retrievedPosition.longitude);
-
-                  String base64Image = "";
-                  if (imageFile.path != "") {
-                    List<int> imageBytes = await imageFile.readAsBytes();
-                    base64Image = base64Encode(imageBytes);
-                  }
-                  Report report = Report(
-                      null,
-                      title,
-                      description,
-                      null,
-                      selectedCategories,
-                      position!,
-                      base64Image,
-                      alternatives,
-                      repeatingReport
-                          .map((e) => e as RepeatingReportsEnum)
-                          .toList(),
-                      true,
-                      '');
-                  ReportFunctions.createReport(report);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Meldung wurde gespeichert!')));
-                  Navigator.pop(context);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Bitte alle Felder ausfüllen.')));
-                }
-              },
-              label: const Text('Meldung erstellen',
-                  style: TextStyle(color: Colors.white)),
+              onPressed: () => isCreating ? null : _createReport(context),
+              label: Text(
+                  isCreating
+                      ? 'Meldung wird übermittelt...'
+                      : 'Meldung erstellen',
+                  style: const TextStyle(color: Colors.white)),
               icon: const Icon(Icons.save, color: Colors.white),
-              backgroundColor: Colors.green,
+              backgroundColor: isCreating ? Colors.grey : Colors.green,
               foregroundColor: theme.primaryColor),
         ),
       ),
     );
+  }
+
+  _createReport(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      if (selectedCategories.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Bitte wähle mindestens eine Kategorie aus.')));
+        return;
+      }
+
+      Position? retrievedPosition = await getCurrentPosition();
+      if (retrievedPosition == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'Aktueller Standort konnte nicht ermittelt werden. Versuche es erneut.')));
+        return;
+      }
+      setState(() {
+        isCreating = true;
+      });
+      position =
+          LatLng(retrievedPosition.latitude, retrievedPosition.longitude);
+
+      //TODO Verzögerung raus nehmen (für Präsi bisschen anschaulicher, wenn nicht direkt lädt)
+      await Future.delayed(const Duration(seconds: 1));
+
+      String base64Image = "";
+      if (imageFile.path != "") {
+        List<int> imageBytes = await imageFile.readAsBytes();
+        base64Image = base64Encode(imageBytes);
+      }
+      Report report = Report(
+          null,
+          title,
+          description,
+          null,
+          selectedCategories,
+          position!,
+          base64Image,
+          alternatives,
+          repeatingReport.map((e) => e as RepeatingReportsEnum).toList(),
+          true,
+          '');
+
+      bool successful = await ReportFunctions.createReport(report);
+
+      if (successful) {
+        Navigator.pop(context);
+      } else {
+        setState(() {
+          isCreating = false;
+        });
+      }
+      showResponseSnackBar(
+          context,
+          successful,
+          'Meldung wurde erfolgreich gespeichert!',
+          'Fehler beim Erstellen der Meldung!');
+    }
   }
 }

@@ -58,7 +58,7 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30.0),
                   child: Text(
-                    "OObacht! benötigt immer Berechtigungen auf deinen Standort, um dir relevante Meldungen zu senden, bitte aktiviere diese in den Einstellungen!",
+                    "OObacht! benötigt immer Berechtigungen auf deinen Standort, um dir relevante Meldungen in deiner Umgebung zu senden, bitte aktiviere diesen in den Einstellungen!",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,

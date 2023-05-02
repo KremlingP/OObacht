@@ -28,6 +28,7 @@ class _DescriptionInputFieldState extends State<DescriptionInputField> {
         labelText: 'Beschreibung',
         hintText: 'Gebe eine Beschreibung für die Meldung ein...',
         border: const OutlineInputBorder(),
+        helperStyle: TextStyle(color: theme.primaryColor),
         labelStyle: TextStyle(color: theme.primaryColor),
         hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
       ),
