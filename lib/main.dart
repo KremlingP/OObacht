@@ -81,7 +81,7 @@ class _OobachtAppState extends State<OobachtApp> {
   Widget build(BuildContext context) {
     final pushNotificationService = PushNotificationService(_firebaseMessaging);
     pushNotificationService.initialise();
-    precacheImage(const AssetImage("assets/logo_animated.png"), context);
+    precacheImage(const AssetImage("assets/logo_animated.gif"), context);
     precacheImage(const AssetImage("assets/logo.png"), context);
     precacheImage(const AssetImage("assets/icon.png"), context);
     precacheImage(const AssetImage("assets/multiple_groups_icon.png"), context);
