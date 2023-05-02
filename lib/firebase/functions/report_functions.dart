@@ -59,19 +59,6 @@ class ReportFunctions {
     return [];
   }
 
-  static Future<String> downloadReportImage(Report report) async {
-    const functionName = 'downloadReportImage';
-
-    HttpsCallable callable = FirebaseFunctions.instance
-        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
-
-    final response = await callable.call(<String, dynamic>{
-      'reportId': report.id,
-    });
-    // TODO PK Warten auf Timo
-    return response.data;
-  }
-
   static Future<bool> createReport(Report report) async {
     const functionName = 'createReport';
 

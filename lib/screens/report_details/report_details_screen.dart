@@ -8,11 +8,8 @@ import '../../utils/helper_methods.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Report reportData;
-  late Future<String> picture;
 
-  ReportDetailsScreen({Key? key, required this.reportData}) : super(key: key) {
-    picture = ReportFunctions.downloadReportImage(reportData);
-  }
+  const ReportDetailsScreen({Key? key, required this.reportData}) : super(key: key);
 
   @override
   State<ReportDetailsScreen> createState() => _ReportDetailsScreenState();
@@ -133,25 +130,15 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ///Show Picture
-              FutureBuilder(
-                  future: widget.picture,
-                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasError) {
-                      return Container();
-                    }
-                    if (snapshot.hasData) {
-                      return SizedBox(
-                        height: shortestViewportWidth * 0.5,
-                        child: Image.network(
-                          snapshot.data,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  }),
+              ///Show Picture if not null or empty
+              widget.reportData.image == null || widget.reportData.image.isEmpty
+                  ? Container()
+                  : SizedBox(
+                height: shortestViewportWidth * 0.5,
+                child: Image.network(widget.reportData.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
