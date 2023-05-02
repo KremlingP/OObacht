@@ -115,8 +115,24 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           _isCurrentlyUpdating
               ? Container(
                   color: Colors.black54,
-                  child: const Center(
-                      child: LoadingHint(text: "Aktualisiere Meldungen...")))
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/logo_animated.gif',
+                        height: 50,
+                        width: 50,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      const Text(
+                        "Aktualisiere Meldungen...",
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  )))
               : Container(),
         ],
       )),
