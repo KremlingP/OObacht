@@ -4,6 +4,7 @@ import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/utils/dialoges.dart';
 import 'package:oobacht/widgets/loading_hint.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '../../utils/helper_methods.dart';
 
@@ -137,17 +138,22 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   ? Container()
                   : SizedBox(
                       height: shortestViewportWidth * 0.5,
-                      child: Image.network(
-                        widget.reportData.image,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent? loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                              child: LoadingHint(text: "Lade Bild..."));
+                      child: GestureDetector(
+                        onTap: () {
+                          showImageViewer(context, Image.network(widget.reportData.image).image, swipeDismissible: true, doubleTapZoomable: true);
                         },
-                      ),
-                    ),
+                        child: Image.network(
+                            widget.reportData.image,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                  child: LoadingHint(text: "Lade Bild..."));
+                            },
+                          ),
+                        ),
+              ),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(

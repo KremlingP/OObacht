@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
@@ -59,9 +60,14 @@ class _PhotoPickerState extends State<PhotoPicker> {
                     decoration: BoxDecoration(
                         border: Border.all(
                             color: theme.colorScheme.primary, width: 3.0)),
-                    child: Image.file(
-                      imageFile!,
-                      fit: BoxFit.cover,
+                    child: GestureDetector(
+                      onTap: () {
+                        showImageViewer(context, Image.file(imageFile!).image, swipeDismissible: true, doubleTapZoomable: true);
+                      },
+                      child: Image.file(
+                        imageFile!,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -73,7 +79,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
                           imageFile = null;
                         });
                       },
-                      child: Icon(Icons.delete, color: Colors.white),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     ),
                   )
                 ],
