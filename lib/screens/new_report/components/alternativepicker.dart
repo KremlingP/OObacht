@@ -37,6 +37,7 @@ class _AlternativePickerState extends State<AlternativePicker> {
             labelText: 'Alternative eingeben',
             hintText: 'Füge eine Alternative hinzu...',
             border: const OutlineInputBorder(),
+            helperStyle: TextStyle(color: theme.primaryColor),
             labelStyle: TextStyle(color: theme.primaryColor),
             hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
           ),

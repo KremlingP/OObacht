@@ -25,6 +25,7 @@ class _TitleInputFieldState extends State<TitleInputField> {
       decoration: InputDecoration(
         labelText: 'Titel',
         hintText: 'Gebe den Titel der Meldung ein...',
+        helperStyle: TextStyle(color: theme.primaryColor),
         border: const OutlineInputBorder(),
         labelStyle: TextStyle(color: theme.primaryColor),
         hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
