@@ -34,14 +34,14 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    markers =
-        generateMarkers(widget.reports, context, widget.showMarkerDetails);
     currentPosition = getCurrentPosition();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    markers =
+        generateMarkers(widget.reports, context, widget.showMarkerDetails);
     return FutureBuilder(
       future: markers,
       builder: (context, AsyncSnapshot<dynamic> markerSnapshot) {
