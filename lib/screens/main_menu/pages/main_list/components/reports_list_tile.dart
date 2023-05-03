@@ -53,7 +53,7 @@ class ReportsListTile extends StatelessWidget {
                             : Container(),
                         Text(
                           data.title,
-                          maxLines: 2,
+                          maxLines: data.institution.isNotEmpty ? 1 : 2,
                           style: TextStyle(
                               fontWeight: FontWeight.w900,
                               color: theme.primaryColor),
@@ -63,19 +63,37 @@ class ReportsListTile extends StatelessWidget {
                     )),
 
                     ///Timestamp
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    Column(
                       children: [
-                        const Icon(
-                          Icons.event,
-                          color: Colors.orange,
-                        ),
-                        Text(" ${getDisplayDate(data.creationDate!)}",
-                            style: const TextStyle(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Icon(
+                              Icons.event,
                               color: Colors.orange,
-                              fontWeight: FontWeight.bold,
                             ),
-                            maxLines: 1),
+                            Text(" ${getDisplayDate(data.creationDate!)}",
+                                style: const TextStyle(
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1),
+                          ],
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const Icon(
+                                Icons.trending_up,
+                                color: Colors.orange,
+                              ),
+                              Text(" ${data.distance!.toStringAsFixed(2)} km entfernt",
+                                  style: const TextStyle(
+                                    color: Colors.orange,
+                                  ),
+                                  maxLines: 1),
+                            ]
+                        ),
                       ],
                     )
                   ],

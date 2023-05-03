@@ -200,6 +200,17 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         showMapCaption: false,
                       ),
                     ),
+                    ///Distance
+                    const Icon(
+                      Icons.trending_up,
+                      color: Colors.orange,
+                    ),
+                    Text(" ${widget.reportData.distance!.toStringAsFixed(2)} km entfernt",
+                      style: const TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                              maxLines: 1),
                     const SizedBox(height: 20.0),
 
                     /// Repeating report

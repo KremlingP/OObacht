@@ -12,6 +12,7 @@ class Report {
   final String? id;
   final String title;
   final String description;
+  final double? distance;
   @DateTimeConverter()
   final DateTime? creationDate;
   final List<Group> groups;
@@ -27,6 +28,7 @@ class Report {
       this.id,
       this.title,
       this.description,
+      this.distance,
       this.creationDate,
       this.groups,
       this.location,

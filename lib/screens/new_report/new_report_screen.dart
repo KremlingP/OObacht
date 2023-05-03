@@ -204,6 +204,7 @@ class _NewReportScreenState extends State<NewReportScreen> {
           title,
           description,
           null,
+          null,
           selectedCategories,
           position!,
           base64Image,
