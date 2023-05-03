@@ -85,6 +85,34 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 const SizedBox(height: 20),
+                                Chip(
+                                  backgroundColor: theme.colorScheme.secondary,
+                                  avatar: const CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: Icon(Icons.person,
+                                        color: Colors.black),
+                                  ),
+                                  label: Column(
+                                    children: [
+                                      Text(
+                                        FirebaseAuth.instance.currentUser!.displayName!,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        FirebaseAuth.instance.currentUser!.email!,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
                                 Text("Umkreis setzen",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
