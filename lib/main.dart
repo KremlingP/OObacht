@@ -3,6 +3,7 @@ import 'package:context_holder/context_holder.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
@@ -75,6 +76,11 @@ class _OobachtAppState extends State<OobachtApp> {
     startPositionListener();
     initPlatformState();
     BackgroundFetch.start();
+
+    var brightness = SchedulerBinding.instance.window.platformBrightness;
+    bool isDarkMode = brightness == Brightness.dark;
+
+    print('>>>>>> ISDARKMODE: $isDarkMode');
   }
 
   @override
