@@ -191,7 +191,6 @@ class _NewReportScreenState extends State<NewReportScreen> {
       position =
           LatLng(retrievedPosition.latitude, retrievedPosition.longitude);
 
-      //TODO Verzögerung raus nehmen (für Präsi bisschen anschaulicher, wenn nicht direkt lädt)
       await Future.delayed(const Duration(seconds: 1));
 
       String base64Image = "";

@@ -328,7 +328,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         isDeleting = true;
       });
 
-      //TODO Verzögerung raus nehmen (für Präsi bisschen anschaulicher, wenn nicht direkt lädt)
       await Future.delayed(const Duration(seconds: 1));
 
       bool successful =

@@ -101,7 +101,6 @@ class _OobachtAppState extends State<OobachtApp> {
     setState(() {
       if (prefs.getString('themeMode') != null) {
         final themeModeString = prefs.getString('themeMode');
-        print('>>>>> ThemeMode: $themeModeString');
         ThemeMode themeMode = ThemeMode.light;
         switch (themeModeString) {
           case "dark":
