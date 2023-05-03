@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/utils/list_unique.dart';
 
 import '../../../../../logic/classes/report.dart';
 
@@ -32,7 +33,11 @@ class MapCaption extends StatelessWidget {
             DataColumn(label: Text('Icon')),
             DataColumn(label: Text('NAME')),
           ],
-          rows: _getDataRows(theme),
+          rows: reportsList.map((e) => getDataRowForReport(e, theme)).toList()
+          .unique((element) {
+            Text textWidget = element.cells.last.child as Text;
+            return textWidget.data;
+          }),
         ),
       ),
     );
@@ -69,9 +74,15 @@ class MapCaption extends StatelessWidget {
     List<DataRow> dataRows = [];
     for (var report in reportsList) {
       DataRow newRow = getDataRowForReport(report, theme);
-      if (dataRows
-          .any((element) => element.cells.first == newRow.cells.first)) {
+      if (!dataRows
+          .any((element) {
+            Text firstElement = element.cells.last.child as Text;
+            Text secondElement = newRow.cells.last.child as Text;
+        print('>>> Comparing ${firstElement.data} with ${secondElement.data}');
+        return firstElement.data == secondElement.data;
+          })) {
         dataRows.add(newRow);
+        print(">>> Added new row");
       }
     }
     return dataRows;
