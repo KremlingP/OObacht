@@ -73,16 +73,14 @@ class ReportFunctions {
         'location': const LocationConverter().toJson(report.location),
         'alternatives': report.alternatives,
         'repeatingReport':
-            report.repeatingReport.map((e) => e.toString()).toList(),
+            report.repeatingReport.map((e) => e.name).toList(),
       };
       if (report.image != null && report.image.isNotEmpty) {
         map.addAll(<String, dynamic>{'image': report.image});
       }
-      print("DEBUG: ${report.image}");
-      print(map.toString());
+
       final HttpsCallableResult result = await callable.call(map);
       if (result.data != null) {
-        print(result.data.toString());
         return result.data;
       }
     } on FirebaseFunctionsException catch (error) {

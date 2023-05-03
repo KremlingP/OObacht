@@ -78,8 +78,8 @@ Color getRepeatingReportColor(RepeatingReportsEnum repeatingReport) {
     case RepeatingReportsEnum.thunder:
       return Colors.orange;
     case RepeatingReportsEnum.hail:
-      return Colors.white12;
+      return Colors.grey;
     case RepeatingReportsEnum.fog:
-      return Colors.white10;
+      return Colors.grey;
   }
 }
