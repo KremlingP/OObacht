@@ -28,7 +28,6 @@ class CustomTheme with ChangeNotifier {
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
           .copyWith(background: Colors.white),
       cardColor: Colors.white,
-      brightness: Brightness.light,
     );
   }
 
@@ -46,7 +45,6 @@ class CustomTheme with ChangeNotifier {
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
           .copyWith(background: darkModeBackgroundColor),
       cardColor: darkModeBackgroundColor,
-      brightness: Brightness.dark,
     );
   }
 }
