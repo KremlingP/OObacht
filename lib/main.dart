@@ -3,7 +3,6 @@ import 'package:context_holder/context_holder.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
@@ -76,11 +75,6 @@ class _OobachtAppState extends State<OobachtApp> {
     startPositionListener();
     initPlatformState();
     BackgroundFetch.start();
-
-    var brightness = SchedulerBinding.instance.window.platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
-
-    print('>>>>>> ISDARKMODE: $isDarkMode');
   }
 
   @override
@@ -98,16 +92,29 @@ class _OobachtAppState extends State<OobachtApp> {
       darkTheme: CustomTheme.darkTheme,
       themeMode: currentTheme.currentTheme,
       home: LocationPermissionWrapper(),
-      //debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
     );
   }
 
   void loadDataFromSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      if (prefs.getBool('darkMode') != null) {
-        //standard is LightMode, if DarkMode is true toggle theme
-        if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
+      if (prefs.getString('themeMode') != null) {
+        final themeModeString = prefs.getString('themeMode');
+        print('>>>>> ThemeMode: $themeModeString');
+        ThemeMode themeMode = ThemeMode.light;
+        switch (themeModeString) {
+          case "dark":
+            themeMode = ThemeMode.dark;
+            break;
+          case "light":
+            themeMode = ThemeMode.light;
+            break;
+          case "system":
+            themeMode = ThemeMode.system;
+            break;
+        }
+        currentTheme.toggleTheme(themeMode);
       }
       if (prefs.getBool('pushNotifications') != null) {
         //standard is true

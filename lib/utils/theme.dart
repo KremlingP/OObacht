@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/globals.dart' as globals;
 
 CustomTheme currentTheme = CustomTheme();
 
 class CustomTheme with ChangeNotifier {
-  static bool _isDarkTheme = false;
+  static ThemeMode _themeMode = ThemeMode.light;
 
   static Color darkModeBackgroundColor = const Color.fromRGBO(53, 52, 51, 1);
 
-  ThemeMode get currentTheme => _isDarkTheme ? ThemeMode.dark : ThemeMode.light;
+  ThemeMode get currentTheme => _themeMode;
 
-  void toggleTheme() {
-    _isDarkTheme = !_isDarkTheme;
+  void toggleTheme(ThemeMode newTheme) {
+    _themeMode = newTheme;
+    globals.globalThemeMode = _themeMode;
     notifyListeners();
   }
 
