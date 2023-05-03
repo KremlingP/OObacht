@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '/utils/list_unique.dart';
 import '../../../../../logic/classes/report.dart';
 
 class MapCaption extends StatelessWidget {
@@ -33,11 +32,7 @@ class MapCaption extends StatelessWidget {
             DataColumn(label: Text('Icon')),
             DataColumn(label: Text('NAME')),
           ],
-          rows: reportsList
-              .map((e) => getDataRowForReport(e, theme))
-              .toList()
-              //compares toString of child => name of group and eliminates duplicates
-              .unique((dr) => dr.cells.last.child.toString()),
+          rows: _getDataRows(theme),
         ),
       ),
     );
@@ -68,5 +63,17 @@ class MapCaption extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  List<DataRow> _getDataRows(ThemeData theme) {
+    List<DataRow> dataRows = [];
+    for (var report in reportsList) {
+      DataRow newRow = getDataRowForReport(report, theme);
+      if (dataRows
+          .any((element) => element.cells.first == newRow.cells.first)) {
+        dataRows.add(newRow);
+      }
+    }
+    return dataRows;
   }
 }
