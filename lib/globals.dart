@@ -4,4 +4,4 @@ import 'package:flutter/material.dart';
 
 bool pushNotificationsActivated = true;
 
-ThemeMode globalThemeMode = ThemeMode.system;
+ThemeMode globalThemeMode = ThemeMode.light;
