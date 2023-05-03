@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/firebase/functions/group_functions.dart';
+import 'package:oobacht/logic/services/pushnotificationsservice.dart';
+import 'package:oobacht/main.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
@@ -44,6 +46,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   void initState() {
     filteredReports = ReportFunctions.getAllReports();
     allGroups = GroupFunctions.getAllGroups();
+
+    // Send initial position and fcm token
+    startPositionListener();
+    PushNotificationService.sendSavedFcmTokenToServer();
+
     super.initState();
   }
 

@@ -65,6 +65,7 @@ class _SettingsDrawerPageState extends State<SettingsDrawerPage> {
                   setState(() {
                     globals.pushNotificationsActivated = value;
                     saveDataToSharedPrefs();
+                    PushNotificationService.sendSavedFcmTokenToServer();
                   });
                 },
               ),

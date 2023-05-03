@@ -5,6 +5,8 @@ import 'package:oobacht/firebase/functions/user_functions.dart';
 import 'package:oobacht/globals.dart' as globals;
 
 class PushNotificationService {
+  static String _fcmToken = "";
+
   final FirebaseMessaging _fcm;
 
   static int semaphore = 0;
@@ -16,6 +18,7 @@ class PushNotificationService {
 
     String? token = await _fcm.getToken();
     if(token != null) {
+      _fcmToken = token;
       await sendFcmTokenToServer(token);
     }
 
@@ -26,6 +29,7 @@ class PushNotificationService {
     );
 
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
+      _fcmToken = fcmToken;
       await sendFcmTokenToServer(fcmToken);
     }).onError((err) {});
 
@@ -48,7 +52,11 @@ class PushNotificationService {
     showNotificationWhileAppRunning(title, body);
   }
 
-  Future<void> sendFcmTokenToServer(String fcmToken) async {
+  static Future<void> sendSavedFcmTokenToServer() async {
+    await sendFcmTokenToServer(_fcmToken);
+  }
+
+  static Future<void> sendFcmTokenToServer(String fcmToken) async {
     if(globals.pushNotificationsActivated) {
       UserFunctions.updateFcmToken(fcmToken);
     } else {
