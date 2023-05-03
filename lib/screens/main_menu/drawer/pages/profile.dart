@@ -89,13 +89,14 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                   backgroundColor: theme.colorScheme.secondary,
                                   avatar: const CircleAvatar(
                                     backgroundColor: Colors.white,
-                                    child: Icon(Icons.person,
-                                        color: Colors.black),
+                                    child:
+                                        Icon(Icons.person, color: Colors.black),
                                   ),
                                   label: Column(
                                     children: [
                                       Text(
-                                        FirebaseAuth.instance.currentUser!.displayName!,
+                                        FirebaseAuth
+                                            .instance.currentUser!.displayName!,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20,
@@ -103,7 +104,8 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                         ),
                                       ),
                                       Text(
-                                        FirebaseAuth.instance.currentUser!.email!,
+                                        FirebaseAuth
+                                            .instance.currentUser!.email!,
                                         style: const TextStyle(
                                           fontSize: 15,
                                           color: Colors.white,
@@ -119,7 +121,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                       fontSize: 20,
                                       color: theme.primaryColor,
                                     )),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 5),
                                 Text(
                                   "Du erhältst für Gefahren im Radius von ${radiusSnapshot.data.toStringAsFixed(0)} km Benachrichtigungen.",
                                   style: TextStyle(
@@ -128,7 +130,6 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 10),
                                 Slider(
                                   value: radiusSnapshot.data.toDouble(),
                                   min: 1.0,
@@ -146,7 +147,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                             Future.value(value.round())
                                       }),
                                 ),
-                                const SizedBox(height: 100),
+                                const SizedBox(height: 10),
                                 Text("Interessensgebiete setzen",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -162,7 +163,7 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                     selectedCategories: ownGroupsSnapshot.data,
                                   ),
                                 ),
-                                const SizedBox(height: 100),
+                                const SizedBox(height: 30),
                                 Text("Account und zugehörige Daten löschen",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,

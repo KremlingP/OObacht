@@ -1,10 +1,10 @@
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/firebase/functions/report_functions.dart';
 import 'package:oobacht/logic/classes/report.dart';
 import 'package:oobacht/utils/dialoges.dart';
 import 'package:oobacht/widgets/loading_hint.dart';
 import 'package:oobacht/widgets/map/map_widget.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '../../utils/helper_methods.dart';
 
@@ -140,20 +140,22 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       height: shortestViewportWidth * 0.5,
                       child: GestureDetector(
                         onTap: () {
-                          showImageViewer(context, Image.network(widget.reportData.image).image, swipeDismissible: true, doubleTapZoomable: true);
+                          showImageViewer(context,
+                              Image.network(widget.reportData.image).image,
+                              swipeDismissible: true, doubleTapZoomable: true);
                         },
                         child: Image.network(
-                            widget.reportData.image,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                  child: LoadingHint(text: "Lade Bild..."));
-                            },
-                          ),
+                          widget.reportData.image,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                                child: LoadingHint(text: "Lade Bild..."));
+                          },
                         ),
-              ),
+                      ),
+                    ),
               Container(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
@@ -200,17 +202,19 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         showMapCaption: false,
                       ),
                     ),
+
                     ///Distance
                     const Icon(
                       Icons.trending_up,
                       color: Colors.orange,
                     ),
-                    Text(" ${widget.reportData.distance!.toStringAsFixed(2)} km entfernt",
-                      style: const TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                    ),
-                              maxLines: 1),
+                    Text(
+                        " ${widget.reportData.distance!.toStringAsFixed(2)} km entfernt",
+                        style: const TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1),
                     const SizedBox(height: 20.0),
 
                     /// Repeating report
@@ -252,10 +256,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                                   fontSize: 20,
                                 )),
                           ),
-                          const SizedBox(height: 10),
                           widget.reportData.alternatives.isNotEmpty
                               ? SizedBox(
-                                  height: 150,
+                                  height: 110,
                                   child: ListView.builder(
                                     itemCount:
                                         widget.reportData.alternatives.length,
