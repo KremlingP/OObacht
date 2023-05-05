@@ -10,7 +10,7 @@ Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
     json['id'] as String?,
     json['title'] as String,
     json['description'] as String,
-    json['distance'] == 0 ? 0.0 : json['distance'] as double,
+    (json['distance'] * 1.0) as double,
     _$JsonConverterFromJson<Map<dynamic, dynamic>, DateTime>(
         json['creationDate'], const DateTimeConverter().fromJson),
     (json['groups'] as List<dynamic>)
