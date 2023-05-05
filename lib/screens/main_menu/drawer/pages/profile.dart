@@ -87,10 +87,23 @@ class _ProfileDrawerPageState extends State<ProfileDrawerPage> {
                                 const SizedBox(height: 20),
                                 Chip(
                                   backgroundColor: theme.colorScheme.secondary,
-                                  avatar: const CircleAvatar(
+                                  avatar: CircleAvatar(
                                     backgroundColor: Colors.white,
                                     child:
-                                        Icon(Icons.person, color: Colors.black),
+                                        ClipOval(
+                                          child: FirebaseAuth.instance.currentUser!.photoURL == null ?
+                                        const Icon(Icons.person, color: Colors.black)
+                                            :
+                                        Image.network(
+                                          FirebaseAuth.instance.currentUser!.photoURL!,
+                                          fit: BoxFit.scaleDown,
+                                          loadingBuilder: (BuildContext context, Widget child,
+                                              ImageChunkEvent? loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return const Icon(Icons.person, color: Colors.black);
+                                          },
+                                        ),
+                                        )
                                   ),
                                   label: Column(
                                     children: [
