@@ -46,7 +46,7 @@ class InformationsDrawerPage extends StatelessWidget {
                   width: data.size.shortestSide / 1.4,
                 ),
                 Text(
-                  "by OOBacht! Group",
+                  "by OObacht! Group",
                   style: TextStyle(color: theme.primaryColor),
                 ),
                 Text(

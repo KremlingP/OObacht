@@ -21,7 +21,7 @@ class MainMenuDrawer extends StatelessWidget {
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.orange),
               child: Text(
-                'OObacht! 0.0.1',
+                'OObacht! 1.0.0',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
