@@ -264,7 +264,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         onPressed: _startSearch,
       ),
       PopupMenuButton(
-          icon: const Icon(Icons.filter_alt),
+          icon: selectedGroups.isEmpty
+              ? const Icon(Icons.filter_alt_off)
+              : const Icon(Icons.filter_alt),
           itemBuilder: (context) {
             return [
               PopupMenuItem<int>(
