@@ -28,7 +28,7 @@ class InformationsDrawerPage extends StatelessWidget {
                           color: theme.primaryColor),
                     ),
                     Text(
-                      "v 0.0.1",
+                      "v 1.0.0",
                       style: TextStyle(
                           fontFamily: 'Fredoka',
                           fontSize: 20,
