@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:oobacht/firebase/functions/group_functions.dart';
+import 'package:oobacht/logic/services/pushnotificationsservice.dart';
+import 'package:oobacht/main.dart';
 import 'package:oobacht/screens/main_menu/pages/main_list/main_list.dart';
 import 'package:oobacht/screens/new_report/new_report_screen.dart';
 import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
@@ -26,6 +28,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   late Future<List<Report>> filteredReports;
+  bool _isCurrentlyUpdating = false;
 
   //PageController to make pages swipeable
   final _pageViewController = PageController();
@@ -43,6 +46,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   void initState() {
     filteredReports = ReportFunctions.getAllReports();
     allGroups = GroupFunctions.getAllGroups();
+
+    // Send initial position and fcm token
+    startPositionListener();
+    PushNotificationService.sendSavedFcmTokenToServer();
+
     super.initState();
   }
 
@@ -70,38 +78,70 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         width: viewportWidth * 0.65,
         child: const MainMenuDrawer(),
       ),
+      onDrawerChanged: (wasOpened) => {
+        if (!wasOpened) {updateFilteredReports()}
+      },
       body: SafeArea(
-          child: FutureBuilder(
-        future: filteredReports,
-        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasError) {
-            return const ErrorTextWithIcon(
-                text:
-                    "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
-                icon: Icons.wifi_off);
-          }
-          if (snapshot.hasData) {
-            return PageView(
-              controller: _pageViewController,
-              children: [
-                MapWidget(
-                  reports: snapshot.data,
-                  showMarkerDetails: true,
-                  showMapCaption: true,
-                ),
-                MainList(reports: snapshot.data),
-              ],
-              onPageChanged: (index) {
-                setState(() {
-                  filteredReports = _getFilteredReports();
-                  _activePageIndex = index;
-                });
-              },
-            );
-          } else {
-            return const Center(child: LoadingHint(text: "Lade Meldungen..."));
-          }
-        },
+          child: Stack(
+        children: [
+          FutureBuilder(
+            future: filteredReports,
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasError) {
+                return const ErrorTextWithIcon(
+                    text:
+                        "Fehler beim Laden der Meldungen! \n Bitte Verbindung überprüfen!",
+                    icon: Icons.wifi_off);
+              }
+              if (snapshot.hasData) {
+                return PageView(
+                  controller: _pageViewController,
+                  children: [
+                    MapWidget(
+                      reports: snapshot.data,
+                      showMarkerDetails: true,
+                      showMapCaption: true,
+                    ),
+                    MainList(
+                        reports: snapshot.data,
+                        refreshMethod: updateFilteredReports),
+                  ],
+                  onPageChanged: (index) {
+                    setState(() {
+                      updateFilteredReports();
+                      _activePageIndex = index;
+                    });
+                  },
+                );
+              } else {
+                return const Center(
+                    child: LoadingHint(text: "Lade Meldungen..."));
+              }
+            },
+          ),
+          _isCurrentlyUpdating
+              ? Container(
+                  color: Colors.black54,
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/logo_animated.gif',
+                        height: 50,
+                        width: 50,
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      const Text(
+                        "Aktualisiere Meldungen...",
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  )))
+              : Container(),
+        ],
       )),
       floatingActionButton: FutureBuilder(
         future: allGroups,
@@ -109,7 +149,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           if (snapshot.hasData) {
             return FloatingActionButton.extended(
               label: const Text('Neue Meldung'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               onPressed: () => _newReport(snapshot.data),
               tooltip: 'Neue Meldung erstellen',
@@ -159,7 +199,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             ),
             context: context)
         .then((value) {
-      setState(() {});
+      updateFilteredReports();
     });
   }
 
@@ -182,8 +222,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white, fontSize: 16.0),
       onChanged: (query) {
-        queryText = query;
-        updateSearchQuery();
+        setState(() {
+          queryText = query;
+          updateFilteredReports();
+        });
       },
     );
   }
@@ -222,7 +264,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         onPressed: _startSearch,
       ),
       PopupMenuButton(
-          icon: const Icon(Icons.filter_alt),
+          icon: selectedGroups.isEmpty
+              ? const Icon(Icons.filter_alt_off)
+              : const Icon(Icons.filter_alt),
           itemBuilder: (context) {
             return [
               PopupMenuItem<int>(
@@ -242,9 +286,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
             if (value == 0) {
               _showCategoryPicker(context, theme);
             } else if (value == 1) {
-              //TODO nur Eigene anzeigen absprechen -> backend/frontend-seitig filtern?
-              ReportFunctions.getAllReports();
-              showOnlyOwn = !showOnlyOwn;
+              setState(() {
+                showOnlyOwn = !showOnlyOwn;
+                updateFilteredReports();
+              });
             }
           }),
     ];
@@ -256,19 +301,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
     setState(() {
       _isSearching = true;
-    });
-  }
-
-  void updateSearchQuery() async {
-    List<Report> results = [];
-    if (queryText.isEmpty) {
-      results = await ReportFunctions.getAllReports();
-    } else {
-      results = await _getFilteredReports();
-    }
-
-    setState(() {
-      filteredReports = Future.value(results);
     });
   }
 
@@ -284,7 +316,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     setState(() {
       _searchQueryController.clear();
       queryText = "";
-      updateSearchQuery();
+      updateFilteredReports();
     });
   }
 
@@ -312,7 +344,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     onConfirm: (values) {
                       selectedGroups = values;
                       setState(() {
-                        filteredReports = _getFilteredReports();
+                        updateFilteredReports();
                       });
                     },
                     title: Text(
@@ -340,7 +372,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   Future<List<Report>> _getFilteredReports() async {
-    List<Report> reports = await ReportFunctions.getAllReports();
+    _isCurrentlyUpdating = true;
+    List<Report> reports = showOnlyOwn
+        ? await ReportFunctions.getOwnReports()
+        : await ReportFunctions.getAllReports();
+
     if (selectedGroups.isNotEmpty) {
       reports = reports
           .where((report) => report.groups.any(
@@ -353,6 +389,15 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               report.title.toLowerCase().contains(queryText.toLowerCase()))
           .toList();
     }
+    setState(() {
+      _isCurrentlyUpdating = false;
+    });
     return reports;
+  }
+
+  void updateFilteredReports() {
+    setState(() {
+      filteredReports = _getFilteredReports();
+    });
   }
 }

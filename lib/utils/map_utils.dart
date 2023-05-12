@@ -18,16 +18,16 @@ Future<HashMap<String, Marker>> generateMarkers(List<Report> reportsList,
     BitmapDescriptor icon;
     if (report.groups.length > 1) {
       icon = await markerGenerator.createBitmapDescriptorFromIconData(
-          Icons.category,
+          const AssetImage('assets/multiple_groups_icon.png'),
           theme.primaryColor,
           Colors.grey,
-          theme.colorScheme.background);
+          Colors.white);
     } else {
       icon = await markerGenerator.createBitmapDescriptorFromIconData(
           report.groups[0].icon,
           theme.primaryColor,
           report.groups[0].color,
-          theme.colorScheme.background);
+          Colors.white);
     }
     final marker = Marker(
       markerId: MarkerId(report.id ?? ""),

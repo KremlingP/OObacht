@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:oobacht/utils/auth_wrapper.dart';
 import 'package:oobacht/widgets/ErrorTextWithIcon.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,7 +58,7 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30.0),
                   child: Text(
-                    "OObacht! benötigt immer Berechtigungen auf deinen Standort, um dir relevante Meldungen zu senden, bitte aktiviere diese in den Einstellungen!",
+                    "OObacht! benötigt immer Berechtigungen auf deinen Standort, um dir relevante Meldungen in deiner Umgebung zu senden, bitte aktiviere diesen in den Einstellungen!",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -91,10 +92,15 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
     if (Platform.isAndroid) {
       result = await Permission.locationAlways.request();
     } else {
-      result = await Permission.locationWhenInUse.request();
-      if (result.isGranted) {
-        result = await Permission.locationAlways.request();
+      LocationPermission permission;
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.deniedForever) {
+          return Future.error('Location Not Available');
+        }
       }
+      result = await Permission.locationWhenInUse.request();
     }
 
     if (result.isGranted) {
@@ -107,10 +113,15 @@ class _LocationPermissionWrapperState extends State<LocationPermissionWrapper>
     if (Platform.isAndroid) {
       result = await Permission.locationAlways.request();
     } else {
-      result = await Permission.locationWhenInUse.request();
-      if (result.isGranted) {
-        result = await Permission.locationAlways.request();
+      LocationPermission permission;
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.deniedForever) {
+          return Future.error('Location Not Available');
+        }
       }
+      result = PermissionStatus.granted;
     }
 
     if (result.isGranted) {

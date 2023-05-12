@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
+import 'package:oobacht/globals.dart' as globals;
 import 'package:oobacht/logic/services/pushnotificationsservice.dart';
 import 'package:oobacht/utils/location_permission_wrapper.dart';
 import 'package:oobacht/utils/map_utils.dart';
@@ -80,23 +81,44 @@ class _OobachtAppState extends State<OobachtApp> {
   Widget build(BuildContext context) {
     final pushNotificationService = PushNotificationService(_firebaseMessaging);
     pushNotificationService.initialise();
+    precacheImage(const AssetImage("assets/logo_animated.gif"), context);
     precacheImage(const AssetImage("assets/logo.png"), context);
+    precacheImage(const AssetImage("assets/icon.png"), context);
+    precacheImage(const AssetImage("assets/multiple_groups_icon.png"), context);
+    precacheImage(const AssetImage("assets/default_group_icon.png"), context);
     return MaterialApp(
       title: 'OObacht!',
       theme: CustomTheme.lightTheme,
       darkTheme: CustomTheme.darkTheme,
       themeMode: currentTheme.currentTheme,
       home: LocationPermissionWrapper(),
-      //debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
     );
   }
 
   void loadDataFromSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      if (prefs.getBool('darkMode') != null) {
-        //standard is LightMode, if DarkMode is true toggle theme
-        if (prefs.getBool('darkMode') == true) currentTheme.toggleTheme();
+      if (prefs.getString('themeMode') != null) {
+        final themeModeString = prefs.getString('themeMode');
+        ThemeMode themeMode = ThemeMode.light;
+        switch (themeModeString) {
+          case "dark":
+            themeMode = ThemeMode.dark;
+            break;
+          case "light":
+            themeMode = ThemeMode.light;
+            break;
+          case "system":
+            themeMode = ThemeMode.system;
+            break;
+        }
+        currentTheme.toggleTheme(themeMode);
+      }
+      if (prefs.getBool('pushNotifications') != null) {
+        //standard is true
+        if (prefs.getBool('pushNotifications') == false)
+          globals.pushNotificationsActivated = false;
       }
     });
   }

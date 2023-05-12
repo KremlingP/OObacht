@@ -28,7 +28,7 @@ class InformationsDrawerPage extends StatelessWidget {
                           color: theme.primaryColor),
                     ),
                     Text(
-                      "v 0.0.1",
+                      "v 1.0.0",
                       style: TextStyle(
                           fontFamily: 'Fredoka',
                           fontSize: 20,
@@ -46,8 +46,16 @@ class InformationsDrawerPage extends StatelessWidget {
                   width: data.size.shortestSide / 1.4,
                 ),
                 Text(
-                  "by OOBacht! Group",
+                  "by OObacht! Group",
                   style: TextStyle(color: theme.primaryColor),
+                ),
+                Text(
+                  "Ein großer Dank geht an Torsten! Ohne ihn hätten unsere Bilder noch immer eine schlechte Qualität!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: theme.primaryColor,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold),
                 )
               ],
             ),

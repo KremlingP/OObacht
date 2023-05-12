@@ -8,8 +8,6 @@ class GroupFunctions {
       UrlHelper.getFunctionUrl("subscribeGroup"),
     );
 
-    print(">>> subscribeGroup: ${group.id}");
-
     final response = await callable.call(<String, dynamic>{
       'groupId': group.id,
     });
@@ -19,8 +17,6 @@ class GroupFunctions {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
       UrlHelper.getFunctionUrl("unsubscribeGroup"),
     );
-
-    print(">>> unsubscribeGroup: ${group.id}");
 
     final response = await callable.call(<String, dynamic>{
       'groupId': group.id,

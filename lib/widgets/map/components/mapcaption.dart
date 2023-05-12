@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oobacht/utils/list_unique.dart';
 
-import '/utils/list_unique.dart';
 import '../../../../../logic/classes/report.dart';
 
 class MapCaption extends StatelessWidget {
@@ -11,22 +11,20 @@ class MapCaption extends StatelessWidget {
     required this.reportsList,
   }) : super(key: key);
 
-  bool multipleCategoriesSet = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Positioned(
       top: 10,
       left: 10,
-      height: 105,
+      height: 103,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: DataTable(
           headingRowHeight: 0,
           dataRowHeight: 25,
           dataRowColor: MaterialStateProperty.all<Color>(
-              const Color.fromRGBO(147, 150, 153, 0.5)),
+              const Color.fromRGBO(255, 255, 255, 0.50)),
           columnSpacing: 1,
           border: TableBorder.all(
             color: Colors.transparent,
@@ -35,19 +33,18 @@ class MapCaption extends StatelessWidget {
             DataColumn(label: Text('Icon')),
             DataColumn(label: Text('NAME')),
           ],
-          rows: reportsList
-              .map((e) => getDataRowForReport(e, theme))
-              .toList()
-              //compares toString of child => name of group and eliminates duplicates
-              .unique((dr) => dr.cells.last.child.toString()),
+          rows: reportsList.map((e) => getDataRowForReport(e, theme)).toList()
+          .unique((element) {
+            Text textWidget = element.cells.last.child as Text;
+            return textWidget.data;
+          }),
         ),
       ),
     );
   }
 
   DataRow getDataRowForReport(Report report, ThemeData theme) {
-    if (report.groups.length > 1 && !multipleCategoriesSet) {
-      multipleCategoriesSet = true;
+    if (report.groups.length > 1) {
       return DataRow(
         cells: [
           const DataCell(
@@ -63,7 +60,7 @@ class MapCaption extends StatelessWidget {
     return DataRow(
       cells: [
         DataCell(
-          Icon(report.groups[0].icon, color: report.groups[0].color),
+          ImageIcon(report.groups[0].icon, color: report.groups[0].color),
         ),
         DataCell(
           Text(report.groups[0].name,
@@ -71,5 +68,23 @@ class MapCaption extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  List<DataRow> _getDataRows(ThemeData theme) {
+    List<DataRow> dataRows = [];
+    for (var report in reportsList) {
+      DataRow newRow = getDataRowForReport(report, theme);
+      if (!dataRows
+          .any((element) {
+            Text firstElement = element.cells.last.child as Text;
+            Text secondElement = newRow.cells.last.child as Text;
+        print('>>> Comparing ${firstElement.data} with ${secondElement.data}');
+        return firstElement.data == secondElement.data;
+          })) {
+        dataRows.add(newRow);
+        print(">>> Added new row");
+      }
+    }
+    return dataRows;
   }
 }

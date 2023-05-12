@@ -40,6 +40,25 @@ class ReportFunctions {
     return [];
   }
 
+  static Future<List<Report>> getOwnReports() async {
+    const functionName = 'getOwnReports';
+
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
+
+    try {
+      final HttpsCallableResult result = await callable.call();
+      if (result.data != null) {
+        final reports = result.data.map((e) => Report.fromJson(e)).toList();
+
+        return Future.value(List<Report>.from(reports));
+      }
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
+    }
+    return [];
+  }
+
   static Future<bool> createReport(Report report) async {
     const functionName = 'createReport';
 
@@ -54,21 +73,61 @@ class ReportFunctions {
         'location': const LocationConverter().toJson(report.location),
         'alternatives': report.alternatives,
         'repeatingReport':
-            report.repeatingReport.map((e) => e.toString()).toList(),
+            report.repeatingReport.map((e) => e.name).toList(),
       };
       if (report.image != null && report.image.isNotEmpty) {
         map.addAll(<String, dynamic>{'image': report.image});
       }
-      print("DEBUG: ${report.image}");
-      print(map.toString());
+
       final HttpsCallableResult result = await callable.call(map);
       if (result.data != null) {
-        print(result.data.toString());
         return result.data;
       }
     } on FirebaseFunctionsException catch (error) {
       UrlHelper.printFirebaseFunctionsException(error, functionName);
     }
     return false;
+  }
+
+  static Future<bool> deleteReport(String reportId) async {
+    const functionName = 'deleteReport';
+
+    HttpsCallable callable = FirebaseFunctions.instance
+        .httpsCallableFromUrl(UrlHelper.getFunctionUrl(functionName));
+
+    try {
+      final HttpsCallableResult result =
+      await callable.call(<String, String>{'id': reportId});
+
+      return result.data;
+    } on FirebaseFunctionsException catch (error) {
+      UrlHelper.printFirebaseFunctionsException(error, functionName);
+    }
+
+    return false;
+  }
+
+  static Future<bool> createComplaint(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createComplaint"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
+  }
+
+  static Future<bool> createConcluded(String reportId) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallableFromUrl(
+      UrlHelper.getFunctionUrl("createConcluded"),
+    );
+
+    final response = await callable.call(<String, dynamic>{
+      'reportId': reportId,
+    });
+
+    return response.data;
   }
 }

@@ -2,9 +2,14 @@ import 'package:context_holder/context_holder.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:oobacht/firebase/functions/user_functions.dart';
+import 'package:oobacht/globals.dart' as globals;
 
 class PushNotificationService {
+  static String _fcmToken = "";
+
   final FirebaseMessaging _fcm;
+
+  static int semaphore = 0;
 
   PushNotificationService(this._fcm);
 
@@ -13,6 +18,7 @@ class PushNotificationService {
 
     String? token = await _fcm.getToken();
     if(token != null) {
+      _fcmToken = token;
       await sendFcmTokenToServer(token);
     }
 
@@ -23,19 +29,39 @@ class PushNotificationService {
     );
 
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
+      _fcmToken = fcmToken;
       await sendFcmTokenToServer(fcmToken);
     }).onError((err) {});
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      String title = notification?.title ?? '';
-      String body = notification?.body ?? '';
-      showNotificationWhileAppRunning(title, body);
+      // This workaround is needed because of a FirebaseMessaging bug
+      // where messages are received twice or more often
+      if (semaphore != 0) {
+        return;
+      }
+      semaphore = 1;
+      Future.delayed(const Duration(seconds: 1)).then((_) => semaphore = 0);
+      handleMessage(message);
     });
   }
 
-  Future<void> sendFcmTokenToServer(String fcmToken) async {
-    UserFunctions.updateFcmToken(fcmToken);
+  void handleMessage(RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    String title = notification?.title ?? '';
+    String body = notification?.body ?? '';
+    showNotificationWhileAppRunning(title, body);
+  }
+
+  static Future<void> sendSavedFcmTokenToServer() async {
+    await sendFcmTokenToServer(_fcmToken);
+  }
+
+  static Future<void> sendFcmTokenToServer(String fcmToken) async {
+    if(globals.pushNotificationsActivated) {
+      UserFunctions.updateFcmToken(fcmToken);
+    } else {
+      UserFunctions.updateFcmToken("");
+    }
   }
 
   Future<void> showNotificationWhileAppRunning(String title, String description) async {

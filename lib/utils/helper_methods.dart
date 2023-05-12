@@ -19,7 +19,7 @@ List<Widget> getGroupChips(List<Group> groups) {
         backgroundColor: group.color,
         avatar: CircleAvatar(
           backgroundColor: group.color,
-          child: Icon(group.icon, color: Colors.white),
+          child: ImageIcon(group.icon, color: Colors.white),
         ),
       ),
     );
@@ -48,4 +48,32 @@ List<Widget> getRepeatingChips(
   }
 
   return chips;
+}
+
+void showLoadingSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 2),
+    ),
+  );
+}
+
+void showResponseSnackBar(BuildContext context, bool successful,
+    String successString, String failString) {
+  if (successful) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(successString),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(failString),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 }

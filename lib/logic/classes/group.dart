@@ -5,16 +5,13 @@ import 'package:oobacht/utils/json_serialization/icon_converter.dart';
 
 part 'group.g.dart';
 
-//TODO IconPath nicht nullable machen -> Timo gibt da im Backand null anstatt nen leeren String zurück -> funzt bei imageUrl auch aber warum hier nicht?
-//TODO Bei Color klären, obs als String oder einfach hexcode int in der DB gespeichert wird
-
 @JsonSerializable()
 class Group {
   final String id;
   final String name;
   @JsonKey(name: 'iconPath')
   @IconConverter()
-  final IconData icon;
+  final ImageProvider icon;
   @ColorConverter()
   final Color color;
 

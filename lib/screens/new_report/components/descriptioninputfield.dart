@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../new_report_screen.dart';
@@ -18,8 +16,8 @@ class _DescriptionInputFieldState extends State<DescriptionInputField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return TextFormField(
-      keyboardType: TextInputType.multiline,
-      maxLines: 10,
+      keyboardType: TextInputType.text,
+      maxLines: 3,
       maxLength: 500,
       autocorrect: true,
       onChanged: (value) => {
@@ -30,6 +28,7 @@ class _DescriptionInputFieldState extends State<DescriptionInputField> {
         labelText: 'Beschreibung',
         hintText: 'Gebe eine Beschreibung für die Meldung ein...',
         border: const OutlineInputBorder(),
+        helperStyle: TextStyle(color: theme.primaryColor),
         labelStyle: TextStyle(color: theme.primaryColor),
         hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
       ),

@@ -18,14 +18,6 @@ class _AlternativePickerState extends State<AlternativePicker> {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Center(
-          child: Text("Alternativen hinzufügen",
-              style: TextStyle(
-                color: theme.primaryColor,
-                fontSize: 20,
-              )),
-        ),
-        const SizedBox(height: 10),
         TextFormField(
           controller: _alternativeController,
           keyboardType: TextInputType.text,
@@ -42,9 +34,10 @@ class _AlternativePickerState extends State<AlternativePicker> {
             })
           },
           decoration: InputDecoration(
-            labelText: 'Alternative',
+            labelText: 'Alternative eingeben',
             hintText: 'Füge eine Alternative hinzu...',
             border: const OutlineInputBorder(),
+            helperStyle: TextStyle(color: theme.primaryColor),
             labelStyle: TextStyle(color: theme.primaryColor),
             hintStyle: TextStyle(color: theme.primaryColor.withOpacity(0.5)),
           ),
@@ -52,7 +45,7 @@ class _AlternativePickerState extends State<AlternativePicker> {
         ),
         alternatives.isNotEmpty
             ? SizedBox(
-                height: 150,
+                height: 100,
                 child: ListView.builder(
                   itemCount: alternatives.length,
                   itemBuilder: (context, index) {
@@ -69,9 +62,15 @@ class _AlternativePickerState extends State<AlternativePicker> {
                         leading: CircleAvatar(
                           backgroundColor: theme.colorScheme.primary,
                           foregroundColor: theme.primaryColor,
-                          child: Text('${index + 1}'),
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        title: Text(alternatives[index], style: TextStyle(color: theme.primaryColor)),
+                        title: Text(alternatives[index],
+                            style: TextStyle(color: theme.primaryColor)),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           color: theme.primaryColor,
@@ -88,9 +87,7 @@ class _AlternativePickerState extends State<AlternativePicker> {
                   },
                 ),
               )
-            : Center(
-                child: Text("Keine Alternativen hinzugefügt.",
-                    style: TextStyle(color: theme.primaryColor, fontSize: 15))),
+            : Container()
       ],
     );
   }

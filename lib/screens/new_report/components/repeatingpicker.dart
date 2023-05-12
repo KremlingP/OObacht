@@ -40,10 +40,14 @@ class _RepeatingPickerState extends State<RepeatingPicker> {
         ),
       ),
       backgroundColor: theme.colorScheme.background,
-      selectedColor: theme.colorScheme.primary.withOpacity(0.1),
+      itemsTextStyle: const TextStyle(color: Colors.white),
+      unselectedColor: Colors.grey,
+      searchTextStyle: TextStyle(color: theme.primaryColor),
+      selectedColor: theme.colorScheme.primary,
+      selectedItemsTextStyle: const TextStyle(color: Colors.white),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withOpacity(0.1),
-        borderRadius: const BorderRadius.all(Radius.circular(40)),
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
         border: Border.all(
           color: theme.colorScheme.primary,
           width: 2,
@@ -54,10 +58,10 @@ class _RepeatingPickerState extends State<RepeatingPicker> {
         color: theme.primaryColor,
       ),
       buttonText: Text(
-        "Meldung wird erneut ausgelöst:",
+        "Meldung wird erneut ausgelöst bei:",
         style: TextStyle(
           color: theme.primaryColor,
-          fontSize: 16,
+          fontSize: 15,
         ),
       ),
       confirmText:
@@ -85,6 +89,12 @@ class _RepeatingPickerState extends State<RepeatingPicker> {
         _multiSelectKey.currentState?.validate();
       },
       chipDisplay: MultiSelectChipDisplay(
+        textStyle: const TextStyle(color: Colors.white),
+        chipColor: Colors.orange,
+        icon: const Icon(
+          Icons.close,
+          color: Colors.white,
+        ),
         onTap: (value) {
           setState(() {
             selectedValues.remove(value);

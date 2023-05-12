@@ -12,6 +12,10 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
+
+       <meta-data
+           android:name="com.google.firebase.messaging.default_notification_icon"
+           android:resource="@drawable/icon_transparent" />
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyB9pH-071cJQQMu2x3Ly_SrPoE4-gYxpJ4"/>
        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />

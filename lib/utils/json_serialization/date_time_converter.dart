@@ -1,7 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-//TODO implement DateTimeConverter, update Map and newDate
-
 class DateTimeConverter
     implements JsonConverter<DateTime, Map<dynamic, dynamic>> {
   const DateTimeConverter();

@@ -7,27 +7,29 @@ part of 'report.dart';
 // **************************************************************************
 
 Report _$ReportFromJson(Map<dynamic, dynamic> json) => Report(
-      json['id'] as String?,
-      json['title'] as String,
-      json['description'] as String,
-      _$JsonConverterFromJson<Map<dynamic, dynamic>, DateTime>(
-          json['creationDate'], const DateTimeConverter().fromJson),
-      (json['groups'] as List<dynamic>)
-          .map((e) => Group.fromJson(e as Map<dynamic, dynamic>))
-          .toList(),
-      const LocationConverter().fromJson(json['location'] as Map),
-      json['imageUrl'] == null ? '' : json['imageUrl'] as String,
-      json['alternatives'] != null
-          ? (json['alternatives'] as List<dynamic>)
-              .map((e) => e as String)
-              .toList()
-          : [],
-      json['repeatingReport'] != null
-          ? (json['repeatingReport'] as List<dynamic>)
-              .map((e) => $enumDecode(_$RepeatingReportsEnumEnumMap, e))
-              .toList()
-          : [],
-    );
+    json['id'] as String?,
+    json['title'] as String,
+    json['description'] as String,
+    (json['distance'] * 1.0) as double,
+    _$JsonConverterFromJson<Map<dynamic, dynamic>, DateTime>(
+        json['creationDate'], const DateTimeConverter().fromJson),
+    (json['groups'] as List<dynamic>)
+        .map((e) => Group.fromJson(e as Map<dynamic, dynamic>))
+        .toList(),
+    const LocationConverter().fromJson(json['location'] as Map),
+    json['imageUrl'] == null ? '' : json['imageUrl'] as String,
+    json['alternatives'] != null
+        ? (json['alternatives'] as List<dynamic>)
+            .map((e) => e as String)
+            .toList()
+        : [],
+    json['repeatingReport'] != null
+        ? (json['repeatingReport'] as List<dynamic>)
+            .map((e) => $enumDecode(_$RepeatingReportsEnumEnumMap, e))
+            .toList()
+        : [],
+    json['isOwnReport'] as bool,
+    json['institution'] as String);
 
 Map<String, dynamic> _$ReportToJson(Report instance) => <String, dynamic>{
       'id': instance.id,
