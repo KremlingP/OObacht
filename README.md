@@ -2,6 +2,12 @@
 
 Project for the lecture "Development of mobile applications" at DHBW Stuttgart Campus Horb
 
+## Please note
+
+In this project, a Firebase API is addressed and authenticated using API keys. 
+The API keys stored in this repository are outdated and *cannot* be used to communicate with the API.
+To use the app, new API keys must be generated and stored using the Firebase CLI. Please contact a maintainer of the project for this.
+
 ## Ordner Struktur
 
 - assets: Icons, Logos, Bilder
